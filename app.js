@@ -1,4 +1,5 @@
 const API_BASE = "https://honghua-recruitment-2026.zhangxl9510.chatgpt.site";
+const SNAPSHOT_URL = "./data.json";
 const TOKEN_KEY = "hh_recruitment_editor_token";
 
 const stages = [
@@ -194,14 +195,32 @@ function render() {
   if (state.tab === "board") renderBoard(); else renderTable();
 }
 
+async function readData() {
+  const token = editorToken();
+  if (token) {
+    try {
+      const response = await api("/api/recruitment");
+      const data = await response.json();
+      if (!response.ok || !data.items) throw new Error(data.error || "读取失败");
+      return data;
+    } catch {
+      window.sessionStorage.removeItem(TOKEN_KEY);
+      showNotice("编辑后台暂时无法连接，已自动切换为公开只读模式", 4500);
+    }
+  }
+
+  const response = await fetch(`${SNAPSHOT_URL}?t=${Date.now()}`, { cache: "no-store" });
+  const data = await response.json();
+  if (!response.ok || !data.items) throw new Error(data.error || "读取失败");
+  return { ...data, canEdit: false };
+}
+
 async function load() {
   state.loading = state.items.length === 0;
   state.error = "";
   render();
   try {
-    const response = await api("/api/recruitment");
-    const data = await response.json();
-    if (!response.ok || !data.items) throw new Error(data.error || "读取失败");
+    const data = await readData();
     state.items = data.items;
     state.canEdit = Boolean(data.canEdit);
     if (editorToken() && !state.canEdit) window.sessionStorage.removeItem(TOKEN_KEY);
