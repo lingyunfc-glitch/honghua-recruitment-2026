@@ -147,33 +147,39 @@ function renderBoard() {
     }))
     .sort((a, b) => b.planned - a.planned);
   const maxDepartmentPlan = Math.max(...departmentRows.map((row) => row.planned), 1);
+  const departmentBar = (tone, label, value) => {
+    const width = Math.min(100, value / maxDepartmentPlan * 100);
+    const edgeClass = width > 72 ? " edge" : "";
+    const focus = value > 0 ? ' tabindex="0"' : "";
+    return `<i class="bar ${tone}${edgeClass}" style="width:${width}%" data-tooltip="${label}：${value} 人" aria-label="${label} ${value} 人"${focus}></i>`;
+  };
 
   content.innerHTML = `
     <section class="kpis">
-      <article class="dark"><span>计划补充</span><b>${planned}</b><small>社会招聘${socialPlanned} · 协力人员${partnerPlanned}</small></article>
-      <article><span>已有合适人选</span><b>${total("suitableCount")}</b><small>人</small></article>
-      <article><span>已发Offer</span><b>${offers}</b><small>完成率 ${planned ? Math.round(offers / planned * 100) : 0}%</small></article>
-      <article><span>已到岗</span><b>${onboarded}</b><small>人</small></article>
-      <article class="warn"><span>剩余缺口</span><b>${remaining}</b><small>按已发Offer计算</small></article>
+      <article class="dark" tabindex="0"><span>计划补充</span><b>${planned}</b><small>社会招聘${socialPlanned} · 协力人员${partnerPlanned}</small></article>
+      <article tabindex="0"><span>已有合适人选</span><b>${total("suitableCount")}</b><small>人</small></article>
+      <article tabindex="0"><span>已发Offer</span><b>${offers}</b><small>完成率 ${planned ? Math.round(offers / planned * 100) : 0}%</small></article>
+      <article tabindex="0"><span>已到岗</span><b>${onboarded}</b><small>人</small></article>
+      <article class="warn" tabindex="0"><span>剩余缺口</span><b>${remaining}</b><small>按已发Offer计算</small></article>
     </section>
     <section class="panel">
       <div class="panelhead"><h2>招聘进度</h2><span>各阶段累计人数</span></div>
       <div class="funnel">${stages.map(([key, label], index) => {
         const value = total(key);
         const width = planned ? Math.min(100, value / planned * 100) : 0;
-        return `<article><small>0${index + 1}</small><span>${label}</span><b>${value}<em>人</em></b><div><i style="width:${width}%"></i></div></article>`;
+        return `<article tabindex="0" aria-label="${label} ${value} 人"><small>0${index + 1}</small><span>${label}</span><b>${value}<em>人</em></b><div><i style="width:${width}%"></i></div></article>`;
       }).join("")}</div>
     </section>
     <section class="grid">
-      <article class="panel">
+      <article class="panel department-panel">
         <div class="panelhead"><h2>各部门招聘进度</h2><span>计划 / Offer / 到岗</span></div>
-        <div class="bars">${departmentRows.map((row) => `<div><span>${escapeHtml(row.name)}</span><div><i class="p" style="width:${row.planned / maxDepartmentPlan * 100}%"></i><i class="o" style="width:${row.offers / maxDepartmentPlan * 100}%"></i><i class="a" style="width:${row.onboarded / maxDepartmentPlan * 100}%"></i></div><b>${row.planned}</b></div>`).join("")}</div>
+        <div class="bars">${departmentRows.map((row) => `<div class="bar-row" tabindex="0" data-summary="计划 ${row.planned} · Offer ${row.offers} · 到岗 ${row.onboarded}" aria-label="${escapeHtml(row.name)}：计划 ${row.planned} 人，Offer ${row.offers} 人，到岗 ${row.onboarded} 人"><span>${escapeHtml(row.name)}</span><div class="bar-track">${departmentBar("p", "计划", row.planned)}${departmentBar("o", "Offer", row.offers)}${departmentBar("a", "到岗", row.onboarded)}</div><b>${row.planned}</b></div>`).join("")}</div>
       </article>
-      <article class="panel">
+      <article class="panel composition-panel">
         <div class="panelhead"><h2>补充方式</h2><span>计划构成</span></div>
         <div class="split">
-          <div class="donut" style="background:radial-gradient(circle,#fff 0 53%,transparent 54%),conic-gradient(#75a6d2 0 ${planned ? socialPlanned / planned * 100 : 0}%,#69b9ae 0 100%)"><b>${planned}</b><small>计划人数</small></div>
-          <div><p><i class="social"></i><b>社会招聘</b><span>${socialPlanned}人 · ${planned ? Math.round(socialPlanned / planned * 100) : 0}%</span></p><p><i class="partner"></i><b>协力人员</b><span>${partnerPlanned}人 · ${planned ? Math.round(partnerPlanned / planned * 100) : 0}%</span></p></div>
+          <div class="donut" tabindex="0" aria-label="计划人数 ${planned} 人，其中社会招聘 ${socialPlanned} 人，协力人员 ${partnerPlanned} 人" style="background:radial-gradient(circle,#fff 0 53%,transparent 54%),conic-gradient(#75a6d2 0 ${planned ? socialPlanned / planned * 100 : 0}%,#69b9ae 0 100%)"><b>${planned}</b><small>计划人数</small></div>
+          <div><p tabindex="0"><i class="social"></i><b>社会招聘</b><span>${socialPlanned}人 · ${planned ? Math.round(socialPlanned / planned * 100) : 0}%</span></p><p tabindex="0"><i class="partner"></i><b>协力人员</b><span>${partnerPlanned}人 · ${planned ? Math.round(partnerPlanned / planned * 100) : 0}%</span></p></div>
         </div>
       </article>
     </section>`;
