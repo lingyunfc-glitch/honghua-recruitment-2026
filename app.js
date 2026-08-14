@@ -1,6 +1,7 @@
 const API_BASE = "https://honghua-recruitment-2026.zhangxl9510.chatgpt.site";
 const SNAPSHOT_URL = "./data.json";
 const TOKEN_KEY = "hh_recruitment_editor_token";
+const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
 
 const stages = [
   ["suitableCount", "合适人选"],
@@ -54,6 +55,47 @@ function formatTime(value) {
 
 function editorToken() {
   return window.sessionStorage.getItem(TOKEN_KEY) || "";
+}
+
+function publicItems(items) {
+  return items.map((item) => ({ ...item, candidateNames: null }));
+}
+
+function itemTimestamp(item) {
+  const timestamp = Date.parse(item?.updatedAt || "");
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+function cachePublicItems(items) {
+  try {
+    window.localStorage.setItem(PUBLIC_CACHE_KEY, JSON.stringify(publicItems(items)));
+  } catch {
+    // Local storage is only an immediate-display fallback; sync still works without it.
+  }
+}
+
+function recentPublicItems() {
+  try {
+    const items = JSON.parse(window.localStorage.getItem(PUBLIC_CACHE_KEY) || "null");
+    return Array.isArray(items) ? publicItems(items) : [];
+  } catch {
+    return [];
+  }
+}
+
+function mergePublicItems(remoteItems, cachedItems) {
+  const cachedById = new Map(cachedItems.map((item) => [item.id, item]));
+  let usedCache = false;
+  const merged = remoteItems.map((remoteItem) => {
+    const cachedItem = cachedById.get(remoteItem.id);
+    if (cachedItem && itemTimestamp(cachedItem) > itemTimestamp(remoteItem)) {
+      usedCache = true;
+      return cachedItem;
+    }
+    return remoteItem;
+  });
+  if (!usedCache) window.localStorage.removeItem(PUBLIC_CACHE_KEY);
+  return publicItems(merged);
 }
 
 async function api(path, options = {}) {
@@ -212,7 +254,7 @@ async function readData() {
   const response = await fetch(`${SNAPSHOT_URL}?t=${Date.now()}`, { cache: "no-store" });
   const data = await response.json();
   if (!response.ok || !data.items) throw new Error(data.error || "读取失败");
-  return { ...data, canEdit: false };
+  return { ...data, items: mergePublicItems(data.items, recentPublicItems()), canEdit: false };
 }
 
 async function load() {
@@ -304,9 +346,10 @@ function openEditor(id) {
       const data = await response.json();
       if (!response.ok || !data.item) throw new Error(data.error || "保存失败");
       state.items = state.items.map((current) => current.id === data.item.id ? data.item : current);
+      cachePublicItems(state.items);
       closeOverlay();
       render();
-      showNotice("进度已保存，更新时间已自动生成");
+      showNotice("进度已保存；退出编辑后会立即保留显示，公网数据约5分钟内同步", 5000);
     } catch (error) {
       const message = error instanceof Error ? error.message : "保存失败";
       showNotice(message, 4000);
@@ -331,8 +374,10 @@ adminButton.addEventListener("click", async () => {
   if (state.canEdit) {
     window.sessionStorage.removeItem(TOKEN_KEY);
     state.canEdit = false;
-    await load();
-    showNotice("已退出编辑模式");
+    state.items = publicItems(state.items);
+    cachePublicItems(state.items);
+    render();
+    showNotice("已退出编辑模式；刚保存的数据会保留显示，公网数据约5分钟内同步", 5000);
   } else {
     openLogin();
   }
