@@ -109,15 +109,15 @@
       "detail": "项目经理/建造经理",
       "recruitmentType": "社会招聘",
       "plannedCount": 12,
-      "suitableCount": 0,
-      "interviewCount": 0,
-      "salaryCount": 0,
-      "offerCount": 0,
+      "suitableCount": 2,
+      "interviewCount": 2,
+      "salaryCount": 2,
+      "offerCount": 2,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": null,
-      "remainingCount": 12,
-      "currentProgress": "待更新"
+      "updatedAt": "2026-08-14T13:13:49.916Z",
+      "remainingCount": 10,
+      "currentProgress": "已发Offer"
     },
     {
       "id": 8,
@@ -126,15 +126,15 @@
       "detail": "采购管理",
       "recruitmentType": "社会招聘",
       "plannedCount": 2,
-      "suitableCount": 0,
+      "suitableCount": 3,
       "interviewCount": 0,
       "salaryCount": 0,
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": null,
+      "updatedAt": "2026-08-14T13:14:09.094Z",
       "remainingCount": 2,
-      "currentProgress": "待更新"
+      "currentProgress": "已有合适人选"
     },
     {
       "id": 9,
