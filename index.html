@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="宏华海洋2026年下半年社会招聘与协力人员招聘进度看板" />
+    <title>宏华海洋｜2026年下半年招聘进度</title>
+    <link rel="icon" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="brand">
+          <img src="./assets/honghua-logo-tech.png" alt="" aria-hidden="true" />
+          <span><strong>宏华海洋</strong><small>HONGHUA OFFSHORE</small></span>
+        </div>
+        <div class="live"><i></i>数据每分钟自动刷新</div>
+      </header>
+
+      <div class="wrap">
+        <section class="hero">
+          <div>
+            <p>2026 H2 · RECRUITMENT TRACKER</p>
+            <h1>2026年下半年招聘进度</h1>
+            <span>社会招聘与协力人员补充计划 · 共18个岗位批次</span>
+          </div>
+          <div class="updated">
+            <small>最后更新时间（北京时间）</small>
+            <strong id="latest-time">尚未更新</strong>
+            <button id="refresh-button" type="button">刷新</button>
+          </div>
+        </section>
+
+        <nav>
+          <button id="board-tab" class="active" type="button">▦ 招聘进度看板</button>
+          <button id="table-tab" type="button">▤ 招聘进度表</button>
+          <button id="admin-button" class="admin-login" type="button">输入密码编辑</button>
+        </nav>
+
+        <div id="notice" class="toast hidden" role="status"></div>
+        <div id="content"><div class="loading">正在读取招聘进度…</div></div>
+      </div>
+
+      <footer>宏华海洋 · 数据范围：社会招聘及协力人员</footer>
+      <div id="overlay-root"></div>
+    </main>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
