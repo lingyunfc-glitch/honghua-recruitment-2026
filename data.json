@@ -109,15 +109,15 @@
       "detail": "项目经理/建造经理",
       "recruitmentType": "社会招聘",
       "plannedCount": 12,
-      "suitableCount": 2,
-      "interviewCount": 2,
-      "salaryCount": 2,
-      "offerCount": 2,
+      "suitableCount": 0,
+      "interviewCount": 0,
+      "salaryCount": 0,
+      "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-08-14T13:13:49.916Z",
-      "remainingCount": 10,
-      "currentProgress": "已发Offer"
+      "updatedAt": null,
+      "remainingCount": 12,
+      "currentProgress": "待更新"
     },
     {
       "id": 8,
@@ -126,15 +126,15 @@
       "detail": "采购管理",
       "recruitmentType": "社会招聘",
       "plannedCount": 2,
-      "suitableCount": 3,
+      "suitableCount": 0,
       "interviewCount": 0,
       "salaryCount": 0,
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-08-14T13:14:09.094Z",
+      "updatedAt": null,
       "remainingCount": 2,
-      "currentProgress": "已有合适人选"
+      "currentProgress": "待更新"
     },
     {
       "id": 9,
@@ -143,15 +143,15 @@
       "detail": "电气",
       "recruitmentType": "社会招聘",
       "plannedCount": 1,
-      "suitableCount": 1,
-      "interviewCount": 1,
-      "salaryCount": 1,
+      "suitableCount": 0,
+      "interviewCount": 0,
+      "salaryCount": 0,
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-08-14T13:29:48.911Z",
+      "updatedAt": null,
       "remainingCount": 1,
-      "currentProgress": "薪酬谈判"
+      "currentProgress": "待更新"
     },
     {
       "id": 10,
