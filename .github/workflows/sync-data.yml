@@ -20,7 +20,7 @@ jobs:
 
       - name: Download public data
         env:
-          DATA_URL: https://honghua-recruitment-2026.zhangxl9510.chatgpt.site/api/recruitment
+          DATA_URL: https://api.zhangxiaolei.top/api/recruitment
         run: |
           curl --fail --silent --show-error --location --retry 3 \
             --user-agent "Mozilla/5.0 GitHub-Actions recruitment-sync" \

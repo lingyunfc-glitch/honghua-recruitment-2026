@@ -1,4 +1,4 @@
-const API_BASE = "https://honghua-recruitment-2026.zhangxl9510.chatgpt.site";
+const API_BASE = "https://api.zhangxiaolei.top";
 const SNAPSHOT_URL = "./data.json";
 const TOKEN_KEY = "hh_recruitment_editor_token";
 const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
