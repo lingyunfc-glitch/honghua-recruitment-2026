@@ -189,7 +189,7 @@ function renderOverview() {
 
       <article class="vessel-card ripple-card">
         <div class="vessel-copy"><span>OFFSHORE ENGINEERING</span><strong>梦想号</strong><small>深海装备 · 向新而行</small></div>
-        <img src="./assets/meng-xiang-hero.webp?v=20260826" alt="宏华海洋梦想号海工船" />
+        <img src="./assets/meng-xiang-hero.webp?v=20260826b" alt="宏华海洋梦想号海工船" />
         <div class="waterline" aria-hidden="true"><i></i><i></i><i></i></div>
       </article>
     </section>
