@@ -1307,6 +1307,7 @@ body::after { display: none; }
   white-space: nowrap;
 }
 .hero-deck .metric-icon {
+  position: absolute;
   order: initial;
   top: 19px;
   right: 15px;
@@ -1377,9 +1378,9 @@ body::after { display: none; }
 }
 .hero-deck .vessel-card img {
   z-index: 5;
-  right: -15%;
+  right: -6%;
   bottom: -18%;
-  width: 129%;
+  width: 112%;
   height: auto;
   max-height: none;
   object-fit: contain;
@@ -1462,3 +1463,5 @@ body::after { display: none; }
   .hero-deck .metric-card strong { font-size: 42px; }
   .hero-deck .metric-card small { font-size: 11px; white-space: normal; }
 }
+
+html { overflow-x: hidden; }
