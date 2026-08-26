@@ -203,8 +203,8 @@ function renderOverview() {
         <div class="vessel-copy"><span>OFFSHORE ENGINEERING</span><strong>梦想号</strong><small>逐浪深蓝 · 向新而行</small></div>
         <div class="vessel-mountains" aria-hidden="true"><i></i><i></i><i></i></div>
         <img src="./assets/meng-xiang-hero-hd.webp?v=20260826" alt="宏华海洋梦想号海工船" />
-        <div class="ship-halo" aria-hidden="true"></div>
         <div class="bow-splash" aria-hidden="true"><b></b><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ship-wake" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="waterline" aria-hidden="true"><i></i><i></i><i></i></div>
       </article>
     </section>
@@ -241,7 +241,7 @@ function renderOverview() {
   document.querySelector("#view-all-positions").addEventListener("click", () => {
     state.tab = "positions";
     state.department = "全部部门";
-    state.recruitmentType = "社会招聘";
+    state.recruitmentType = "全部方式";
     state.query = "";
     render();
   });
@@ -289,20 +289,27 @@ function renderPositions(focusSearch = false, cursor = null) {
       <select id="progress-select" aria-label="筛选进展">${progressValues.map((name) => `<option${name === state.progress ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
       <span class="privacy-badge">${state.canEdit ? "● 可编辑" : "🔒 公开只读"}</span>
     </section>
-    <section class="position-grid">
-      ${filtered.length ? filtered.map((item) => `<article class="position-card ripple-card" data-card-id="${item.id}">
-        <div class="position-card-top">
-          <div class="position-symbol">${iconSvg(item.position.includes("船") ? "ship" : item.department.includes("技术") ? "wind" : item.department.includes("安全") ? "beacon" : "rig")}</div>
-          <div class="position-title"><span>${escapeHtml(item.department)} · ${escapeHtml(item.recruitmentType)}</span><h2>${escapeHtml(item.position)}</h2><p>${escapeHtml(item.detail)}</p></div>
-          <mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark>
-        </div>
-        ${stageRail(item)}
-        <div class="position-foot">
-          <div class="gap-block"><span>剩余缺口</span><strong>${item.remainingCount}<em>人</em></strong></div>
-          <div class="position-meta"><span>更新时间 ${formatTime(item.updatedAt)}</span>${state.canEdit ? `<span class="candidate-line">人员：${escapeHtml(item.candidateNames || "尚未填写")}</span>` : ""}</div>
-          ${state.canEdit ? `<button class="edit-button" data-edit-id="${item.id}" type="button">更新数据</button>` : ""}
-        </div>
-      </article>`).join("") : '<div class="empty-state">没有符合当前筛选条件的岗位</div>'}
+    <section class="positions-table-panel ripple-card">
+      <div class="table-scroll">
+        <table class="recruitment-table">
+          <thead><tr><th>序号</th><th class="position-column">部门 / 岗位</th><th>补充方式</th><th>计划</th><th>合适人选</th><th>已面试</th><th>薪酬谈判</th><th>已发Offer</th><th>已到岗</th><th>剩余缺口</th><th>当前进度</th><th>最后更新</th>${state.canEdit ? "<th>操作</th>" : ""}</tr></thead>
+          <tbody>${filtered.length ? filtered.map((item, index) => `<tr>
+            <td class="row-number">${String(index + 1).padStart(2, "0")}</td>
+            <td class="position-cell"><strong>${escapeHtml(item.position)}</strong><span>${escapeHtml(item.department)} · ${escapeHtml(item.detail)}</span>${state.canEdit ? `<small>人员：${escapeHtml(item.candidateNames || "尚未填写")}</small>` : ""}</td>
+            <td><label class="type-chip ${item.recruitmentType === "协力人员" ? "partner" : "social"}">${escapeHtml(item.recruitmentType)}</label></td>
+            <td class="number planned">${item.plannedCount}</td>
+            <td class="number">${item.suitableCount}</td>
+            <td class="number">${item.interviewCount}</td>
+            <td class="number">${item.salaryCount}</td>
+            <td class="number offer">${item.offerCount}</td>
+            <td class="number onboard">${item.onboardCount}</td>
+            <td class="number gap-number">${item.remainingCount}</td>
+            <td><mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark></td>
+            <td class="time-cell">${formatTime(item.updatedAt)}</td>
+            ${state.canEdit ? `<td><button class="edit-button" data-edit-id="${item.id}" type="button">更新</button></td>` : ""}
+          </tr>`).join("") : '<tr><td class="empty-cell" colspan="13">没有符合当前筛选条件的岗位</td></tr>'}</tbody>
+        </table>
+      </div>
     </section>`;
 
   const searchInput = document.querySelector("#search-input");
@@ -552,7 +559,14 @@ function openEditor(id) {
 }
 
 overviewTab.addEventListener("click", () => { state.tab = "overview"; state.query = ""; render(); });
-positionsTab.addEventListener("click", () => { state.tab = "positions"; render(); });
+positionsTab.addEventListener("click", () => {
+  state.tab = "positions";
+  state.department = "全部部门";
+  state.recruitmentType = "全部方式";
+  state.progress = "全部进展";
+  state.query = "";
+  render();
+});
 document.querySelector("#refresh-button").addEventListener("click", load);
 adminButton.addEventListener("click", async () => {
   if (state.canEdit) {
