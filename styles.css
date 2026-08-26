@@ -1049,3 +1049,193 @@ body::after { display: none; }
   .ship-sea { height: 105px; }
   .bow-splash { width: 165px; height: 96px; }
 }
+
+/* Suspended vessel pendant — keeps the ship self-contained like the approved concept. */
+.hero-deck .vessel-card {
+  min-height: 220px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.96);
+  border-radius: 27px;
+  background:
+    radial-gradient(ellipse at 72% 88%, rgba(53,172,218,.18), transparent 42%),
+    linear-gradient(180deg, rgba(252,254,255,.95) 0 48%, rgba(226,245,252,.84) 76%, rgba(202,234,246,.72));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(82,176,220,.2),
+    0 22px 42px rgba(22,92,143,.17),
+    0 6px 13px rgba(22,126,176,.1);
+  animation: pendant-hover 5.8s ease-in-out infinite;
+  transform-origin: 50% 55%;
+}
+.hero-deck .vessel-card::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 7;
+  inset: 6px;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 21px;
+  background: linear-gradient(118deg, rgba(255,255,255,.38), transparent 25% 70%, rgba(75,192,228,.1));
+  box-shadow: inset 0 0 24px rgba(255,255,255,.28);
+  pointer-events: none;
+}
+.hero-deck .vessel-card::after {
+  z-index: 8;
+  border-radius: 27px;
+  background: linear-gradient(112deg, transparent 29%, rgba(255,255,255,.08) 40%, rgba(255,255,255,.62) 49%, rgba(106,213,238,.18) 57%, transparent 69%);
+}
+.hero-deck .vessel-card img {
+  z-index: 4;
+  right: -4%;
+  bottom: -7%;
+  width: 110%;
+  height: 113%;
+  max-height: none;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: saturate(1.14) contrast(1.13) drop-shadow(0 17px 12px rgba(7,58,99,.22));
+}
+.hero-deck .vessel-card:hover {
+  animation-play-state: paused;
+  transform: perspective(950px) translateY(-7px) rotateX(1.4deg) rotateY(-1.8deg);
+  border-color: rgba(112,207,238,.88);
+  box-shadow: inset 0 1px 0 #fff, 0 28px 52px rgba(22,92,143,.22), 0 8px 18px rgba(23,146,191,.13);
+}
+.hero-deck .ship-sea,
+.hero-deck .bow-splash,
+.hero-deck .ship-wake { display: none; }
+
+/* Visible ambient motion without covering report data. */
+.ocean-ambient::before,
+.ocean-ambient::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  width: 260px;
+  height: 520px;
+  pointer-events: none;
+  opacity: .62;
+  background:
+    radial-gradient(circle at 18% 92%, rgba(255,255,255,.92) 0 4px, transparent 5px),
+    radial-gradient(circle at 73% 78%, rgba(76,194,229,.45) 0 6px, transparent 7px),
+    radial-gradient(circle at 36% 58%, rgba(255,255,255,.82) 0 3px, transparent 4px),
+    radial-gradient(circle at 82% 42%, rgba(58,181,222,.4) 0 5px, transparent 6px),
+    radial-gradient(circle at 48% 18%, rgba(255,255,255,.76) 0 4px, transparent 5px);
+  animation: bubble-cloud 10s linear infinite;
+}
+.ocean-ambient::before { left: 2%; bottom: -340px; }
+.ocean-ambient::after { right: 4%; bottom: -280px; animation-delay: -5s; animation-duration: 13s; }
+.page-shell::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 110px -12% auto;
+  height: 520px;
+  pointer-events: none;
+  opacity: .3;
+  background:
+    radial-gradient(ellipse at 18% 38%, rgba(255,255,255,.85), transparent 22%),
+    radial-gradient(ellipse at 62% 58%, rgba(58,190,225,.2), transparent 30%),
+    radial-gradient(ellipse at 88% 20%, rgba(255,255,255,.72), transparent 20%);
+  animation: caustic-drift 12s ease-in-out infinite alternate;
+}
+
+.hero-deck .metric-card::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -58px;
+  right: -54px;
+  width: 145px;
+  height: 145px;
+  border-radius: 46% 54% 62% 38%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.9), rgba(89,203,232,.11) 46%, transparent 67%);
+  animation: card-caustic 6.5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.hero-deck .metric-card:nth-child(2)::before { animation-delay: -1.8s; }
+.hero-deck .metric-card:nth-child(3)::before { animation-delay: -3.4s; }
+.hero-deck .metric-card:nth-child(4)::before { animation-delay: -5.1s; }
+.hero-deck .metric-card > * { position: relative; z-index: 2; }
+
+.flow-node::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: -6px;
+  border-radius: 50%;
+  padding: 2px;
+  background: conic-gradient(from 90deg, transparent 0 28%, rgba(47,198,226,.72) 39%, rgba(255,255,255,.95) 45%, transparent 55% 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rim-orbit 6.8s linear infinite;
+  pointer-events: none;
+}
+.flow-node:nth-child(2n)::before { animation-direction: reverse; animation-duration: 8.4s; }
+.stage-step.active > i::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -3px;
+  width: 8px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 5px #fff, 0 0 10px #19b8e2;
+  animation: stage-spark 2.5s linear infinite;
+}
+.overview-position-card::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -45% 40% 35% -20%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(76,202,232,.12), transparent 68%);
+  animation: department-glow 7s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.overview-position-card > * { position: relative; z-index: 2; }
+
+/* Larger type on the full position view. */
+.positions-head { padding: 22px 30px; }
+.positions-head h1 { margin-bottom: 0; font-size: 40px; }
+.records strong { font-size: 40px; }
+.records span, .privacy-badge { font-size: 14px; }
+.filter-bar { padding: 14px; gap: 12px; }
+.filter-bar input, .filter-bar select { min-height: 46px; font-size: 16px; }
+.recruitment-table { min-width: 1260px; }
+.recruitment-table th { height: 52px; font-size: 14px; }
+.recruitment-table td { height: 72px; font-size: 14px; }
+.row-number { font-size: 12px !important; }
+.position-cell strong { font-size: 17px; }
+.position-cell span, .position-cell small { font-size: 12px; }
+.type-chip { padding: 5px 9px; font-size: 12px; }
+.number { font-size: 17px !important; }
+.recruitment-table mark { min-width: 88px; font-size: 13px; }
+.time-cell { font-size: 12px !important; }
+
+@keyframes pendant-hover {
+  0%, 100% { transform: translateY(1px); box-shadow: inset 0 1px 0 #fff, 0 19px 38px rgba(22,92,143,.14), 0 5px 12px rgba(22,126,176,.08); }
+  50% { transform: translateY(-6px); box-shadow: inset 0 1px 0 #fff, 0 29px 50px rgba(22,92,143,.2), 0 9px 19px rgba(22,126,176,.13); }
+}
+@keyframes bubble-cloud {
+  0% { transform: translateY(0) translateX(-8px) scale(.82); opacity: 0; }
+  14% { opacity: .62; }
+  82% { opacity: .5; }
+  100% { transform: translateY(-760px) translateX(34px) scale(1.18); opacity: 0; }
+}
+@keyframes caustic-drift { to { transform: translateX(8%) translateY(35px) scale(1.08); } }
+@keyframes card-caustic { to { transform: translate(-24px, 28px) rotate(18deg) scale(1.12); opacity: .55; } }
+@keyframes rim-orbit { to { transform: rotate(360deg); } }
+@keyframes stage-spark { to { left: calc(100% - 5px); } }
+@keyframes department-glow { to { transform: translate(58%, 38%) scale(1.22); opacity: .54; } }
+
+@media (max-width: 1180px) {
+  .hero-deck .vessel-card { min-height: 270px; }
+  .hero-deck .vessel-card img { right: -2%; width: 104%; height: 110%; }
+}
+@media (max-width: 560px) {
+  .positions-head h1 { font-size: 34px; }
+  .recruitment-table { min-width: 1220px; }
+}
