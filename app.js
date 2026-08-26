@@ -278,7 +278,7 @@ function renderPositions(focusSearch = false, cursor = null) {
 
   content.innerHTML = `
     <section class="positions-head">
-      <div><span>POSITION PROGRESS</span><h1>岗位进度</h1><p>按岗位查看招聘链路；${state.canEdit ? "当前已进入编辑模式，可直接更新数据。" : "公开视图隐藏人员姓名，数据只读。"}</p></div>
+      <div><span>POSITION PROGRESS</span><h1>岗位进度</h1></div>
       <div class="records"><strong>${filtered.length}</strong><span>条岗位记录</span></div>
     </section>
     <section class="filter-bar">
