@@ -955,7 +955,7 @@ body::after { display: none; }
 .bow-splash {
   z-index: 7;
   left: 5%;
-  bottom: -8%;
+  bottom: -13%;
   width: 218px;
   height: 126px;
 }
@@ -1347,16 +1347,16 @@ body::after { display: none; }
   display: block;
   position: absolute;
   z-index: 1;
-  inset: auto -17% -41px -10%;
-  height: 142px;
+  inset: auto -9% -28px 1%;
+  height: 86px;
   border: 0;
   border-radius: 50%;
   background:
-    radial-gradient(ellipse at 37% 39%, rgba(255,255,255,.96) 0 8%, rgba(161,226,242,.57) 23%, transparent 56%),
-    radial-gradient(ellipse at 70% 55%, rgba(78,190,223,.35), rgba(206,240,249,.18) 41%, transparent 68%);
+    radial-gradient(ellipse at 34% 43%, rgba(188,231,242,.3) 0 18%, rgba(74,181,212,.14) 39%, transparent 66%),
+    radial-gradient(ellipse at 74% 54%, rgba(121,207,228,.22), rgba(205,239,247,.1) 42%, transparent 70%);
   box-shadow: none;
-  filter: blur(.2px) drop-shadow(0 8px 14px rgba(27,147,195,.12));
-  opacity: .9;
+  filter: blur(4px) drop-shadow(0 6px 12px rgba(27,147,195,.08));
+  opacity: .68;
   pointer-events: none;
   animation: undercurrent-pulse 4.4s ease-in-out infinite;
 }
@@ -1398,44 +1398,105 @@ body::after { display: none; }
 .hero-deck .ship-sea {
   display: block;
   z-index: 4;
-  left: -13%;
-  right: -20%;
-  bottom: -50px;
-  height: 138px;
-  overflow: visible;
+  left: -5%;
+  right: -10%;
+  bottom: -31px;
+  height: 104px;
+  overflow: hidden;
+  filter: blur(.15px) drop-shadow(0 -4px 9px rgba(20,128,176,.1));
 }
 .hero-deck .ship-sea::before {
-  bottom: -42px;
-  height: 130px;
-  opacity: .83;
+  left: -6%;
+  right: -6%;
+  bottom: -22px;
+  height: 100px;
+  clip-path: none;
+  border-radius: 46% 54% 44% 56% / 23% 26% 74% 77%;
+  background:
+    radial-gradient(ellipse at 17% 24%, rgba(255,255,255,.66) 0 3%, rgba(190,235,246,.27) 9%, transparent 23%),
+    radial-gradient(ellipse at 49% 18%, rgba(238,251,255,.54) 0 4%, rgba(112,205,229,.2) 12%, transparent 26%),
+    radial-gradient(ellipse at 81% 29%, rgba(255,255,255,.48) 0 3%, rgba(123,211,231,.16) 11%, transparent 25%),
+    linear-gradient(180deg, rgba(219,244,250,.04) 0 12%, rgba(72,177,211,.22) 38%, rgba(19,118,166,.2) 63%, rgba(118,204,226,.06) 90%, transparent);
+  opacity: .78;
+  filter: blur(.55px);
+  animation: water-surface-roll 6.4s ease-in-out infinite alternate;
 }
 .hero-deck .ship-sea::after {
-  top: 42px;
-  opacity: .9;
+  left: -8%;
+  right: -4%;
+  top: 31px;
+  height: 38px;
+  background:
+    radial-gradient(ellipse at 12% 45%, rgba(255,255,255,.74) 0 2%, rgba(197,238,247,.34) 7%, transparent 19%),
+    radial-gradient(ellipse at 35% 54%, rgba(255,255,255,.6) 0 2%, rgba(138,216,233,.22) 8%, transparent 21%),
+    radial-gradient(ellipse at 63% 38%, rgba(245,253,255,.62) 0 2%, rgba(146,220,237,.2) 7%, transparent 19%),
+    radial-gradient(ellipse at 88% 56%, rgba(255,255,255,.45) 0 2%, rgba(121,207,229,.16) 7%, transparent 18%);
+  background-size: auto;
+  opacity: .66;
+  filter: blur(.35px);
+  animation: water-glint-drift 5.6s ease-in-out infinite alternate;
 }
+.hero-deck .ship-sea i,
+.hero-deck .ship-sea b { display: none; }
 .hero-deck .ship-wake {
   display: block;
   z-index: 6;
-  right: -21%;
-  bottom: -21%;
-  width: 93%;
-  height: 92px;
+  right: -10%;
+  bottom: -14%;
+  width: 74%;
+  height: 76px;
+  overflow: hidden;
+  opacity: .72;
 }
 .hero-deck .ship-wake i {
+  position: absolute;
+  right: 0;
+  height: 30px;
   border: 0;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,.98) 0 15%, rgba(179,236,248,.68) 32%, rgba(76,196,226,.18) 51%, transparent 72%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(250,254,255,.78) 0 8%, rgba(181,230,241,.43) 24%, rgba(71,180,211,.12) 49%, transparent 72%);
+  filter: blur(.45px);
+  transform: skewX(-9deg);
+  animation: natural-wake 4.8s ease-in-out infinite;
 }
+.hero-deck .ship-wake i:nth-child(1) { top: 7px; width: 82%; opacity: .82; }
+.hero-deck .ship-wake i:nth-child(2) { top: 25px; right: -7%; width: 69%; opacity: .52; animation-delay: -1.7s; animation-duration: 5.7s; }
+.hero-deck .ship-wake i:nth-child(3) { top: 44px; right: -13%; width: 55%; opacity: .3; animation-delay: -3.2s; animation-duration: 6.5s; }
 .hero-deck .bow-splash {
   display: block;
   z-index: 7;
-  left: -3%;
-  bottom: -18%;
-  width: 235px;
-  height: 139px;
-  transform: rotate(-3deg);
+  left: 9%;
+  bottom: -11%;
+  width: 154px;
+  height: 86px;
+  transform: rotate(-4deg);
+  filter: blur(.2px) drop-shadow(0 0 7px rgba(255,255,255,.42));
 }
 .hero-deck .bow-splash b { border-width: 10px; }
 .hero-deck .bow-splash b { display: none; }
+.hero-deck .bow-splash i { display: none; }
+.hero-deck .bow-splash::before {
+  left: 17px;
+  bottom: 10px;
+  width: 102px;
+  height: 58px;
+  border-radius: 58% 42% 61% 39% / 67% 52% 48% 33%;
+  background:
+    radial-gradient(ellipse at 20% 75%, rgba(255,255,255,.86) 0 10%, rgba(191,235,245,.46) 25%, transparent 57%),
+    radial-gradient(ellipse at 54% 51%, rgba(255,255,255,.72) 0 8%, rgba(164,224,238,.3) 24%, transparent 58%),
+    radial-gradient(ellipse at 82% 74%, rgba(243,252,255,.58) 0 7%, rgba(127,210,231,.18) 23%, transparent 52%);
+  filter: blur(.55px);
+  animation: natural-bow-foam 3.1s ease-in-out infinite;
+}
+.hero-deck .bow-splash::after {
+  left: 0;
+  bottom: 3px;
+  width: 145px;
+  height: 27px;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.72), rgba(174,229,241,.35) 34%, rgba(78,190,219,.08) 58%, transparent 75%);
+  filter: blur(.7px);
+  animation: natural-bow-spread 3.8s ease-in-out infinite;
+}
 
 @keyframes ship-breakout-3d {
   0%, 100% { transform: perspective(1050px) translate3d(0, 2px, 18px) rotateX(.6deg) rotateY(-3.2deg) scale(1); }
@@ -1450,10 +1511,31 @@ body::after { display: none; }
   40%, 62% { opacity: .48; }
   84%, 100% { transform: translateX(90%); opacity: 0; }
 }
+@keyframes water-surface-roll {
+  0% { transform: translate3d(-2.5%, 3px, 0) scale(1, .94); }
+  52% { transform: translate3d(1.5%, -2px, 0) scale(1.025, 1.02); }
+  100% { transform: translate3d(3%, 1px, 0) scale(1.04, .97); }
+}
+@keyframes water-glint-drift {
+  0% { transform: translateX(-3%) scaleX(.97); opacity: .48; }
+  100% { transform: translateX(4%) scaleX(1.04); opacity: .72; }
+}
+@keyframes natural-wake {
+  0%, 100% { transform: translateX(-3%) skewX(-9deg) scaleX(.94); opacity: .5; }
+  50% { transform: translateX(6%) skewX(-6deg) scaleX(1.08); opacity: .78; }
+}
+@keyframes natural-bow-foam {
+  0%, 100% { transform: rotate(-5deg) translateY(2px) scale(.94, .9); opacity: .58; }
+  50% { transform: rotate(-2deg) translate(4px, -3px) scale(1.05, 1.08); opacity: .82; }
+}
+@keyframes natural-bow-spread {
+  0%, 100% { transform: translateX(-4px) scaleX(.9); opacity: .46; }
+  50% { transform: translateX(8px) scaleX(1.08); opacity: .7; }
+}
 
 @media (max-width: 1180px) {
   .hero-deck .vessel-card { min-height: 276px; }
-  .hero-deck .vessel-card img { right: 2%; bottom: -9%; width: 96%; }
+  .hero-deck .vessel-card img { right: 2%; bottom: -14%; width: 96%; }
   .hero-deck .bow-splash { left: 4%; }
 }
 @media (max-width: 760px) {
