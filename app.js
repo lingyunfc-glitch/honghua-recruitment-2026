@@ -359,6 +359,8 @@ function initOceanEffects() {
   const particles = [];
   const rings = [];
   const motes = [];
+  const tracers = [];
+  const pointerTrail = [];
   const currents = Array.from({ length: 5 }, (_, index) => ({
     phase: index * 1.37,
     speed: .00028 + index * .000035,
@@ -386,10 +388,21 @@ function initOceanEffects() {
         alpha: .08 + Math.random() * .16,
       });
     }
+    tracers.length = 0;
+    for (let index = 0; index < 9; index += 1) {
+      tracers.push({
+        x: Math.random() * width,
+        y: height * (.34 + Math.random() * .58),
+        length: 54 + Math.random() * 120,
+        speed: .32 + Math.random() * .56,
+        phase: Math.random() * Math.PI * 2,
+        alpha: .07 + Math.random() * .09,
+      });
+    }
   };
 
   const addDrop = (x, y, burst = false) => {
-    const count = burst ? 10 : 2;
+    const count = burst ? 16 : 3;
     for (let index = 0; index < count; index += 1) {
       const angle = burst ? Math.random() * Math.PI * 2 : Math.PI + (Math.random() - 0.5) * 1.1;
       const speed = burst ? 1.2 + Math.random() * 2.8 : 0.35 + Math.random();
@@ -405,8 +418,9 @@ function initOceanEffects() {
     }
     if (particles.length > 90) particles.splice(0, particles.length - 90);
     if (burst) {
-      rings.push({ x, y, radius: 8, growth: 1.55, alpha: .42, life: 1 });
-      rings.push({ x, y, radius: 3, growth: 1.08, alpha: .26, life: 1 });
+      rings.push({ x, y, radius: 8, growth: 1.9, alpha: .5, life: 1 });
+      rings.push({ x, y, radius: 3, growth: 1.32, alpha: .34, life: 1 });
+      rings.push({ x, y, radius: 15, growth: 2.35, alpha: .2, life: 1 });
     }
     if (rings.length > 24) rings.splice(0, rings.length - 24);
   };
@@ -418,9 +432,9 @@ function initOceanEffects() {
       const baseY = height * (.38 + index * .125);
       const gradient = context.createLinearGradient(0, 0, width, 0);
       gradient.addColorStop(0, "rgba(35, 171, 216, 0)");
-      gradient.addColorStop(.14, `rgba(35, 171, 216, ${.025 + index * .006})`);
-      gradient.addColorStop(.48, `rgba(255, 255, 255, ${.055 + index * .006})`);
-      gradient.addColorStop(.78, `rgba(33, 185, 220, ${.03 + index * .006})`);
+      gradient.addColorStop(.14, `rgba(35, 171, 216, ${.05 + index * .009})`);
+      gradient.addColorStop(.48, `rgba(255, 255, 255, ${.08 + index * .009})`);
+      gradient.addColorStop(.78, `rgba(33, 185, 220, ${.055 + index * .009})`);
       gradient.addColorStop(1, "rgba(35, 171, 216, 0)");
       context.beginPath();
       for (let x = -40; x <= width + 40; x += 24) {
@@ -446,6 +460,47 @@ function initOceanEffects() {
       context.fillStyle = `rgba(37, 178, 220, ${mote.alpha})`;
       context.fill();
     });
+
+    context.save();
+    context.globalCompositeOperation = "screen";
+    tracers.forEach((tracer) => {
+      tracer.x += tracer.speed;
+      if (tracer.x - tracer.length > width + 30) {
+        tracer.x = -tracer.length - Math.random() * 180;
+        tracer.y = height * (.34 + Math.random() * .58);
+      }
+      const y = tracer.y + Math.sin(time * .0011 + tracer.phase) * 7;
+      const tracerGradient = context.createLinearGradient(tracer.x - tracer.length, y, tracer.x, y);
+      tracerGradient.addColorStop(0, "rgba(27, 171, 221, 0)");
+      tracerGradient.addColorStop(.72, `rgba(41, 194, 226, ${tracer.alpha})`);
+      tracerGradient.addColorStop(1, `rgba(255, 255, 255, ${tracer.alpha * 2.2})`);
+      context.beginPath();
+      context.moveTo(tracer.x - tracer.length, y + Math.sin(time * .001 + tracer.phase) * 2);
+      context.quadraticCurveTo(tracer.x - tracer.length * .42, y - 8, tracer.x, y);
+      context.lineWidth = 1.2;
+      context.strokeStyle = tracerGradient;
+      context.stroke();
+      context.beginPath();
+      context.arc(tracer.x, y, 1.5, 0, Math.PI * 2);
+      context.fillStyle = `rgba(255,255,255,${tracer.alpha * 2.6})`;
+      context.fill();
+    });
+
+    pointerTrail.forEach((point) => { point.life -= .034; });
+    if (pointerTrail.length > 1) {
+      for (let index = 1; index < pointerTrail.length; index += 1) {
+        const previous = pointerTrail[index - 1];
+        const point = pointerTrail[index];
+        context.beginPath();
+        context.moveTo(previous.x, previous.y);
+        context.quadraticCurveTo((previous.x + point.x) / 2, point.y - 4, point.x, point.y);
+        context.lineWidth = Math.max(.4, 3.2 * point.life);
+        context.strokeStyle = `rgba(54, 205, 230, ${Math.max(0, .22 * point.life)})`;
+        context.stroke();
+      }
+      while (pointerTrail.length && pointerTrail[0].life <= 0) pointerTrail.shift();
+    }
+    context.restore();
 
     rings.forEach((ring) => {
       ring.radius += ring.growth;
@@ -473,7 +528,10 @@ function initOceanEffects() {
 
   window.addEventListener("resize", resize, { passive: true });
   window.addEventListener("pointermove", (event) => {
-    if (!event.target.closest("main") || performance.now() - lastSpawn < 72) return;
+    if (!event.target.closest("main")) return;
+    pointerTrail.push({ x: event.clientX, y: event.clientY, life: 1 });
+    if (pointerTrail.length > 14) pointerTrail.shift();
+    if (performance.now() - lastSpawn < 54) return;
     lastSpawn = performance.now();
     addDrop(event.clientX, event.clientY);
   }, { passive: true });
