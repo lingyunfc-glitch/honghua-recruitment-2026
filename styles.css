@@ -968,10 +968,14 @@ body::after { display: none; }
   bottom: 18px;
   width: 116px;
   height: 78px;
-  clip-path: polygon(0 82%, 9% 48%, 20% 73%, 29% 17%, 39% 62%, 51% 0, 58% 59%, 72% 24%, 75% 69%, 92% 49%, 100% 89%);
-  background: linear-gradient(110deg, rgba(255,255,255,.18), rgba(255,255,255,.98) 48%, rgba(183,236,247,.54));
-  filter: blur(.35px) drop-shadow(0 0 9px rgba(255,255,255,.75));
-  transform-origin: 50% 100%;
+  border-radius: 58% 42% 63% 37% / 72% 48% 52% 28%;
+  background:
+    radial-gradient(ellipse at 24% 78%, rgba(255,255,255,.98) 0 19%, rgba(187,237,248,.62) 34%, transparent 62%),
+    radial-gradient(ellipse at 58% 48%, rgba(255,255,255,.92) 0 14%, rgba(196,241,249,.48) 30%, transparent 61%),
+    radial-gradient(ellipse at 81% 76%, rgba(255,255,255,.78) 0 12%, transparent 48%);
+  filter: blur(.7px) drop-shadow(0 0 10px rgba(255,255,255,.68));
+  transform: rotate(-10deg);
+  transform-origin: 35% 88%;
   animation: bow-plume 2.35s ease-in-out infinite;
 }
 .bow-splash::after {
@@ -1031,7 +1035,7 @@ body::after { display: none; }
 @keyframes foam-pulse { 50% { transform: translateY(-8px) scale(1.12); opacity: .92; } }
 @keyframes foam-breathe { 50% { transform: translateX(-12px) scaleX(1.08); opacity: .62; } }
 @keyframes wake-foam { 50% { transform: translateX(12%) scaleX(1.12); opacity: .58; } }
-@keyframes bow-plume { 50% { transform: translateY(-7px) scale(1.08, 1.16); opacity: .72; } }
+@keyframes bow-plume { 50% { transform: rotate(-7deg) translate(5px, -6px) scale(1.08, 1.13); opacity: .72; } }
 @keyframes bow-foam { 50% { transform: translateX(10px) scaleX(1.13); opacity: .64; } }
 
 @media (max-width: 1180px) {
