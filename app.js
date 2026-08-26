@@ -23,6 +23,8 @@ const state = {
   error: "",
 };
 
+let lastAnimatedTab = "";
+
 const formatter = new Intl.DateTimeFormat("zh-CN", {
   timeZone: "Asia/Shanghai",
   year: "numeric",
@@ -349,13 +351,19 @@ function bindRippleCards() {
 function initOceanEffects() {
   const canvas = document.querySelector("#ocean-effects");
   const context = canvas?.getContext("2d");
-  if (!canvas || !context || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!canvas || !context) return;
   let width = 0;
   let height = 0;
   let ratio = 1;
   let lastSpawn = 0;
   const particles = [];
   const rings = [];
+  const motes = [];
+  const currents = Array.from({ length: 5 }, (_, index) => ({
+    phase: index * 1.37,
+    speed: .00028 + index * .000035,
+    amplitude: 8 + index * 2.4,
+  }));
 
   const resize = () => {
     ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -366,6 +374,18 @@ function initOceanEffects() {
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    motes.length = 0;
+    const moteCount = Math.max(20, Math.min(48, Math.round(width / 34)));
+    for (let index = 0; index < moteCount; index += 1) {
+      motes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: .5 + Math.random() * 1.45,
+        speed: .08 + Math.random() * .2,
+        sway: Math.random() * Math.PI * 2,
+        alpha: .08 + Math.random() * .16,
+      });
+    }
   };
 
   const addDrop = (x, y, burst = false) => {
@@ -391,8 +411,42 @@ function initOceanEffects() {
     if (rings.length > 24) rings.splice(0, rings.length - 24);
   };
 
-  const draw = () => {
+  const draw = (time = 0) => {
     context.clearRect(0, 0, width, height);
+
+    currents.forEach((current, index) => {
+      const baseY = height * (.38 + index * .125);
+      const gradient = context.createLinearGradient(0, 0, width, 0);
+      gradient.addColorStop(0, "rgba(35, 171, 216, 0)");
+      gradient.addColorStop(.14, `rgba(35, 171, 216, ${.025 + index * .006})`);
+      gradient.addColorStop(.48, `rgba(255, 255, 255, ${.055 + index * .006})`);
+      gradient.addColorStop(.78, `rgba(33, 185, 220, ${.03 + index * .006})`);
+      gradient.addColorStop(1, "rgba(35, 171, 216, 0)");
+      context.beginPath();
+      for (let x = -40; x <= width + 40; x += 24) {
+        const y = baseY
+          + Math.sin(x * .008 + time * current.speed + current.phase) * current.amplitude
+          + Math.sin(x * .0027 - time * .00019 + index) * 6;
+        if (x === -40) context.moveTo(x, y); else context.lineTo(x, y);
+      }
+      context.lineWidth = .75 + index * .16;
+      context.strokeStyle = gradient;
+      context.stroke();
+    });
+
+    motes.forEach((mote) => {
+      mote.y -= mote.speed;
+      mote.x += Math.sin(time * .0007 + mote.sway) * .05;
+      if (mote.y < -8) {
+        mote.y = height + 8;
+        mote.x = Math.random() * width;
+      }
+      context.beginPath();
+      context.arc(mote.x, mote.y, mote.radius, 0, Math.PI * 2);
+      context.fillStyle = `rgba(37, 178, 220, ${mote.alpha})`;
+      context.fill();
+    });
+
     rings.forEach((ring) => {
       ring.radius += ring.growth;
       ring.life -= .045;
@@ -430,6 +484,45 @@ function initOceanEffects() {
   draw();
 }
 
+function initSceneParallax() {
+  const root = document.documentElement;
+  let frame = 0;
+  window.addEventListener("pointermove", (event) => {
+    if (frame) return;
+    frame = window.requestAnimationFrame(() => {
+      const x = event.clientX / window.innerWidth - .5;
+      const y = event.clientY / window.innerHeight - .5;
+      root.style.setProperty("--scene-x", `${(x * 16).toFixed(2)}px`);
+      root.style.setProperty("--scene-y", `${(y * 11).toFixed(2)}px`);
+      root.style.setProperty("--ship-x", `${(x * -10).toFixed(2)}px`);
+      root.style.setProperty("--ship-y", `${(y * -6).toFixed(2)}px`);
+      frame = 0;
+    });
+  }, { passive: true });
+}
+
+function animateRenderedScene() {
+  if (lastAnimatedTab === state.tab) return;
+  lastAnimatedTab = state.tab;
+  const selector = state.tab === "overview"
+    ? ".hero-deck .metric-card, .hero-deck .vessel-card, .flow-panel, .overview-position-card"
+    : ".positions-head, .filter-bar, .positions-table-panel";
+  window.requestAnimationFrame(() => {
+    document.querySelectorAll(selector).forEach((element, index) => {
+      if (typeof element.animate !== "function") return;
+      element.animate([
+        { opacity: 0, transform: `translate3d(0, ${18 + Math.min(index, 4) * 3}px, 0) scale(.985)` },
+        { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" },
+      ], {
+        duration: 560 + Math.min(index, 8) * 65,
+        delay: Math.min(index, 8) * 42,
+        easing: "cubic-bezier(.2,.78,.2,1)",
+        fill: "both",
+      });
+    });
+  });
+}
+
 function render() {
   syncHeader();
   if (state.loading) {
@@ -442,6 +535,7 @@ function render() {
     return;
   }
   if (state.tab === "overview") renderOverview(); else renderPositions();
+  animateRenderedScene();
 }
 
 async function readData() {
@@ -596,6 +690,7 @@ adminButton.addEventListener("click", async () => {
   }
 });
 
+initSceneParallax();
 initOceanEffects();
 void load();
 window.setInterval(() => void load(), 60000);
