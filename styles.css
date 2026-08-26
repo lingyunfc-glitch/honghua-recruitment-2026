@@ -868,6 +868,7 @@ body::after { display: none; }
   animation: none;
   filter: saturate(1.16) contrast(1.16) drop-shadow(0 22px 14px rgba(7,58,99,.25));
 }
+.hero-deck .vessel-card::before { display: none; }
 
 /* A real body of water under 梦想号: rolling blue volume, white caps and foam. */
 .ship-sea {
@@ -975,12 +976,13 @@ body::after { display: none; }
 .flow-node strong { font-size: 42px; }
 .flow-node small { font-size: 15px; }
 .flow-node em { font-size: 12px; }
-.overview-position-title small { font-size: 11px; }
+.overview-position-title small { font-size: 12px; }
 .overview-position-title strong { font-size: 17px; }
 .overview-position-stats { font-size: 11px; }
 .overview-position-stats b { font-size: 17px; }
 .overview-position-card .stage-step > span { font-size: 11px; }
-.overview-position-card .stage-step > small { font-size: 10px; }
+.overview-position-card .stage-step > small { font-size: 11px; }
+.overview-position-card mark { font-size: 12px; }
 .positions-head p { font-size: 16px; }
 .records span, .privacy-badge { font-size: 13px; }
 .filter-bar input, .filter-bar select { font-size: 15px; }
