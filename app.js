@@ -149,9 +149,18 @@ function syncHeader() {
 function metricCard(kind, label, value, note, accent = "blue") {
   return `<article class="metric-card ripple-card ${accent}" tabindex="0">
     <div class="metric-icon">${iconSvg(kind)}</div>
-    <div class="metric-copy"><span>${label}</span><strong>${value}<em>人</em></strong><small>${note}</small></div>
+    <div class="metric-copy"><span>${label}</span><strong>${value}<em>人</em></strong>${note ? `<small>${note}</small>` : ""}</div>
     <i class="metric-tide" aria-hidden="true"></i>
   </article>`;
+}
+
+function progressFromCounts(row) {
+  if (row.onboardCount > 0) return "已到岗";
+  if (row.offerCount > 0) return "已发Offer";
+  if (row.salaryCount > 0) return "薪酬谈判";
+  if (row.interviewCount > 0) return "已面试/确认";
+  if (row.suitableCount > 0) return "已有合适人选";
+  return "待更新";
 }
 
 function renderOverview() {
@@ -159,54 +168,71 @@ function renderOverview() {
   const suitable = total("suitableCount");
   const interviewed = total("interviewCount");
   const offers = total("offerCount");
-  const onboarded = total("onboardCount");
   const socialPlanned = total("plannedCount", state.items.filter((item) => item.recruitmentType === "社会招聘"));
   const partnerPlanned = planned - socialPlanned;
-  const focusItems = [...state.items]
-    .sort((a, b) => Number(b.remainingCount || 0) - Number(a.remainingCount || 0) || Number(b.plannedCount || 0) - Number(a.plannedCount || 0))
+  const socialItems = state.items.filter((item) => item.recruitmentType === "社会招聘");
+  const departmentFocus = [...new Set(socialItems.map((item) => item.department))]
+    .map((department) => {
+      const rows = socialItems.filter((item) => item.department === department);
+      const summary = {
+        department,
+        itemCount: rows.length,
+        plannedCount: total("plannedCount", rows),
+        suitableCount: total("suitableCount", rows),
+        interviewCount: total("interviewCount", rows),
+        salaryCount: total("salaryCount", rows),
+        offerCount: total("offerCount", rows),
+        onboardCount: total("onboardCount", rows),
+        remainingCount: total("remainingCount", rows),
+      };
+      return { ...summary, currentProgress: progressFromCounts(summary) };
+    })
+    .sort((a, b) => b.plannedCount - a.plannedCount || b.suitableCount - a.suitableCount)
     .slice(0, 6);
 
   content.innerHTML = `
     <section class="hero-deck">
       <div class="metrics">
           ${metricCard("wind", "计划补充", planned, `社会招聘 ${socialPlanned} · 协力人员 ${partnerPlanned}`, "orange")}
-          ${metricCard("rig", "合适人员", suitable, `人才储备率 ${clampPercent(suitable, planned)}%`)}
-          ${metricCard("ship", "已面试", interviewed, `面试推进率 ${clampPercent(interviewed, planned)}%`)}
-          ${metricCard("beacon", "已发Offer", offers, `到岗 ${onboarded} 人`, "orange")}
+          ${metricCard("rig", "合适人员", suitable, "")}
+          ${metricCard("ship", "已面试", interviewed, "")}
+          ${metricCard("beacon", "已发Offer", offers, "", "orange")}
       </div>
 
       <article class="vessel-card ripple-card">
         <div class="vessel-copy"><span>OFFSHORE ENGINEERING</span><strong>梦想号</strong><small>逐浪深蓝 · 向新而行</small></div>
         <div class="vessel-mountains" aria-hidden="true"><i></i><i></i><i></i></div>
-        <img src="./assets/meng-xiang-hero.webp?v=20260826b" alt="宏华海洋梦想号海工船" />
+        <img src="./assets/meng-xiang-hero-hd.webp?v=20260826" alt="宏华海洋梦想号海工船" />
         <div class="ship-halo" aria-hidden="true"></div>
-        <div class="bow-splash" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="bow-splash" aria-hidden="true"><b></b><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="waterline" aria-hidden="true"><i></i><i></i><i></i></div>
       </article>
     </section>
 
     <section class="flow-panel ripple-card">
-      <div class="panel-heading"><div><span>OCEAN FLOW</span><h2>招聘流程进度总览</h2></div><b>当前重点：推动 Offer 转化到岗</b></div>
+      <div class="panel-heading"><div><span>OCEAN FLOW</span><h2>招聘转化链路</h2></div><b>相邻阶段转化率 · 对应人数</b></div>
       <div class="flow-track">
         <div class="flow-ribbon" aria-hidden="true"></div>
         <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div>
         ${stages.map(([key, label], index) => {
           const value = total(key);
-          return `<article class="flow-node ${index === 2 ? "focus" : ""}" tabindex="0" aria-label="${label} ${value} 人">
-            <span>0${index + 1}</span><strong>${value}</strong><small>${label}</small><em>${clampPercent(value, planned)}%</em>
+          const previous = index === 0 ? planned : total(stages[index - 1][0]);
+          const conversion = clampPercent(value, previous);
+          return `<article class="flow-node ${index === 2 ? "focus" : ""}" tabindex="0" aria-label="${label} ${value} 人，阶段转化率 ${conversion}%">
+            <span>0${index + 1}</span><strong>${conversion}%</strong><small>${label}</small><em>${value}人</em>
           </article>`;
         }).join("")}
       </div>
     </section>
 
     <section class="priority-panel">
-      <div class="panel-heading"><div><span>POSITION PROGRESS</span><h2>岗位进度 <small>紧凑视图</small></h2></div><button id="view-all-positions" type="button">查看全部岗位 →</button></div>
+      <div class="panel-heading"><div><span>SOCIAL RECRUITMENT</span><h2>岗位进度</h2></div><button id="view-all-positions" type="button">查看全部岗位 →</button></div>
       <div class="priority-grid">
-        ${focusItems.map((item) => `<button class="overview-position-card ripple-card" data-position-id="${item.id}" type="button">
-          <span class="position-emblem">${iconSvg(item.position.includes("船") ? "ship" : item.department.includes("安全") ? "beacon" : item.department.includes("技术") ? "wind" : "rig")}</span>
-          <div class="overview-position-title"><small>${escapeHtml(item.department)} · ${escapeHtml(item.detail)}</small><strong>${escapeHtml(item.position)}</strong></div>
+        ${departmentFocus.map((item) => `<button class="overview-position-card ripple-card" data-department="${escapeHtml(item.department)}" type="button">
+          <span class="position-emblem">${iconSvg(item.department.includes("安全") ? "beacon" : item.department.includes("技术") ? "wind" : item.department.includes("项目") ? "ship" : "rig")}</span>
+          <div class="overview-position-title"><small>社会招聘 · ${item.itemCount}个岗位</small><strong>${escapeHtml(item.department)}</strong></div>
           <mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark>
-          <div class="overview-position-stats"><span>计划 <b>${item.plannedCount}</b></span><span>当前 <b>${Math.max(item.suitableCount, item.interviewCount, item.salaryCount, item.offerCount, item.onboardCount)}</b></span><span>缺口 <b>${item.remainingCount}</b></span></div>
+          <div class="overview-position-stats"><span>计划 <b>${item.plannedCount}</b></span><span>合适 <b>${item.suitableCount}</b></span><span>缺口 <b>${item.remainingCount}</b></span></div>
           ${stageRail(item)}
         </button>`).join("")}
       </div>
@@ -214,12 +240,16 @@ function renderOverview() {
 
   document.querySelector("#view-all-positions").addEventListener("click", () => {
     state.tab = "positions";
+    state.department = "全部部门";
+    state.recruitmentType = "社会招聘";
+    state.query = "";
     render();
   });
-  document.querySelectorAll("[data-position-id]").forEach((button) => button.addEventListener("click", () => {
-    const item = state.items.find((row) => row.id === Number(button.dataset.positionId));
+  document.querySelectorAll("[data-department]").forEach((button) => button.addEventListener("click", () => {
     state.tab = "positions";
-    state.query = item?.position || "";
+    state.department = button.dataset.department;
+    state.recruitmentType = "社会招聘";
+    state.query = "";
     render();
   }));
   bindRippleCards();
