@@ -132,9 +132,28 @@ body::before {
 
 .page-shell { width: min(1460px, calc(100% - 48px)); margin: 0 auto; padding: 24px 0 42px; }
 .intro-line { display: flex; justify-content: space-between; align-items: center; min-height: 52px; margin-bottom: 18px; }
-.motto { display: flex; align-items: center; gap: 0; color: #0a3d78; font-family: "STKaiti", "KaiTi", serif; font-size: clamp(22px, 2.1vw, 34px); font-weight: 800; letter-spacing: 0.18em; }
-.motto span { display: inline-flex; align-items: center; }
-.motto span:not(:last-child)::after { content: ""; width: 22px; height: 1px; margin: 0 14px 0 8px; background: linear-gradient(90deg, #9ebbd2, transparent); }
+.motto {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 4px 13px;
+  color: #073d78;
+  font-family: "STKaiti", "KaiTi", "FZKai-Z03", serif;
+  font-size: clamp(23px, 2vw, 32px);
+  font-weight: 800;
+  letter-spacing: .16em;
+  background: linear-gradient(180deg, #062f67 12%, #0b5591 72%, #07366d);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 8px rgba(18, 82, 133, .12));
+}
+.motto::before, .motto::after { content: ""; position: absolute; left: 3px; height: 1px; border-radius: 50%; }
+.motto::before { right: 2px; bottom: 6px; background: linear-gradient(90deg, #159ad9, rgba(32,185,219,.45) 62%, transparent); transform: rotate(-.45deg); }
+.motto::after { right: 24%; bottom: 2px; background: linear-gradient(90deg, transparent, rgba(18,134,202,.42), transparent); transform: rotate(.7deg); }
+.motto span { display: inline-flex; align-items: center; white-space: nowrap; }
+.motto span:not(:last-child)::after { content: ""; width: 4px; height: 4px; margin-left: 13px; border-radius: 50%; background: #28addb; box-shadow: 0 0 0 4px rgba(40,173,219,.08), 0 0 10px rgba(40,173,219,.35); }
 .updated { display: flex; align-items: baseline; gap: 10px; color: #7188a1; font-size: 12px; }
 .updated strong { color: #365777; font-size: 13px; }
 
@@ -359,7 +378,8 @@ body::after {
   background-size: 640px 190px, 760px 220px, 540px 170px;
   animation: ocean-drift 14s linear infinite alternate;
 }
-.hero-deck { display: grid; grid-template-columns: minmax(0, 3.25fr) minmax(360px, 1.35fr); gap: 16px; }
+.hero-deck { position: relative; display: grid; grid-template-columns: minmax(0, 3.1fr) minmax(390px, 1.55fr); gap: 16px; isolation: isolate; }
+.hero-deck::after { content: ""; position: absolute; z-index: -1; right: -10px; bottom: -7px; width: 37%; height: 74%; border-radius: 50% 0 24px 50%; background: radial-gradient(ellipse at 55% 100%, rgba(24,169,218,.18), transparent 62%); filter: blur(5px); }
 .hero-deck .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
 .hero-deck .metric-card {
   min-height: 202px;
@@ -398,12 +418,25 @@ body::after {
 .metric-tide { position: absolute; left: 70px; right: 22px; bottom: 28px; height: 1px; background: linear-gradient(90deg, #79bddf, transparent); }
 .metric-tide::before { content: ""; position: absolute; left: 0; top: -2px; width: 22%; height: 4px; border-radius: 99px; background: linear-gradient(90deg, #2cb8e5, #dff8ff); animation: tide-scan 3.8s ease-in-out infinite; }
 
-.hero-deck .vessel-card { min-height: 202px; border-radius: 23px; background: linear-gradient(160deg, #fafdff, #dff3fc); }
-.hero-deck .vessel-card::before { opacity: .6; }
-.hero-deck .vessel-card img { right: -4%; bottom: -3px; width: 102%; max-height: 96%; animation: ship-sail 5.8s ease-in-out infinite; }
-.hero-deck .vessel-copy { padding: 20px; }
+.hero-deck .vessel-card { min-height: 202px; overflow: visible; border-color: transparent; border-radius: 0; background: transparent; box-shadow: none; perspective: 980px; }
+.hero-deck .vessel-card:hover { border-color: transparent; box-shadow: none; }
+.hero-deck .vessel-card::before { inset: -10px -8px -6px -6px; z-index: 0; opacity: .72; border-radius: 46% 18px 18px 44%; background: radial-gradient(ellipse at 70% 45%, rgba(255,255,255,.94) 0 20%, rgba(216,241,251,.62) 55%, transparent 76%); }
+.hero-deck .vessel-card img { right: -9%; bottom: -13%; z-index: 3; width: 118%; max-height: 118%; object-fit: contain; filter: saturate(1.08) contrast(1.05) drop-shadow(0 18px 15px rgba(12,72,112,.18)); -webkit-mask-image: none; mask-image: none; transform-origin: 78% 100%; animation: ship-sail-3d 5.8s ease-in-out infinite; }
+.hero-deck .vessel-copy { display: none; }
 .hero-deck .vessel-copy strong { font-size: 22px; }
-.ship-halo { position: absolute; z-index: 1; right: 2%; top: 5%; width: 74%; aspect-ratio: 1.7; border: 1px solid rgba(76,178,226,.26); border-radius: 50%; box-shadow: 0 0 34px rgba(46,182,226,.15), inset 0 0 30px rgba(255,255,255,.65); animation: halo-pulse 4.6s ease-in-out infinite; }
+.ship-halo { position: absolute; z-index: 1; right: -1%; top: -2%; width: 88%; aspect-ratio: 1.7; border: 1px solid rgba(76,178,226,.22); border-radius: 50%; box-shadow: 0 0 34px rgba(46,182,226,.14), inset 0 0 30px rgba(255,255,255,.7); animation: halo-pulse 4.6s ease-in-out infinite; }
+.vessel-mountains { position: absolute; z-index: 1; left: 1%; right: -8%; bottom: 30px; height: 52px; overflow: hidden; opacity: .38; }
+.vessel-mountains i { position: absolute; bottom: -34px; width: 150px; height: 80px; border-radius: 18px 8px 0 0; background: linear-gradient(145deg, transparent 49%, #78b7d5 50% 53%, #d8edf7 54%); transform: rotate(4deg); }
+.vessel-mountains i:nth-child(1) { left: 0; }
+.vessel-mountains i:nth-child(2) { left: 35%; transform: rotate(-3deg) scale(.8); }
+.vessel-mountains i:nth-child(3) { right: -10px; transform: rotate(5deg) scale(1.15); }
+.bow-splash { position: absolute; z-index: 5; left: 13%; bottom: 5%; width: 70px; height: 42px; filter: drop-shadow(0 0 7px rgba(49,190,226,.55)); }
+.bow-splash i { position: absolute; left: 48%; bottom: 0; width: 4px; height: 28px; border-radius: 50%; background: linear-gradient(to top, rgba(26,176,220,.2), #fff); transform-origin: bottom; animation: splash-rise 2.8s ease-in-out infinite; }
+.bow-splash i:nth-child(1) { transform: rotate(-42deg) scale(.8); }
+.bow-splash i:nth-child(2) { transform: rotate(-18deg) scale(1.15); animation-delay: -.7s; }
+.bow-splash i:nth-child(3) { transform: rotate(19deg) scale(.95); animation-delay: -1.4s; }
+.bow-splash i:nth-child(4) { transform: rotate(45deg) scale(.72); animation-delay: -2s; }
+.hero-deck .waterline { z-index: 4; left: -10%; right: -10%; bottom: -18px; height: 74px; }
 .waterline i { animation: drift 4.2s ease-in-out infinite alternate; }
 .waterline i:nth-child(2) { animation-delay: -.8s; animation-duration: 5s; }
 .waterline i:nth-child(3) { animation-delay: -1.4s; animation-duration: 3.7s; }
@@ -448,7 +481,7 @@ body::after {
 .priority-panel { padding-bottom: 22px; background: rgba(255,255,255,.93); }
 .panel-heading h2 small { margin-left: 6px; color: #718aa2; font-size: 11px; font-weight: 500; }
 .priority-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.overview-position-card { position: relative; overflow: hidden; min-height: 138px; display: grid; grid-template-columns: 56px 1fr auto; grid-template-rows: auto 1fr; gap: 7px 12px; padding: 13px 14px; border: 1px solid #cfe2ef; border-radius: 17px; color: #173f6b; background: linear-gradient(145deg, #fff, #f1f9fd); text-align: left; cursor: pointer; }
+.overview-position-card { position: relative; overflow: hidden; min-height: 158px; display: grid; grid-template-columns: 56px 1fr auto; grid-template-rows: auto 1fr; gap: 7px 12px; padding: 13px 14px; border: 1px solid #cfe2ef; border-radius: 17px; color: #173f6b; background: linear-gradient(145deg, #fff, #f1f9fd); text-align: left; cursor: pointer; }
 .position-emblem { grid-row: 1 / 3; display: grid; place-items: center; width: 55px; height: 55px; align-self: start; border: 1px solid #abd6ec; border-radius: 50%; color: #0873c9; background: radial-gradient(circle at 35% 25%, #fff, #dff3fd 62%, #bce2f3); box-shadow: 0 7px 16px rgba(23,105,164,.14), inset 0 0 0 5px rgba(255,255,255,.55); }
 .position-emblem svg { width: 34px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .overview-position-title { min-width: 0; }
@@ -459,10 +492,11 @@ body::after {
 .overview-position-stats b { margin-left: 3px; color: #0c4a86; font-size: 15px; }
 .overview-position-stats span:last-child b { color: var(--orange); }
 .overview-position-card .stage-rail { grid-column: 1 / -1; margin: 4px 0 0; }
-.overview-position-card .stage-step > span { width: 18px; height: 18px; font-size: 0; }
+.overview-position-card .stage-step > span { width: 23px; height: 23px; border-color: #a8c7dc; color: #617c96; font-size: 9px; }
 .overview-position-card .stage-step.active > span { background: #e5f7ff; box-shadow: 0 0 0 3px rgba(48,163,221,.1); }
-.overview-position-card .stage-step > small { margin-top: 4px; font-size: 8px; }
-.overview-position-card .stage-step > i { top: 8px; left: calc(50% + 9px); width: calc(100% - 18px); }
+.overview-position-card .stage-step.active > span { color: #075fa9; font-size: 10px; }
+.overview-position-card .stage-step > small { margin-top: 5px; color: #58748f; font-size: 8.5px; }
+.overview-position-card .stage-step > i { top: 11px; left: calc(50% + 12px); width: calc(100% - 24px); }
 
 .position-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .position-card { min-height: 268px; background: linear-gradient(150deg, #fff, #f2f9fd); }
@@ -472,6 +506,8 @@ body::after {
 @keyframes icon-float { 50% { transform: translateY(-5px) rotate(1.5deg); } }
 @keyframes tide-scan { 50% { left: 70%; width: 30%; } }
 @keyframes ship-sail { 50% { transform: translate3d(-5px, -4px, 0) rotate(-.25deg); } }
+@keyframes ship-sail-3d { 0%, 100% { transform: rotateX(1deg) rotateY(-3deg) translate3d(0,0,10px); } 50% { transform: rotateX(.2deg) rotateY(-1deg) translate3d(-7px,-5px,22px); } }
+@keyframes splash-rise { 0%, 100% { opacity: .28; height: 18px; } 50% { opacity: .95; height: 34px; } }
 @keyframes halo-pulse { 50% { transform: scale(1.035); opacity: .65; } }
 @keyframes water-flow { to { transform: translateX(6%); } }
 @keyframes bubble-float { 50% { transform: translateY(-4px); } }
@@ -487,7 +523,7 @@ body::after {
   .hero-deck { grid-template-columns: 1fr; }
   .hero-deck .metrics { grid-template-columns: repeat(4, 1fr); }
   .hero-deck .vessel-card { min-height: 260px; }
-  .hero-deck .vessel-card img { width: 72%; }
+  .hero-deck .vessel-card img { right: -3%; width: 103%; }
   .priority-grid { grid-template-columns: repeat(2, 1fr); }
   .position-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filter-bar { grid-template-columns: 1fr repeat(3, 140px); }
@@ -507,7 +543,7 @@ body::after {
   .priority-grid { grid-template-columns: repeat(2, 1fr); }
   .position-grid { grid-template-columns: 1fr; }
   .hero-deck .vessel-card { min-height: 270px; }
-  .hero-deck .vessel-card img { width: 94%; }
+  .hero-deck .vessel-card img { right: -5%; width: 108%; }
   .flow-track { gap: 8px; overflow-x: auto; padding: 8px 0 12px; }
   .flow-node { min-width: 116px; min-height: 116px; }
   .flow-ribbon { min-width: 570px; left: 56px; right: auto; width: 520px; }
@@ -519,8 +555,8 @@ body::after {
 }
 
 @media (max-width: 560px) {
-  .motto { font-size: 20px; letter-spacing: .08em; }
-  .motto span:not(:last-child)::after { width: 8px; margin: 0 7px 0 4px; }
+  .motto { gap: 7px; font-size: 20px; letter-spacing: .07em; }
+  .motto span:not(:last-child)::after { width: 3px; height: 3px; margin-left: 7px; }
   .updated span { display: none; }
   .hero-deck .metric-card { min-height: 156px; padding: 12px; }
   .metric-icon { width: 50px; height: 50px; }

@@ -177,8 +177,10 @@ function renderOverview() {
 
       <article class="vessel-card ripple-card">
         <div class="vessel-copy"><span>OFFSHORE ENGINEERING</span><strong>梦想号</strong><small>逐浪深蓝 · 向新而行</small></div>
+        <div class="vessel-mountains" aria-hidden="true"><i></i><i></i><i></i></div>
         <img src="./assets/meng-xiang-hero.webp?v=20260826b" alt="宏华海洋梦想号海工船" />
         <div class="ship-halo" aria-hidden="true"></div>
+        <div class="bow-splash" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
         <div class="waterline" aria-hidden="true"><i></i><i></i><i></i></div>
       </article>
     </section>
