@@ -800,3 +800,220 @@ body::after { opacity: .62; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+/* Ocean clarity pass — projection-safe typography and organic moving water. */
+body {
+  position: relative;
+  font-size: 16px;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.page-shell { position: relative; z-index: 1; }
+body::after { display: none; }
+
+/* Remove the marked decorative bars. */
+.motto::before,
+.motto::after,
+.metric-tide,
+.vessel-mountains,
+.waterline { display: none !important; }
+.motto {
+  gap: 22px;
+  padding: 3px 10px 5px;
+}
+.motto span {
+  font-size: 34px;
+  line-height: 1.2;
+  filter: none;
+}
+
+/* Broad, translucent water fields sit behind the glass instead of drawing lines. */
+.ocean-ambient {
+  z-index: 0;
+  inset: 180px -18% auto;
+  height: 1120px;
+  opacity: .55;
+  overflow: hidden;
+}
+.ocean-ambient i {
+  left: -10%;
+  width: 120%;
+  height: 280px;
+  border: 0;
+  border-radius: 45% 55% 48% 52% / 28% 34% 66% 72%;
+  background:
+    radial-gradient(ellipse at 25% 8%, rgba(255,255,255,.76), transparent 25%),
+    radial-gradient(ellipse at 72% 18%, rgba(74,202,230,.22), transparent 36%),
+    linear-gradient(180deg, rgba(174,226,245,.05), rgba(58,178,221,.2) 45%, rgba(213,242,250,.07));
+  filter: blur(.2px) drop-shadow(0 16px 30px rgba(49,173,217,.09));
+  animation: ocean-body-roll 9s ease-in-out infinite alternate;
+}
+.ocean-ambient i:nth-child(1) { top: 30px; transform: rotate(-2deg); }
+.ocean-ambient i:nth-child(2) { top: 350px; transform: translateX(8%) rotate(1.5deg); opacity: .72; animation-duration: 12s; animation-delay: -4s; }
+.ocean-ambient i:nth-child(3) { top: 710px; transform: translateX(-5%) rotate(-1deg); opacity: .56; animation-duration: 15s; animation-delay: -8s; }
+
+/* Keep text on exact pixels; motion is carried by light, foam and water layers. */
+.ripple-card,
+.ripple-card:hover {
+  transform: none;
+}
+.ripple-card:hover {
+  border-color: rgba(75,183,226,.72);
+  box-shadow: inset 0 1px 0 #fff, 0 18px 36px rgba(24,105,158,.16);
+}
+.flow-node { animation: none; }
+.hero-deck .vessel-card img {
+  z-index: 5;
+  animation: none;
+  filter: saturate(1.16) contrast(1.16) drop-shadow(0 22px 14px rgba(7,58,99,.25));
+}
+
+/* A real body of water under 梦想号: rolling blue volume, white caps and foam. */
+.ship-sea {
+  position: absolute;
+  z-index: 3;
+  left: -5%;
+  right: -14%;
+  bottom: -33px;
+  height: 126px;
+  overflow: hidden;
+  pointer-events: none;
+  filter: drop-shadow(0 -7px 13px rgba(18,141,198,.18));
+}
+.ship-sea::before {
+  content: "";
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: -38px;
+  height: 122px;
+  clip-path: polygon(0 39%, 6% 31%, 12% 36%, 19% 24%, 27% 34%, 35% 20%, 44% 32%, 53% 23%, 62% 35%, 71% 21%, 80% 32%, 89% 25%, 100% 37%, 100% 100%, 0 100%);
+  background:
+    radial-gradient(ellipse at 32% 18%, rgba(255,255,255,.88), transparent 18%),
+    radial-gradient(ellipse at 70% 24%, rgba(255,255,255,.62), transparent 21%),
+    linear-gradient(180deg, rgba(75,204,231,.5), rgba(13,137,202,.34) 46%, rgba(49,174,215,.06));
+  animation: ship-sea-roll 4.6s ease-in-out infinite alternate;
+}
+.ship-sea::after {
+  content: "";
+  position: absolute;
+  left: -12%;
+  right: -8%;
+  top: 36px;
+  height: 34px;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.94) 0 20%, rgba(190,239,248,.58) 33%, transparent 67%) 0 0 / 86px 25px repeat-x;
+  opacity: .88;
+  animation: foam-drift 5.2s linear infinite;
+}
+.ship-sea i {
+  position: absolute;
+  z-index: 2;
+  bottom: 12px;
+  width: 38%;
+  height: 55px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.88), rgba(111,218,237,.2) 44%, transparent 72%);
+  animation: foam-pulse 3.4s ease-in-out infinite;
+}
+.ship-sea i:nth-child(1) { left: 2%; transform: rotate(-5deg); }
+.ship-sea i:nth-child(2) { left: 34%; bottom: 1px; opacity: .7; animation-delay: -1.2s; }
+.ship-sea i:nth-child(3) { right: -2%; bottom: 17px; opacity: .6; transform: rotate(4deg); animation-delay: -2.3s; }
+.ship-sea b {
+  position: absolute;
+  z-index: 4;
+  left: 18%;
+  right: 4%;
+  bottom: 40px;
+  height: 13px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.94) 16%, rgba(193,240,250,.8) 57%, transparent);
+  filter: blur(1px);
+  animation: foam-breathe 2.8s ease-in-out infinite;
+}
+.ship-wake {
+  z-index: 6;
+  right: -7%;
+  bottom: -2%;
+  width: 61%;
+  height: 74px;
+  overflow: visible;
+}
+.ship-wake i {
+  right: 0;
+  width: 100%;
+  height: 24px;
+  border: 0;
+  border-radius: 48%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.96) 0 18%, rgba(189,239,249,.64) 37%, transparent 69%);
+  filter: drop-shadow(0 0 7px rgba(28,178,218,.42));
+  animation: wake-foam 3.6s ease-in-out infinite;
+}
+.ship-wake i:nth-child(2) { top: 21px; right: -8%; opacity: .6; animation-delay: -1.2s; }
+.ship-wake i:nth-child(3) { top: 41px; right: -15%; opacity: .36; animation-delay: -2.4s; }
+.bow-splash {
+  z-index: 7;
+  left: 5%;
+  bottom: -8%;
+  width: 218px;
+  height: 126px;
+}
+.bow-splash b { border-width: 11px; }
+.bow-splash i { width: 7px; animation-duration: 2.1s; }
+
+/* Larger, crisper projection typography. */
+.nav-item { font-size: 16px; }
+.live, .admin-login { font-size: 14px; }
+.updated { font-size: 13px; }
+.updated strong { font-size: 14px; }
+.hero-deck .metric-card span { font-size: 19px; }
+.hero-deck .metric-card strong { font-size: clamp(48px, 4.2vw, 64px); }
+.hero-deck .metric-card small { font-size: 12px; }
+.panel-heading > div > span, .positions-head > div > span { font-size: 12px; }
+.panel-heading h2 { font-size: 23px; }
+.panel-heading > b, .panel-heading button { font-size: 14px; }
+.flow-node strong { font-size: 42px; }
+.flow-node small { font-size: 15px; }
+.flow-node em { font-size: 12px; }
+.overview-position-title small { font-size: 11px; }
+.overview-position-title strong { font-size: 17px; }
+.overview-position-stats { font-size: 11px; }
+.overview-position-stats b { font-size: 17px; }
+.overview-position-card .stage-step > span { font-size: 11px; }
+.overview-position-card .stage-step > small { font-size: 10px; }
+.positions-head p { font-size: 16px; }
+.records span, .privacy-badge { font-size: 13px; }
+.filter-bar input, .filter-bar select { font-size: 15px; }
+.recruitment-table th { font-size: 13px; }
+.recruitment-table td { height: 66px; font-size: 13px; }
+.position-cell strong { font-size: 15px; }
+.position-cell span, .position-cell small { font-size: 11px; }
+.type-chip { font-size: 11px; }
+.number { font-size: 15px !important; }
+.recruitment-table mark { font-size: 12px; }
+.time-cell { font-size: 11px !important; }
+
+@keyframes ocean-body-roll {
+  0% { translate: -3% -10px; rotate: -1deg; scale: 1 .92; }
+  100% { translate: 5% 20px; rotate: 1deg; scale: 1.05 1.08; }
+}
+@keyframes ship-sea-roll {
+  0% { transform: translateX(-3%) translateY(5px) scaleY(.9); }
+  100% { transform: translateX(3%) translateY(-6px) scaleY(1.08); }
+}
+@keyframes foam-drift { to { transform: translateX(86px); } }
+@keyframes foam-pulse { 50% { transform: translateY(-8px) scale(1.12); opacity: .92; } }
+@keyframes foam-breathe { 50% { transform: translateX(-12px) scaleX(1.08); opacity: .62; } }
+@keyframes wake-foam { 50% { transform: translateX(12%) scaleX(1.12); opacity: .58; } }
+
+@media (max-width: 1180px) {
+  .ship-sea { left: 5%; right: 2%; }
+  .bow-splash { left: 10%; }
+}
+@media (max-width: 560px) {
+  .motto { gap: 12px; }
+  .motto span { font-size: 26px; }
+  .hero-deck .metric-card span { font-size: 16px; }
+  .ship-sea { height: 105px; }
+  .bow-splash { width: 165px; height: 96px; }
+}
