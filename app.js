@@ -201,11 +201,10 @@ function renderOverview() {
 
       <article class="vessel-card ripple-card">
         <div class="vessel-copy"><span>OFFSHORE ENGINEERING</span><strong>梦想号</strong><small>逐浪深蓝 · 向新而行</small></div>
-        <div class="vessel-mountains" aria-hidden="true"><i></i><i></i><i></i></div>
         <img src="./assets/meng-xiang-hero-hd.webp?v=20260826" alt="宏华海洋梦想号海工船" />
+        <div class="ship-sea" aria-hidden="true"><i></i><i></i><i></i><b></b></div>
         <div class="bow-splash" aria-hidden="true"><b></b><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="ship-wake" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div class="waterline" aria-hidden="true"><i></i><i></i><i></i></div>
       </article>
     </section>
 
@@ -356,6 +355,7 @@ function initOceanEffects() {
   let ratio = 1;
   let lastSpawn = 0;
   const particles = [];
+  const rings = [];
 
   const resize = () => {
     ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -384,10 +384,30 @@ function initOceanEffects() {
       });
     }
     if (particles.length > 90) particles.splice(0, particles.length - 90);
+    rings.push({
+      x,
+      y,
+      radius: burst ? 9 : 5,
+      growth: burst ? 3.1 : 1.45,
+      alpha: burst ? .55 : .27,
+      life: 1,
+    });
+    if (burst) rings.push({ x, y, radius: 3, growth: 2.25, alpha: .34, life: 1 });
+    if (rings.length > 24) rings.splice(0, rings.length - 24);
   };
 
   const draw = () => {
     context.clearRect(0, 0, width, height);
+    rings.forEach((ring) => {
+      ring.radius += ring.growth;
+      ring.life -= .024;
+      context.beginPath();
+      context.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
+      context.lineWidth = Math.max(.7, 2.1 * ring.life);
+      context.strokeStyle = `rgba(28, 166, 218, ${Math.max(0, ring.alpha * ring.life)})`;
+      context.stroke();
+    });
+    for (let index = rings.length - 1; index >= 0; index -= 1) if (rings[index].life <= 0) rings.splice(index, 1);
     particles.forEach((drop) => {
       drop.x += drop.vx;
       drop.y += drop.vy;
@@ -404,7 +424,7 @@ function initOceanEffects() {
 
   window.addEventListener("resize", resize, { passive: true });
   window.addEventListener("pointermove", (event) => {
-    if (!event.target.closest("main") || performance.now() - lastSpawn < 48) return;
+    if (!event.target.closest("main") || performance.now() - lastSpawn < 72) return;
     lastSpawn = performance.now();
     addDrop(event.clientX, event.clientY);
   }, { passive: true });
