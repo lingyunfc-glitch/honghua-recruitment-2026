@@ -9,7 +9,7 @@
     <link rel="icon" href="./favicon.svg" />
     <link rel="stylesheet" href="./styles.css?v=20260826-meeting" />
   </head>
-  <body class="meeting-mode">
+  <body>
     <header class="topbar">
       <a class="brand" href="#" aria-label="宏华海洋招聘进度首页">
         <img src="./assets/honghua-offshore-logo.jpeg?v=20260826" alt="宏华海洋 HONGHUA OFFSHORE" />
@@ -19,10 +19,6 @@
         <button id="positions-tab" class="nav-item" type="button"><span class="nav-icon" aria-hidden="true">⌁</span>岗位进度</button>
       </nav>
       <div class="header-actions">
-        <div class="view-switch" aria-label="动态效果">
-          <button id="meeting-mode" class="active" type="button">会议模式</button>
-          <button id="dynamic-mode" type="button">动态模式</button>
-        </div>
         <span class="live"><i></i>数据正常</span>
         <button id="refresh-button" class="icon-button" type="button" title="刷新数据" aria-label="刷新数据">↻</button>
         <button id="admin-button" class="admin-login" type="button">输入密码编辑</button>
@@ -39,6 +35,7 @@
     </main>
 
     <div id="overlay-root"></div>
-    <script src="./app.js?v=20260826-meeting2" defer></script>
+    <canvas id="ocean-effects" aria-hidden="true"></canvas>
+    <script src="./app.js?v=20260826-ocean" defer></script>
   </body>
 </html>

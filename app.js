@@ -2,7 +2,6 @@ const API_BASE = "https://api.zhangxiaolei.top";
 const SNAPSHOT_URL = "./data.json";
 const TOKEN_KEY = "hh_recruitment_editor_token";
 const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
-const MOTION_KEY = "hh_recruitment_motion_mode";
 
 const stages = [
   ["suitableCount", "合适人选"],
@@ -22,7 +21,6 @@ const state = {
   query: "",
   loading: true,
   error: "",
-  motion: window.localStorage.getItem(MOTION_KEY) === "dynamic" ? "dynamic" : "meeting",
 };
 
 const formatter = new Intl.DateTimeFormat("zh-CN", {
@@ -42,8 +40,6 @@ const latestTime = document.querySelector("#latest-time");
 const overviewTab = document.querySelector("#overview-tab");
 const positionsTab = document.querySelector("#positions-tab");
 const adminButton = document.querySelector("#admin-button");
-const meetingButton = document.querySelector("#meeting-mode");
-const dynamicButton = document.querySelector("#dynamic-mode");
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -148,16 +144,13 @@ function syncHeader() {
   positionsTab.classList.toggle("active", state.tab === "positions");
   adminButton.classList.toggle("edit-active", state.canEdit);
   adminButton.textContent = state.canEdit ? "编辑模式 · 退出" : "输入密码编辑";
-  document.body.classList.toggle("dynamic-mode", state.motion === "dynamic");
-  document.body.classList.toggle("meeting-mode", state.motion !== "dynamic");
-  meetingButton.classList.toggle("active", state.motion !== "dynamic");
-  dynamicButton.classList.toggle("active", state.motion === "dynamic");
 }
 
 function metricCard(kind, label, value, note, accent = "blue") {
   return `<article class="metric-card ripple-card ${accent}" tabindex="0">
     <div class="metric-icon">${iconSvg(kind)}</div>
-    <div><span>${label}</span><strong>${value}<em>人</em></strong><small>${note}</small></div>
+    <div class="metric-copy"><span>${label}</span><strong>${value}<em>人</em></strong><small>${note}</small></div>
+    <i class="metric-tide" aria-hidden="true"></i>
   </article>`;
 }
 
@@ -174,30 +167,27 @@ function renderOverview() {
     .slice(0, 6);
 
   content.innerHTML = `
-    <section class="overview-grid">
-      <article class="overview-summary">
-        <div class="section-kicker">RECRUITMENT OVERVIEW</div>
-        <h1>招聘进度总览</h1>
-        <p class="overview-lead">会议模式突出核心数字，现场一眼看清计划、储备、面试与Offer转化。</p>
-        <div class="metrics">
+    <section class="hero-deck">
+      <div class="metrics">
           ${metricCard("wind", "计划补充", planned, `社会招聘 ${socialPlanned} · 协力人员 ${partnerPlanned}`, "orange")}
           ${metricCard("rig", "合适人员", suitable, `人才储备率 ${clampPercent(suitable, planned)}%`)}
           ${metricCard("ship", "已面试", interviewed, `面试推进率 ${clampPercent(interviewed, planned)}%`)}
           ${metricCard("beacon", "已发Offer", offers, `到岗 ${onboarded} 人`, "orange")}
-        </div>
-      </article>
+      </div>
 
       <article class="vessel-card ripple-card">
-        <div class="vessel-copy"><span>OFFSHORE ENGINEERING</span><strong>梦想号</strong><small>深海装备 · 向新而行</small></div>
+        <div class="vessel-copy"><span>OFFSHORE ENGINEERING</span><strong>梦想号</strong><small>逐浪深蓝 · 向新而行</small></div>
         <img src="./assets/meng-xiang-hero.webp?v=20260826b" alt="宏华海洋梦想号海工船" />
+        <div class="ship-halo" aria-hidden="true"></div>
         <div class="waterline" aria-hidden="true"><i></i><i></i><i></i></div>
       </article>
     </section>
 
     <section class="flow-panel ripple-card">
-      <div class="panel-heading"><div><span>FLOW</span><h2>招聘流程进度</h2></div><b>当前重点：推动 Offer 转化到岗</b></div>
+      <div class="panel-heading"><div><span>OCEAN FLOW</span><h2>招聘流程进度总览</h2></div><b>当前重点：推动 Offer 转化到岗</b></div>
       <div class="flow-track">
         <div class="flow-ribbon" aria-hidden="true"></div>
+        <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div>
         ${stages.map(([key, label], index) => {
           const value = total(key);
           return `<article class="flow-node ${index === 2 ? "focus" : ""}" tabindex="0" aria-label="${label} ${value} 人">
@@ -208,13 +198,14 @@ function renderOverview() {
     </section>
 
     <section class="priority-panel">
-      <div class="panel-heading"><div><span>POSITION FOCUS</span><h2>重点岗位推进</h2></div><button id="view-all-positions" type="button">查看全部岗位 →</button></div>
+      <div class="panel-heading"><div><span>POSITION PROGRESS</span><h2>岗位进度 <small>紧凑视图</small></h2></div><button id="view-all-positions" type="button">查看全部岗位 →</button></div>
       <div class="priority-grid">
-        ${focusItems.map((item) => `<button class="priority-item ripple-card" data-position-id="${item.id}" type="button">
-          <span class="priority-rank">${String(item.id).padStart(2, "0")}</span>
-          <div><small>${escapeHtml(item.department)} · ${escapeHtml(item.detail)}</small><strong>${escapeHtml(item.position)}</strong></div>
+        ${focusItems.map((item) => `<button class="overview-position-card ripple-card" data-position-id="${item.id}" type="button">
+          <span class="position-emblem">${iconSvg(item.position.includes("船") ? "ship" : item.department.includes("安全") ? "beacon" : item.department.includes("技术") ? "wind" : "rig")}</span>
+          <div class="overview-position-title"><small>${escapeHtml(item.department)} · ${escapeHtml(item.detail)}</small><strong>${escapeHtml(item.position)}</strong></div>
           <mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark>
-          <b><em>${item.remainingCount}</em> 人缺口</b>
+          <div class="overview-position-stats"><span>计划 <b>${item.plannedCount}</b></span><span>当前 <b>${Math.max(item.suitableCount, item.interviewCount, item.salaryCount, item.offerCount, item.onboardCount)}</b></span><span>缺口 <b>${item.remainingCount}</b></span></div>
+          ${stageRail(item)}
         </button>`).join("")}
       </div>
     </section>`;
@@ -303,10 +294,86 @@ function bindRippleCards() {
   document.querySelectorAll(".ripple-card").forEach((card) => {
     card.addEventListener("pointermove", (event) => {
       const box = card.getBoundingClientRect();
-      card.style.setProperty("--pointer-x", `${event.clientX - box.left}px`);
-      card.style.setProperty("--pointer-y", `${event.clientY - box.top}px`);
+      const x = event.clientX - box.left;
+      const y = event.clientY - box.top;
+      card.style.setProperty("--pointer-x", `${x}px`);
+      card.style.setProperty("--pointer-y", `${y}px`);
+      card.style.setProperty("--tilt-x", `${((y / box.height) - 0.5) * -2.4}deg`);
+      card.style.setProperty("--tilt-y", `${((x / box.width) - 0.5) * 2.4}deg`);
+    });
+    card.addEventListener("pointerleave", () => {
+      card.style.setProperty("--tilt-x", "0deg");
+      card.style.setProperty("--tilt-y", "0deg");
     });
   });
+}
+
+function initOceanEffects() {
+  const canvas = document.querySelector("#ocean-effects");
+  const context = canvas?.getContext("2d");
+  if (!canvas || !context || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let width = 0;
+  let height = 0;
+  let ratio = 1;
+  let lastSpawn = 0;
+  const particles = [];
+
+  const resize = () => {
+    ratio = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  };
+
+  const addDrop = (x, y, burst = false) => {
+    const count = burst ? 10 : 2;
+    for (let index = 0; index < count; index += 1) {
+      const angle = burst ? Math.random() * Math.PI * 2 : Math.PI + (Math.random() - 0.5) * 1.1;
+      const speed = burst ? 1.2 + Math.random() * 2.8 : 0.35 + Math.random();
+      particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - (burst ? 0.8 : 0),
+        radius: 1.2 + Math.random() * 2.2,
+        alpha: 0.5 + Math.random() * 0.35,
+        life: 1,
+      });
+    }
+    if (particles.length > 90) particles.splice(0, particles.length - 90);
+  };
+
+  const draw = () => {
+    context.clearRect(0, 0, width, height);
+    particles.forEach((drop) => {
+      drop.x += drop.vx;
+      drop.y += drop.vy;
+      drop.vy += 0.025;
+      drop.life -= 0.018;
+      context.beginPath();
+      context.arc(drop.x, drop.y, Math.max(0.2, drop.radius * drop.life), 0, Math.PI * 2);
+      context.fillStyle = `rgba(45, 192, 229, ${Math.max(0, drop.alpha * drop.life)})`;
+      context.fill();
+    });
+    for (let index = particles.length - 1; index >= 0; index -= 1) if (particles[index].life <= 0) particles.splice(index, 1);
+    window.requestAnimationFrame(draw);
+  };
+
+  window.addEventListener("resize", resize, { passive: true });
+  window.addEventListener("pointermove", (event) => {
+    if (!event.target.closest("main") || performance.now() - lastSpawn < 48) return;
+    lastSpawn = performance.now();
+    addDrop(event.clientX, event.clientY);
+  }, { passive: true });
+  window.addEventListener("pointerdown", (event) => {
+    if (event.target.closest("button, .ripple-card")) addDrop(event.clientX, event.clientY, true);
+  }, { passive: true });
+  resize();
+  draw();
 }
 
 function render() {
@@ -452,16 +519,8 @@ function openEditor(id) {
   });
 }
 
-function setMotion(mode) {
-  state.motion = mode;
-  window.localStorage.setItem(MOTION_KEY, mode);
-  syncHeader();
-}
-
 overviewTab.addEventListener("click", () => { state.tab = "overview"; state.query = ""; render(); });
 positionsTab.addEventListener("click", () => { state.tab = "positions"; render(); });
-meetingButton.addEventListener("click", () => setMotion("meeting"));
-dynamicButton.addEventListener("click", () => setMotion("dynamic"));
 document.querySelector("#refresh-button").addEventListener("click", load);
 adminButton.addEventListener("click", async () => {
   if (state.canEdit) {
@@ -476,5 +535,6 @@ adminButton.addEventListener("click", async () => {
   }
 });
 
+initOceanEffects();
 void load();
 window.setInterval(() => void load(), 60000);
