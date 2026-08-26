@@ -961,6 +961,30 @@ body::after { display: none; }
 }
 .bow-splash b { border-width: 11px; }
 .bow-splash i { width: 7px; animation-duration: 2.1s; }
+.bow-splash::before {
+  content: "";
+  position: absolute;
+  left: 28px;
+  bottom: 18px;
+  width: 116px;
+  height: 78px;
+  clip-path: polygon(0 82%, 9% 48%, 20% 73%, 29% 17%, 39% 62%, 51% 0, 58% 59%, 72% 24%, 75% 69%, 92% 49%, 100% 89%);
+  background: linear-gradient(110deg, rgba(255,255,255,.18), rgba(255,255,255,.98) 48%, rgba(183,236,247,.54));
+  filter: blur(.35px) drop-shadow(0 0 9px rgba(255,255,255,.75));
+  transform-origin: 50% 100%;
+  animation: bow-plume 2.35s ease-in-out infinite;
+}
+.bow-splash::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  bottom: 7px;
+  width: 190px;
+  height: 39px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.98), rgba(169,231,244,.58) 39%, transparent 72%);
+  animation: bow-foam 2.8s ease-in-out infinite;
+}
 
 /* Larger, crisper projection typography. */
 .nav-item { font-size: 16px; }
@@ -1007,6 +1031,8 @@ body::after { display: none; }
 @keyframes foam-pulse { 50% { transform: translateY(-8px) scale(1.12); opacity: .92; } }
 @keyframes foam-breathe { 50% { transform: translateX(-12px) scaleX(1.08); opacity: .62; } }
 @keyframes wake-foam { 50% { transform: translateX(12%) scaleX(1.12); opacity: .58; } }
+@keyframes bow-plume { 50% { transform: translateY(-7px) scale(1.08, 1.16); opacity: .72; } }
+@keyframes bow-foam { 50% { transform: translateX(10px) scaleX(1.13); opacity: .64; } }
 
 @media (max-width: 1180px) {
   .ship-sea { left: 5%; right: 2%; }
