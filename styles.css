@@ -1273,3 +1273,192 @@ body::after { display: none; }
   .positions-head h1 { font-size: 34px; }
   .recruitment-table { min-width: 1220px; }
 }
+
+/* 2026-08-26: frameless, naked-eye 3D vessel and collision-free KPI cards. */
+.hero-deck .metric-card {
+  min-height: 214px;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 25px 17px 18px;
+}
+.hero-deck .metric-card .metric-copy {
+  align-items: flex-start;
+  min-width: 0;
+  padding-right: 48px;
+}
+.hero-deck .metric-card span {
+  position: relative;
+  z-index: 3;
+  white-space: nowrap;
+}
+.hero-deck .metric-card strong {
+  margin: 11px 0 4px;
+  line-height: .95;
+  white-space: nowrap;
+}
+.hero-deck .metric-card small {
+  min-height: 18px;
+  margin-top: 7px;
+  padding-right: 0;
+  color: #65819b;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: left;
+  white-space: nowrap;
+}
+.hero-deck .metric-icon {
+  order: initial;
+  top: 19px;
+  right: 15px;
+  bottom: auto;
+  left: auto;
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(81, 184, 231, .24);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(255,255,255,.86), rgba(224,245,253,.62));
+  box-shadow: inset 0 1px 0 #fff, 0 8px 18px rgba(25,139,209,.09);
+  opacity: .92;
+  animation: icon-float 4.3s ease-in-out infinite;
+}
+.hero-deck .metric-card.orange .metric-icon {
+  border-color: rgba(242, 127, 35, .2);
+  background: linear-gradient(145deg, rgba(255,255,255,.9), rgba(255,241,228,.72));
+}
+.hero-deck .metric-icon svg { width: 32px; height: 32px; }
+.metric-tide { left: 18px; right: 18px; bottom: 20px; }
+
+.hero-deck .vessel-card,
+.hero-deck .vessel-card:hover {
+  min-height: 224px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: none;
+  transform: none;
+}
+.hero-deck .vessel-card::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 1;
+  inset: auto -17% -41px -10%;
+  height: 142px;
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 37% 39%, rgba(255,255,255,.96) 0 8%, rgba(161,226,242,.57) 23%, transparent 56%),
+    radial-gradient(ellipse at 70% 55%, rgba(78,190,223,.35), rgba(206,240,249,.18) 41%, transparent 68%);
+  box-shadow: none;
+  filter: blur(.2px) drop-shadow(0 8px 14px rgba(27,147,195,.12));
+  opacity: .9;
+  pointer-events: none;
+  animation: undercurrent-pulse 4.4s ease-in-out infinite;
+}
+.hero-deck .vessel-card::after {
+  content: "";
+  position: absolute;
+  z-index: 8;
+  top: 2%;
+  right: -6%;
+  width: 72%;
+  height: 82%;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(112deg, transparent 37%, rgba(255,255,255,.42) 49%, rgba(118,220,239,.16) 54%, transparent 64%);
+  opacity: .48;
+  transform: translateX(-82%);
+  animation: ship-light-sweep 5.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.hero-deck .vessel-card img {
+  z-index: 5;
+  right: -15%;
+  bottom: -18%;
+  width: 129%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: saturate(1.18) contrast(1.18) brightness(1.02) drop-shadow(-18px 27px 18px rgba(4,55,96,.26));
+  transform-origin: 62% 86%;
+  animation: ship-breakout-3d 5.2s ease-in-out infinite;
+  will-change: transform, filter;
+}
+.hero-deck .vessel-card:hover img {
+  animation-play-state: paused;
+  transform: perspective(1050px) translate3d(-9px, -10px, 32px) rotateX(1.2deg) rotateY(-4.5deg) scale(1.025);
+  filter: saturate(1.2) contrast(1.2) brightness(1.035) drop-shadow(-24px 32px 21px rgba(4,55,96,.3));
+}
+.hero-deck .ship-sea {
+  display: block;
+  z-index: 4;
+  left: -13%;
+  right: -20%;
+  bottom: -50px;
+  height: 138px;
+  overflow: visible;
+}
+.hero-deck .ship-sea::before {
+  bottom: -42px;
+  height: 130px;
+  opacity: .83;
+}
+.hero-deck .ship-sea::after {
+  top: 42px;
+  opacity: .9;
+}
+.hero-deck .ship-wake {
+  display: block;
+  z-index: 6;
+  right: -21%;
+  bottom: -21%;
+  width: 93%;
+  height: 92px;
+}
+.hero-deck .ship-wake i {
+  border: 0;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.98) 0 15%, rgba(179,236,248,.68) 32%, rgba(76,196,226,.18) 51%, transparent 72%);
+}
+.hero-deck .bow-splash {
+  display: block;
+  z-index: 7;
+  left: -3%;
+  bottom: -18%;
+  width: 235px;
+  height: 139px;
+  transform: rotate(-3deg);
+}
+.hero-deck .bow-splash b { border-width: 10px; }
+
+@keyframes ship-breakout-3d {
+  0%, 100% { transform: perspective(1050px) translate3d(0, 2px, 18px) rotateX(.6deg) rotateY(-3.2deg) scale(1); }
+  50% { transform: perspective(1050px) translate3d(-7px, -8px, 34px) rotateX(1.35deg) rotateY(-4.7deg) scale(1.018); }
+}
+@keyframes undercurrent-pulse {
+  0%, 100% { transform: translateX(-2%) scaleX(.97); opacity: .72; }
+  50% { transform: translateX(3%) scaleX(1.06); opacity: .95; }
+}
+@keyframes ship-light-sweep {
+  0%, 16% { transform: translateX(-90%); opacity: 0; }
+  40%, 62% { opacity: .48; }
+  84%, 100% { transform: translateX(90%); opacity: 0; }
+}
+
+@media (max-width: 1180px) {
+  .hero-deck .vessel-card { min-height: 276px; }
+  .hero-deck .vessel-card img { right: -5%; bottom: -18%; width: 111%; }
+  .hero-deck .bow-splash { left: 4%; }
+}
+@media (max-width: 760px) {
+  .hero-deck .metric-card { min-height: 168px; padding: 20px 14px 16px; }
+  .hero-deck .metric-card .metric-copy { padding-right: 40px; }
+  .hero-deck .metric-icon { top: 14px; right: 12px; width: 36px; height: 36px; border-radius: 12px; }
+  .hero-deck .metric-icon svg { width: 27px; height: 27px; }
+  .hero-deck .metric-card strong { font-size: 42px; }
+  .hero-deck .metric-card small { font-size: 11px; white-space: normal; }
+}
