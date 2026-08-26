@@ -384,15 +384,10 @@ function initOceanEffects() {
       });
     }
     if (particles.length > 90) particles.splice(0, particles.length - 90);
-    rings.push({
-      x,
-      y,
-      radius: burst ? 9 : 5,
-      growth: burst ? 3.1 : 1.45,
-      alpha: burst ? .55 : .27,
-      life: 1,
-    });
-    if (burst) rings.push({ x, y, radius: 3, growth: 2.25, alpha: .34, life: 1 });
+    if (burst) {
+      rings.push({ x, y, radius: 8, growth: 1.55, alpha: .42, life: 1 });
+      rings.push({ x, y, radius: 3, growth: 1.08, alpha: .26, life: 1 });
+    }
     if (rings.length > 24) rings.splice(0, rings.length - 24);
   };
 
@@ -400,7 +395,7 @@ function initOceanEffects() {
     context.clearRect(0, 0, width, height);
     rings.forEach((ring) => {
       ring.radius += ring.growth;
-      ring.life -= .024;
+      ring.life -= .045;
       context.beginPath();
       context.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
       context.lineWidth = Math.max(.7, 2.1 * ring.life);
