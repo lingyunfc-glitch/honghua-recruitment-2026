@@ -1811,3 +1811,190 @@ body::before {
   .overview-position-card:hover,
   .flow-node:hover { translate: 0 -3px; }
 }
+
+/* Luminous boost — a brighter second motion tier without moving report text. */
+.kinetic-light i { opacity: .48; filter: blur(26px) saturate(1.25); }
+.kinetic-light i:nth-child(1) { animation-duration: 9.5s; }
+.kinetic-light i:nth-child(2) { animation-duration: 12s; }
+.kinetic-light i:nth-child(3) { animation-duration: 10.5s; }
+
+.ocean-beams {
+  position: fixed;
+  z-index: 0;
+  inset: 72px -12% 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: .48;
+  mix-blend-mode: multiply;
+}
+.ocean-beams i {
+  position: absolute;
+  top: -24vh;
+  width: 18vw;
+  height: 138vh;
+  background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(104,215,235,.12) 34%, rgba(47,172,223,.055) 64%, transparent 88%);
+  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
+  filter: blur(17px);
+  transform-origin: 50% 0;
+  animation: beam-sway 9s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+.ocean-beams i:nth-child(1) { left: 2%; animation-delay: -2s; }
+.ocean-beams i:nth-child(2) { left: 29%; width: 14vw; opacity: .72; animation-delay: -6s; animation-duration: 12s; }
+.ocean-beams i:nth-child(3) { right: 25%; width: 20vw; opacity: .62; animation-delay: -4s; animation-duration: 10.5s; }
+.ocean-beams i:nth-child(4) { right: 0; width: 15vw; opacity: .7; animation-delay: -8s; animation-duration: 13s; }
+
+.ocean-ambient { opacity: .72; }
+.ocean-ambient i { filter: blur(.1px) saturate(1.18) drop-shadow(0 18px 28px rgba(36,174,217,.14)); }
+.marine-decor i { opacity: 0; box-shadow: inset -2px -2px 7px rgba(21,153,207,.18), 0 0 13px rgba(34,173,218,.2); }
+#ocean-effects { opacity: .94; }
+
+.topbar { box-shadow: inset 0 1px 0 rgba(255,255,255,.98), 0 10px 34px rgba(27,102,154,.11), 0 1px 18px rgba(41,195,224,.08); }
+.topbar::before { animation-duration: 6.2s; }
+.nav-item.active { box-shadow: inset 0 1px 0 #fff, 0 9px 22px rgba(45,111,167,.16), 0 0 18px rgba(42,194,225,.1); }
+
+.hero-deck .metric-card {
+  animation: metric-glass-pulse 5.2s ease-in-out infinite;
+}
+.hero-deck .metric-card:nth-child(2) { animation-delay: -1.3s; }
+.hero-deck .metric-card:nth-child(3) { animation-delay: -2.6s; }
+.hero-deck .metric-card:nth-child(4) { animation-delay: -3.9s; }
+.hero-deck .metric-card:hover { animation: none; }
+.hero-deck .metric-card::before { opacity: .82; animation-duration: 4.3s; }
+.hero-deck .metric-icon {
+  box-shadow: inset 0 1px 0 #fff, 0 8px 18px rgba(25,139,209,.12), 0 0 0 0 rgba(32,187,226,.16);
+}
+.hero-deck .metric-card:hover .metric-icon { box-shadow: inset 0 1px 0 #fff, 0 13px 24px rgba(25,139,209,.2), 0 0 0 9px rgba(32,187,226,.07); }
+
+.hero-deck .vessel-card::after {
+  opacity: .72;
+  background: linear-gradient(112deg, transparent 34%, rgba(255,255,255,.16) 43%, rgba(255,255,255,.8) 49%, rgba(89,215,239,.24) 55%, transparent 66%);
+  animation-duration: 4.2s;
+}
+.hero-deck .vessel-card img {
+  animation-duration: 3.8s;
+  filter: saturate(1.24) contrast(1.22) brightness(1.035) drop-shadow(-22px 31px 19px rgba(4,55,96,.3));
+}
+.hero-deck .vessel-card:hover img {
+  filter: saturate(1.28) contrast(1.24) brightness(1.055) drop-shadow(-29px 38px 23px rgba(4,55,96,.34));
+}
+.hero-deck .ship-sea {
+  bottom: -26px;
+  height: 114px;
+  opacity: .94;
+  filter: saturate(1.16) drop-shadow(0 -5px 11px rgba(20,128,176,.15));
+}
+.hero-deck .ship-sea::before {
+  height: 110px;
+  opacity: .9;
+  animation-duration: 3.35s;
+}
+.hero-deck .ship-sea::after {
+  top: 26px;
+  height: 48px;
+  opacity: .86;
+  animation-duration: 2.8s;
+}
+.hero-deck .ship-wake {
+  right: -8%;
+  bottom: -11%;
+  width: 79%;
+  height: 84px;
+  opacity: .9;
+}
+.hero-deck .ship-wake::after {
+  content: "";
+  position: absolute;
+  inset: 4px 3% 0 10%;
+  background:
+    radial-gradient(circle at 9% 50%, rgba(255,255,255,.95) 0 2px, transparent 3px),
+    radial-gradient(circle at 24% 34%, rgba(255,255,255,.85) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 41% 58%, rgba(215,246,252,.92) 0 2px, transparent 3px),
+    radial-gradient(circle at 62% 28%, rgba(255,255,255,.8) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 81% 56%, rgba(197,239,249,.76) 0 2px, transparent 3px);
+  background-size: 140px 42px;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,.8));
+  animation: wake-sparkles 2.1s linear infinite;
+}
+.hero-deck .bow-splash {
+  left: 6%;
+  bottom: -9%;
+  width: 182px;
+  height: 100px;
+  opacity: .94;
+  filter: saturate(1.12) drop-shadow(0 0 10px rgba(255,255,255,.68)) drop-shadow(0 5px 12px rgba(38,174,214,.25));
+}
+.hero-deck .bow-splash::before { width: 124px; height: 72px; animation-duration: 1.8s; }
+.hero-deck .bow-splash::after { width: 174px; height: 34px; animation-duration: 2.25s; }
+
+.flow-panel {
+  box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(73,184,222,.18), 0 19px 42px rgba(26,99,148,.14), 0 0 28px rgba(34,190,221,.08);
+  animation-duration: 5.2s;
+}
+.flow-panel::before { opacity: .94; animation-duration: 3.9s; }
+.flow-ribbon {
+  height: 28px;
+  box-shadow: 0 0 31px rgba(15,172,221,.58), 0 0 55px rgba(22,178,222,.18), inset 0 4px 9px rgba(255,255,255,.78);
+  animation-duration: 1.85s;
+}
+.flow-ribbon::after { animation-duration: 1.05s; opacity: .8; }
+.flow-spark { width: 14px; height: 14px; box-shadow: 0 0 9px #fff, 0 0 21px #35d8ec, 0 0 36px #0b8fe4; animation-duration: 2.85s; }
+.flow-node {
+  animation-duration: 3.05s;
+  box-shadow: 0 14px 31px rgba(29,113,161,.19), inset 0 0 0 7px rgba(255,255,255,.54), inset -8px -8px 21px rgba(44,177,212,.14), 0 0 22px rgba(42,190,224,.08);
+}
+.flow-node::before { animation-duration: 3.1s; }
+.flow-node.focus { animation: node-buoy 2.7s ease-in-out infinite, focus-energy 2.2s ease-in-out infinite; }
+
+.priority-panel { box-shadow: inset 0 1px 0 #fff, 0 18px 40px rgba(28,94,140,.13), 0 0 30px rgba(37,187,218,.07); }
+.overview-position-card { animation: department-tide 6.4s ease-in-out infinite; }
+.overview-position-card:nth-child(2) { animation-delay: -1.05s; }
+.overview-position-card:nth-child(3) { animation-delay: -2.1s; }
+.overview-position-card:nth-child(4) { animation-delay: -3.15s; }
+.overview-position-card:nth-child(5) { animation-delay: -4.2s; }
+.overview-position-card:nth-child(6) { animation-delay: -5.25s; }
+.overview-position-card:hover { animation: none; }
+.overview-position-card::before { animation-duration: 4.8s; }
+.stage-step.active > i::after { width: 10px; height: 7px; box-shadow: 0 0 7px #fff, 0 0 14px #19b8e2, 0 0 22px rgba(25,184,226,.38); animation-duration: 1.6s; }
+
+.positions-head::after,
+.filter-bar::after,
+.positions-table-panel::before { animation-duration: 6.2s; }
+.positions-table-panel { box-shadow: inset 0 1px 0 #fff, 0 20px 44px rgba(26,96,145,.14), 0 0 32px rgba(40,186,218,.08); }
+.recruitment-table tbody tr:hover td { background: rgba(204,240,252,.82); }
+.recruitment-table tbody tr:hover .number { text-shadow: 0 0 14px rgba(11,120,230,.22); }
+
+@keyframes beam-sway {
+  0% { transform: translate3d(-4vw, 0, 0) rotate(-8deg) scaleX(.82); opacity: .28; }
+  48% { opacity: .66; }
+  100% { transform: translate3d(7vw, 4vh, 0) rotate(8deg) scaleX(1.18); opacity: .38; }
+}
+@keyframes metric-glass-pulse {
+  0%, 100% { box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(91,172,216,.13), 0 13px 28px rgba(34,92,137,.11), 0 0 0 rgba(46,193,226,0); }
+  50% { box-shadow: inset 0 1px 0 #fff, inset 0 0 27px rgba(64,197,228,.07), 0 18px 35px rgba(34,92,137,.15), 0 0 24px rgba(46,193,226,.1); }
+}
+@keyframes wake-sparkles {
+  from { transform: translateX(0) scaleX(.92); opacity: .54; }
+  50% { opacity: 1; }
+  to { transform: translateX(25%) scaleX(1.08); opacity: .48; }
+}
+@keyframes focus-energy {
+  0%, 100% { filter: saturate(1); }
+  50% { filter: saturate(1.2) drop-shadow(0 0 10px rgba(238,133,54,.12)); }
+}
+@keyframes department-tide {
+  0%, 100% { border-color: rgba(255,255,255,.94); box-shadow: inset 0 1px 0 #fff, 0 13px 28px rgba(34,92,137,.11); }
+  50% { border-color: rgba(100,201,234,.72); box-shadow: inset 0 1px 0 #fff, inset 0 0 20px rgba(56,194,224,.06), 0 16px 32px rgba(34,92,137,.14); }
+}
+@keyframes ship-breakout-kinetic {
+  0%, 100% { transform: perspective(1050px) translate3d(var(--ship-x), calc(var(--ship-y) + 4px), 20px) rotateX(.5deg) rotateY(-3.4deg) scale(1); }
+  48% { transform: perspective(1050px) translate3d(calc(var(--ship-x) - 12px), calc(var(--ship-y) - 11px), 44px) rotateX(1.65deg) rotateY(-5.4deg) scale(1.028); }
+  62% { transform: perspective(1050px) translate3d(calc(var(--ship-x) - 8px), calc(var(--ship-y) - 7px), 38px) rotateX(1.25deg) rotateY(-4.8deg) scale(1.021); }
+}
+
+@media (max-width: 760px) {
+  .ocean-beams { opacity: .27; }
+  .ocean-beams i { width: 30vw; filter: blur(22px); }
+  .hero-deck .bow-splash { left: 2%; width: 154px; }
+  .hero-deck .ship-wake { width: 84%; }
+}
