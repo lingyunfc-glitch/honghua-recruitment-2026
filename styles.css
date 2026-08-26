@@ -1378,9 +1378,9 @@ body::after { display: none; }
 }
 .hero-deck .vessel-card img {
   z-index: 5;
-  right: -6%;
-  bottom: -18%;
-  width: 112%;
+  right: -2%;
+  bottom: -14%;
+  width: 104%;
   height: auto;
   max-height: none;
   object-fit: contain;
@@ -1435,6 +1435,7 @@ body::after { display: none; }
   transform: rotate(-3deg);
 }
 .hero-deck .bow-splash b { border-width: 10px; }
+.hero-deck .bow-splash b { display: none; }
 
 @keyframes ship-breakout-3d {
   0%, 100% { transform: perspective(1050px) translate3d(0, 2px, 18px) rotateX(.6deg) rotateY(-3.2deg) scale(1); }
