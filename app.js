@@ -2,10 +2,11 @@ const API_BASE = "https://api.zhangxiaolei.top";
 const SNAPSHOT_URL = "./data.json";
 const TOKEN_KEY = "hh_recruitment_editor_token";
 const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
+const MOTION_KEY = "hh_recruitment_motion_mode";
 
 const stages = [
   ["suitableCount", "合适人选"],
-  ["interviewCount", "已面试/确认"],
+  ["interviewCount", "已面试"],
   ["salaryCount", "薪酬谈判"],
   ["offerCount", "已发Offer"],
   ["onboardCount", "已到岗"],
@@ -13,13 +14,15 @@ const stages = [
 
 const state = {
   items: [],
-  tab: "board",
+  tab: "overview",
   canEdit: false,
   department: "全部部门",
   recruitmentType: "全部方式",
+  progress: "全部进展",
   query: "",
   loading: true,
   error: "",
+  motion: window.localStorage.getItem(MOTION_KEY) === "dynamic" ? "dynamic" : "meeting",
 };
 
 const formatter = new Intl.DateTimeFormat("zh-CN", {
@@ -36,9 +39,11 @@ const content = document.querySelector("#content");
 const overlayRoot = document.querySelector("#overlay-root");
 const notice = document.querySelector("#notice");
 const latestTime = document.querySelector("#latest-time");
-const boardTab = document.querySelector("#board-tab");
-const tableTab = document.querySelector("#table-tab");
+const overviewTab = document.querySelector("#overview-tab");
+const positionsTab = document.querySelector("#positions-tab");
 const adminButton = document.querySelector("#admin-button");
+const meetingButton = document.querySelector("#meeting-mode");
+const dynamicButton = document.querySelector("#dynamic-mode");
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -70,7 +75,7 @@ function cachePublicItems(items) {
   try {
     window.localStorage.setItem(PUBLIC_CACHE_KEY, JSON.stringify(publicItems(items)));
   } catch {
-    // Local storage is only an immediate-display fallback; sync still works without it.
+    // Local storage is only an immediate-display fallback.
   }
 }
 
@@ -105,7 +110,7 @@ async function api(path, options = {}) {
   return fetch(`${API_BASE}${path}`, { ...options, headers, cache: "no-store" });
 }
 
-function showNotice(message, duration = 3000) {
+function showNotice(message, duration = 3200) {
   notice.textContent = message;
   notice.classList.remove("hidden");
   window.setTimeout(() => notice.classList.add("hidden"), duration);
@@ -115,124 +120,199 @@ function total(key, rows = state.items) {
   return rows.reduce((sum, item) => sum + Number(item[key] || 0), 0);
 }
 
-function statusTone(status) {
+function clampPercent(value, maximum) {
+  return maximum ? Math.min(100, Math.max(0, Math.round((value / maximum) * 100))) : 0;
+}
+
+function statusTone(status = "") {
   if (status.includes("完成") || status.includes("到岗")) return "green";
-  if (status.includes("Offer") || status.includes("薪酬")) return "purple";
+  if (status.includes("Offer") || status.includes("薪酬")) return "orange";
   if (status === "待更新") return "gray";
   return "blue";
+}
+
+function iconSvg(kind) {
+  const icons = {
+    wind: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 10v42M32 24L16 15M32 24l17-10M32 24l-2 19M21 54h22M14 56h36"/><circle cx="32" cy="24" r="4"/></svg>',
+    rig: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 54h28M22 54l7-38h8l7 38M25 38h14M27 27h10M20 46h24M29 16l4-8 4 8"/></svg>',
+    ship: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 39h45l-8 13H19zM21 39V25h25v14M27 25v-9h12v9M14 55c6 3 11 3 17 0 6 3 11 3 18 0"/></svg>',
+    beacon: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M23 54h18M27 54l3-31h4l3 31M25 38h14M26 30h12M32 13v-5M21 17l-5-4M43 17l5-4"/><path d="M19 48c8 4 18 4 26 0"/></svg>',
+  };
+  return icons[kind] || icons.ship;
 }
 
 function syncHeader() {
   const latest = state.items.map((item) => item.updatedAt).filter(Boolean).sort().at(-1);
   latestTime.textContent = formatTime(latest || null);
-  boardTab.classList.toggle("active", state.tab === "board");
-  tableTab.classList.toggle("active", state.tab === "table");
-  adminButton.className = `admin-login${state.canEdit ? " edit-active" : ""}`;
-  adminButton.textContent = state.canEdit ? "✓ 编辑模式 · 退出" : "输入密码编辑";
+  overviewTab.classList.toggle("active", state.tab === "overview");
+  positionsTab.classList.toggle("active", state.tab === "positions");
+  adminButton.classList.toggle("edit-active", state.canEdit);
+  adminButton.textContent = state.canEdit ? "编辑模式 · 退出" : "输入密码编辑";
+  document.body.classList.toggle("dynamic-mode", state.motion === "dynamic");
+  document.body.classList.toggle("meeting-mode", state.motion !== "dynamic");
+  meetingButton.classList.toggle("active", state.motion !== "dynamic");
+  dynamicButton.classList.toggle("active", state.motion === "dynamic");
 }
 
-function renderBoard() {
+function metricCard(kind, label, value, note, accent = "blue") {
+  return `<article class="metric-card ripple-card ${accent}" tabindex="0">
+    <div class="metric-icon">${iconSvg(kind)}</div>
+    <div><span>${label}</span><strong>${value}<em>人</em></strong><small>${note}</small></div>
+  </article>`;
+}
+
+function renderOverview() {
   const planned = total("plannedCount");
+  const suitable = total("suitableCount");
+  const interviewed = total("interviewCount");
   const offers = total("offerCount");
   const onboarded = total("onboardCount");
-  const remaining = total("remainingCount");
-  const socialPlanned = state.items.filter((item) => item.recruitmentType === "社会招聘").reduce((sum, item) => sum + item.plannedCount, 0);
-  const partnerPlanned = state.items.filter((item) => item.recruitmentType === "协力人员").reduce((sum, item) => sum + item.plannedCount, 0);
-  const departmentRows = [...new Set(state.items.map((item) => item.department))]
-    .map((name) => ({
-      name,
-      planned: total("plannedCount", state.items.filter((item) => item.department === name)),
-      offers: total("offerCount", state.items.filter((item) => item.department === name)),
-      onboarded: total("onboardCount", state.items.filter((item) => item.department === name)),
-    }))
-    .sort((a, b) => b.planned - a.planned);
-  const maxDepartmentPlan = Math.max(...departmentRows.map((row) => row.planned), 1);
-  const departmentBar = (tone, label, value) => {
-    const width = Math.min(100, value / maxDepartmentPlan * 100);
-    const edgeClass = width > 72 ? " edge" : "";
-    const focus = value > 0 ? ' tabindex="0"' : "";
-    return `<i class="bar ${tone}${edgeClass}" style="width:${width}%" data-tooltip="${label}：${value} 人" aria-label="${label} ${value} 人"${focus}></i>`;
-  };
+  const socialPlanned = total("plannedCount", state.items.filter((item) => item.recruitmentType === "社会招聘"));
+  const partnerPlanned = planned - socialPlanned;
+  const focusItems = [...state.items]
+    .sort((a, b) => Number(b.remainingCount || 0) - Number(a.remainingCount || 0) || Number(b.plannedCount || 0) - Number(a.plannedCount || 0))
+    .slice(0, 6);
 
   content.innerHTML = `
-    <section class="kpis">
-      <article class="dark" tabindex="0"><span>计划补充</span><b>${planned}</b><small>社会招聘${socialPlanned} · 协力人员${partnerPlanned}</small></article>
-      <article tabindex="0"><span>已有合适人选</span><b>${total("suitableCount")}</b><small>人</small></article>
-      <article tabindex="0"><span>已发Offer</span><b>${offers}</b><small>完成率 ${planned ? Math.round(offers / planned * 100) : 0}%</small></article>
-      <article tabindex="0"><span>已到岗</span><b>${onboarded}</b><small>人</small></article>
-      <article class="warn" tabindex="0"><span>剩余缺口</span><b>${remaining}</b><small>按已发Offer计算</small></article>
-    </section>
-    <section class="panel">
-      <div class="panelhead"><h2>招聘进度</h2><span>各阶段累计人数</span></div>
-      <div class="funnel">${stages.map(([key, label], index) => {
-        const value = total(key);
-        const width = planned ? Math.min(100, value / planned * 100) : 0;
-        return `<article tabindex="0" aria-label="${label} ${value} 人"><small>0${index + 1}</small><span>${label}</span><b>${value}<em>人</em></b><div><i style="width:${width}%"></i></div></article>`;
-      }).join("")}</div>
-    </section>
-    <section class="grid">
-      <article class="panel department-panel">
-        <div class="panelhead"><h2>各部门招聘进度</h2><span>计划 / Offer / 到岗</span></div>
-        <div class="bars">${departmentRows.map((row) => `<div class="bar-row" tabindex="0" data-summary="计划 ${row.planned} · Offer ${row.offers} · 到岗 ${row.onboarded}" aria-label="${escapeHtml(row.name)}：计划 ${row.planned} 人，Offer ${row.offers} 人，到岗 ${row.onboarded} 人"><span>${escapeHtml(row.name)}</span><div class="bar-track">${departmentBar("p", "计划", row.planned)}${departmentBar("o", "Offer", row.offers)}${departmentBar("a", "到岗", row.onboarded)}</div><b>${row.planned}</b></div>`).join("")}</div>
-      </article>
-      <article class="panel composition-panel">
-        <div class="panelhead"><h2>补充方式</h2><span>计划构成</span></div>
-        <div class="split">
-          <div class="donut" tabindex="0" aria-label="计划人数 ${planned} 人，其中社会招聘 ${socialPlanned} 人，协力人员 ${partnerPlanned} 人" style="background:radial-gradient(circle,#fff 0 53%,transparent 54%),conic-gradient(#75a6d2 0 ${planned ? socialPlanned / planned * 100 : 0}%,#69b9ae 0 100%)"><b>${planned}</b><small>计划人数</small></div>
-          <div><p tabindex="0"><i class="social"></i><b>社会招聘</b><span>${socialPlanned}人 · ${planned ? Math.round(socialPlanned / planned * 100) : 0}%</span></p><p tabindex="0"><i class="partner"></i><b>协力人员</b><span>${partnerPlanned}人 · ${planned ? Math.round(partnerPlanned / planned * 100) : 0}%</span></p></div>
+    <section class="overview-grid">
+      <article class="overview-summary">
+        <div class="section-kicker">RECRUITMENT OVERVIEW</div>
+        <h1>招聘进度总览</h1>
+        <p class="overview-lead">会议模式突出核心数字，现场一眼看清计划、储备、面试与Offer转化。</p>
+        <div class="metrics">
+          ${metricCard("wind", "计划补充", planned, `社会招聘 ${socialPlanned} · 协力人员 ${partnerPlanned}`, "orange")}
+          ${metricCard("rig", "合适人员", suitable, `人才储备率 ${clampPercent(suitable, planned)}%`)}
+          ${metricCard("ship", "已面试", interviewed, `面试推进率 ${clampPercent(interviewed, planned)}%`)}
+          ${metricCard("beacon", "已发Offer", offers, `到岗 ${onboarded} 人`, "orange")}
         </div>
       </article>
+
+      <article class="vessel-card ripple-card">
+        <div class="vessel-copy"><span>OFFSHORE ENGINEERING</span><strong>梦想号</strong><small>深海装备 · 向新而行</small></div>
+        <img src="./assets/meng-xiang-hero.webp?v=20260826" alt="宏华海洋梦想号海工船" />
+        <div class="waterline" aria-hidden="true"><i></i><i></i><i></i></div>
+      </article>
+    </section>
+
+    <section class="flow-panel ripple-card">
+      <div class="panel-heading"><div><span>FLOW</span><h2>招聘流程进度</h2></div><b>当前重点：推动 Offer 转化到岗</b></div>
+      <div class="flow-track">
+        <div class="flow-ribbon" aria-hidden="true"></div>
+        ${stages.map(([key, label], index) => {
+          const value = total(key);
+          return `<article class="flow-node ${index === 2 ? "focus" : ""}" tabindex="0" aria-label="${label} ${value} 人">
+            <span>0${index + 1}</span><strong>${value}</strong><small>${label}</small><em>${clampPercent(value, planned)}%</em>
+          </article>`;
+        }).join("")}
+      </div>
+    </section>
+
+    <section class="priority-panel">
+      <div class="panel-heading"><div><span>POSITION FOCUS</span><h2>重点岗位推进</h2></div><button id="view-all-positions" type="button">查看全部岗位 →</button></div>
+      <div class="priority-grid">
+        ${focusItems.map((item) => `<button class="priority-item ripple-card" data-position-id="${item.id}" type="button">
+          <span class="priority-rank">${String(item.id).padStart(2, "0")}</span>
+          <div><small>${escapeHtml(item.department)} · ${escapeHtml(item.detail)}</small><strong>${escapeHtml(item.position)}</strong></div>
+          <mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark>
+          <b><em>${item.remainingCount}</em> 人缺口</b>
+        </button>`).join("")}
+      </div>
     </section>`;
+
+  document.querySelector("#view-all-positions").addEventListener("click", () => {
+    state.tab = "positions";
+    render();
+  });
+  document.querySelectorAll("[data-position-id]").forEach((button) => button.addEventListener("click", () => {
+    const item = state.items.find((row) => row.id === Number(button.dataset.positionId));
+    state.tab = "positions";
+    state.query = item?.position || "";
+    render();
+  }));
+  bindRippleCards();
 }
 
 function filteredItems() {
   return state.items.filter((item) =>
     (state.department === "全部部门" || item.department === state.department)
     && (state.recruitmentType === "全部方式" || item.recruitmentType === state.recruitmentType)
-    && `${item.department}${item.position}${item.detail}`.includes(state.query),
+    && (state.progress === "全部进展" || item.currentProgress === state.progress)
+    && `${item.department}${item.position}${item.detail}`.toLowerCase().includes(state.query.trim().toLowerCase()),
   );
 }
 
-function renderTable(focusSearch = false, cursor = null) {
+function stageRail(item) {
+  const railStages = [["plannedCount", "计划"], ...stages];
+  return `<div class="stage-rail">${railStages.map(([key, label], index) => {
+    const active = Number(item[key] || 0) > 0;
+    return `<div class="stage-step ${active ? "active" : ""}"><span>${item[key] || 0}</span><small>${label}</small>${index < railStages.length - 1 ? "<i></i>" : ""}</div>`;
+  }).join("")}</div>`;
+}
+
+function renderPositions(focusSearch = false, cursor = null) {
   const departments = ["全部部门", ...new Set(state.items.map((item) => item.department))];
+  const progressValues = ["全部进展", ...new Set(state.items.map((item) => item.currentProgress))];
   const filtered = filteredItems();
+
   content.innerHTML = `
-    <section class="panel tablepanel">
-      <div class="toolbar"><div><h2>招聘进度表</h2><span>共 ${filtered.length} 条记录</span></div><div>
-        <input id="search-input" placeholder="搜索岗位或方向" value="${escapeHtml(state.query)}" />
-        <select id="department-select">${departments.map((name) => `<option${name === state.department ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
-        <select id="type-select"><option${state.recruitmentType === "全部方式" ? " selected" : ""}>全部方式</option><option${state.recruitmentType === "社会招聘" ? " selected" : ""}>社会招聘</option><option${state.recruitmentType === "协力人员" ? " selected" : ""}>协力人员</option></select>
-      </div></div>
-      <div class="privacy">🔒 ${state.canEdit ? "编辑模式：点击每行左侧“更新”按钮填写计划、进度和具体人员姓名" : "公开视图：具体人员姓名已隐藏，数据只读"}</div>
-      <div class="scroll"><table><thead><tr><th>序号</th><th>部门/岗位</th><th>细分方向/批次</th><th>补充方式</th>${state.canEdit ? "<th>更新</th>" : ""}<th>计划</th>${stages.map(([, label]) => `<th>${label}</th>`).join("")}<th>剩余缺口</th><th>当前进度</th><th>具体人员姓名</th><th>最后更新时间</th></tr></thead>
-      <tbody>${filtered.map((item) => `<tr><td>${String(item.id).padStart(2, "0")}</td><td><b>${escapeHtml(item.position)}</b><small>${escapeHtml(item.department)}</small></td><td>${escapeHtml(item.detail)}</td><td><label class="${item.recruitmentType === "协力人员" ? "partner" : ""}">${escapeHtml(item.recruitmentType)}</label></td>${state.canEdit ? `<td><button class="edit" data-edit-id="${item.id}">更新</button></td>` : ""}<td><b>${item.plannedCount}</b></td>${stages.map(([key]) => `<td>${item[key]}</td>`).join("")}<td class="gap">${item.remainingCount}</td><td><mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark></td><td>${item.candidateNames === null ? "已隐藏" : escapeHtml(item.candidateNames || "—")}</td><td>${formatTime(item.updatedAt)}</td></tr>`).join("")}</tbody></table></div>
+    <section class="positions-head">
+      <div><span>POSITION PROGRESS</span><h1>岗位进度</h1><p>按岗位查看招聘链路；${state.canEdit ? "当前已进入编辑模式，可直接更新数据。" : "公开视图隐藏人员姓名，数据只读。"}</p></div>
+      <div class="records"><strong>${filtered.length}</strong><span>条岗位记录</span></div>
+    </section>
+    <section class="filter-bar">
+      <label class="search-field"><span aria-hidden="true">⌕</span><input id="search-input" placeholder="搜索岗位、方向或部门" value="${escapeHtml(state.query)}" /></label>
+      <select id="department-select" aria-label="筛选部门">${departments.map((name) => `<option${name === state.department ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
+      <select id="type-select" aria-label="筛选补充方式"><option${state.recruitmentType === "全部方式" ? " selected" : ""}>全部方式</option><option${state.recruitmentType === "社会招聘" ? " selected" : ""}>社会招聘</option><option${state.recruitmentType === "协力人员" ? " selected" : ""}>协力人员</option></select>
+      <select id="progress-select" aria-label="筛选进展">${progressValues.map((name) => `<option${name === state.progress ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
+      <span class="privacy-badge">${state.canEdit ? "● 可编辑" : "🔒 公开只读"}</span>
+    </section>
+    <section class="position-grid">
+      ${filtered.length ? filtered.map((item) => `<article class="position-card ripple-card" data-card-id="${item.id}">
+        <div class="position-card-top">
+          <div class="position-symbol">${iconSvg(item.position.includes("船") ? "ship" : item.department.includes("技术") ? "wind" : item.department.includes("安全") ? "beacon" : "rig")}</div>
+          <div class="position-title"><span>${escapeHtml(item.department)} · ${escapeHtml(item.recruitmentType)}</span><h2>${escapeHtml(item.position)}</h2><p>${escapeHtml(item.detail)}</p></div>
+          <mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark>
+        </div>
+        ${stageRail(item)}
+        <div class="position-foot">
+          <div class="gap-block"><span>剩余缺口</span><strong>${item.remainingCount}<em>人</em></strong></div>
+          <div class="position-meta"><span>更新时间 ${formatTime(item.updatedAt)}</span>${state.canEdit ? `<span class="candidate-line">人员：${escapeHtml(item.candidateNames || "尚未填写")}</span>` : ""}</div>
+          ${state.canEdit ? `<button class="edit-button" data-edit-id="${item.id}" type="button">更新数据</button>` : ""}
+        </div>
+      </article>`).join("") : '<div class="empty-state">没有符合当前筛选条件的岗位</div>'}
     </section>`;
 
   const searchInput = document.querySelector("#search-input");
   searchInput.addEventListener("input", (event) => {
     const position = event.target.selectionStart;
     state.query = event.target.value;
-    renderTable(true, position);
+    renderPositions(true, position);
   });
-  document.querySelector("#department-select").addEventListener("change", (event) => {
-    state.department = event.target.value;
-    renderTable();
-  });
-  document.querySelector("#type-select").addEventListener("change", (event) => {
-    state.recruitmentType = event.target.value;
-    renderTable();
-  });
+  document.querySelector("#department-select").addEventListener("change", (event) => { state.department = event.target.value; renderPositions(); });
+  document.querySelector("#type-select").addEventListener("change", (event) => { state.recruitmentType = event.target.value; renderPositions(); });
+  document.querySelector("#progress-select").addEventListener("change", (event) => { state.progress = event.target.value; renderPositions(); });
   document.querySelectorAll("[data-edit-id]").forEach((button) => button.addEventListener("click", () => openEditor(Number(button.dataset.editId))));
+  bindRippleCards();
   if (focusSearch) {
     searchInput.focus();
     if (cursor !== null) searchInput.setSelectionRange(cursor, cursor);
   }
 }
 
+function bindRippleCards() {
+  document.querySelectorAll(".ripple-card").forEach((card) => {
+    card.addEventListener("pointermove", (event) => {
+      const box = card.getBoundingClientRect();
+      card.style.setProperty("--pointer-x", `${event.clientX - box.left}px`);
+      card.style.setProperty("--pointer-y", `${event.clientY - box.top}px`);
+    });
+  });
+}
+
 function render() {
   syncHeader();
   if (state.loading) {
-    content.innerHTML = '<div class="loading">正在读取招聘进度…</div>';
+    content.innerHTML = '<div class="loading"><i></i><span>正在读取招聘进度…</span></div>';
     return;
   }
   if (state.error) {
@@ -240,7 +320,7 @@ function render() {
     document.querySelector("#retry-button").addEventListener("click", load);
     return;
   }
-  if (state.tab === "board") renderBoard(); else renderTable();
+  if (state.tab === "overview") renderOverview(); else renderPositions();
 }
 
 async function readData() {
@@ -253,10 +333,9 @@ async function readData() {
       return data;
     } catch {
       window.sessionStorage.removeItem(TOKEN_KEY);
-      showNotice("编辑后台暂时无法连接，已自动切换为公开只读模式", 4500);
+      showNotice("编辑后台暂时无法连接，已切换为公开只读模式", 4500);
     }
   }
-
   const response = await fetch(`${SNAPSHOT_URL}?t=${Date.now()}`, { cache: "no-store" });
   const data = await response.json();
   if (!response.ok || !data.items) throw new Error(data.error || "读取失败");
@@ -285,12 +364,11 @@ function closeOverlay() {
 }
 
 function openLogin() {
-  overlayRoot.innerHTML = `<div class="backdrop"><form class="login-modal"><button type="button" class="close">×</button><div class="login-icon">✦</div><h2>进入编辑模式</h2><p>请输入招聘进度表编辑密码</p><label><span>编辑密码</span><input name="password" type="password" inputmode="numeric" autofocus autocomplete="current-password" placeholder="请输入密码" /></label><div id="login-error" class="login-error hidden"></div><button class="login-submit">确认进入</button><small>登录状态保留8小时，关闭浏览器后自动退出。</small></form></div>`;
+  overlayRoot.innerHTML = `<div class="backdrop"><form class="login-modal"><button type="button" class="close" aria-label="关闭">×</button><div class="login-icon">⌁</div><small>SECURE EDITING</small><h2>进入编辑模式</h2><p>验证后可更新岗位计划、各阶段人数和人员姓名。</p><label><span>编辑密码</span><input name="password" type="password" autofocus autocomplete="current-password" placeholder="请输入密码" /></label><div id="login-error" class="login-error hidden"></div><button class="login-submit">确认进入</button><em>登录状态保留 8 小时，关闭浏览器后自动退出。</em></form></div>`;
   const backdrop = overlayRoot.querySelector(".backdrop");
   const form = overlayRoot.querySelector("form");
-  const close = overlayRoot.querySelector(".close");
   const input = overlayRoot.querySelector("input");
-  close.addEventListener("click", closeOverlay);
+  overlayRoot.querySelector(".close").addEventListener("click", closeOverlay);
   backdrop.addEventListener("mousedown", (event) => event.target === backdrop && closeOverlay());
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -310,7 +388,9 @@ function openLogin() {
       window.sessionStorage.setItem(TOKEN_KEY, data.token);
       closeOverlay();
       await load();
-      showNotice("已进入编辑模式，8小时内无需重复输入密码");
+      state.tab = "positions";
+      render();
+      showNotice("已进入编辑模式，可直接更新岗位数据");
     } catch (error) {
       errorBox.textContent = error instanceof Error ? error.message : "登录失败";
       errorBox.classList.remove("hidden");
@@ -324,11 +404,10 @@ function openLogin() {
 function openEditor(id) {
   const item = state.items.find((current) => current.id === id);
   if (!item || !state.canEdit) return;
-  overlayRoot.innerHTML = `<div class="backdrop"><form class="modal"><button type="button" class="close">×</button><small>${escapeHtml(item.department)}</small><h2>${escapeHtml(item.position)} · ${escapeHtml(item.detail)}</h2><p>请填写本岗位最新招聘进度</p><div class="fields"><label class="planned-field"><span>计划人数</span><input name="plannedCount" type="number" min="0" value="${item.plannedCount}" required /></label>${stages.map(([key, label]) => `<label><span>${label}</span><input name="${key}" type="number" min="0" value="${item[key]}" required /></label>`).join("")}</div><label class="names"><span>具体人员姓名</span><textarea name="candidateNames" rows="3" placeholder="多人可用顿号或逗号分隔">${escapeHtml(item.candidateNames || "")}</textarea></label><div class="hint">剩余缺口和当前进度由系统自动计算；保存后自动生成最后更新时间。</div><div class="actions"><button class="cancel" type="button">取消</button><button class="save">保存更新</button></div></form></div>`;
+  overlayRoot.innerHTML = `<div class="backdrop"><form class="edit-modal"><button type="button" class="close" aria-label="关闭">×</button><small>${escapeHtml(item.department)} · ${escapeHtml(item.recruitmentType)}</small><h2>${escapeHtml(item.position)}</h2><p>${escapeHtml(item.detail)}｜填写最新招聘进度</p><div class="fields"><label class="planned-field"><span>计划人数</span><input name="plannedCount" type="number" min="0" value="${item.plannedCount}" required /></label>${stages.map(([key, label]) => `<label><span>${label}</span><input name="${key}" type="number" min="0" value="${item[key]}" required /></label>`).join("")}</div><label class="names"><span>具体人员姓名</span><textarea name="candidateNames" rows="3" placeholder="多人可用顿号或逗号分隔">${escapeHtml(item.candidateNames || "")}</textarea></label><div class="hint">剩余缺口和当前进度由系统自动计算，保存后自动生成更新时间。</div><div class="actions"><button class="cancel" type="button">取消</button><button class="save">保存更新</button></div></form></div>`;
   const backdrop = overlayRoot.querySelector(".backdrop");
   const form = overlayRoot.querySelector("form");
-  const close = overlayRoot.querySelector(".close");
-  close.addEventListener("click", closeOverlay);
+  overlayRoot.querySelector(".close").addEventListener("click", closeOverlay);
   form.querySelector(".cancel").addEventListener("click", closeOverlay);
   backdrop.addEventListener("mousedown", (event) => event.target === backdrop && closeOverlay());
   form.addEventListener("submit", async (event) => {
@@ -355,7 +434,7 @@ function openEditor(id) {
       cachePublicItems(state.items);
       closeOverlay();
       render();
-      showNotice("进度已保存；退出编辑后会立即保留显示，公网数据约5分钟内同步", 5000);
+      showNotice("岗位进度已保存；公网数据约 5 分钟内同步", 5000);
     } catch (error) {
       const message = error instanceof Error ? error.message : "保存失败";
       showNotice(message, 4000);
@@ -373,8 +452,16 @@ function openEditor(id) {
   });
 }
 
-boardTab.addEventListener("click", () => { state.tab = "board"; render(); });
-tableTab.addEventListener("click", () => { state.tab = "table"; render(); });
+function setMotion(mode) {
+  state.motion = mode;
+  window.localStorage.setItem(MOTION_KEY, mode);
+  syncHeader();
+}
+
+overviewTab.addEventListener("click", () => { state.tab = "overview"; state.query = ""; render(); });
+positionsTab.addEventListener("click", () => { state.tab = "positions"; render(); });
+meetingButton.addEventListener("click", () => setMotion("meeting"));
+dynamicButton.addEventListener("click", () => setMotion("dynamic"));
 document.querySelector("#refresh-button").addEventListener("click", load);
 adminButton.addEventListener("click", async () => {
   if (state.canEdit) {
@@ -383,7 +470,7 @@ adminButton.addEventListener("click", async () => {
     state.items = publicItems(state.items);
     cachePublicItems(state.items);
     render();
-    showNotice("已退出编辑模式；刚保存的数据会保留显示，公网数据约5分钟内同步", 5000);
+    showNotice("已退出编辑模式");
   } else {
     openLogin();
   }
