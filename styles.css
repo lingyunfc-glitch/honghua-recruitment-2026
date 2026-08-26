@@ -1378,9 +1378,9 @@ body::after { display: none; }
 }
 .hero-deck .vessel-card img {
   z-index: 5;
-  right: -2%;
-  bottom: -14%;
-  width: 104%;
+  right: 2%;
+  bottom: -8%;
+  width: 90%;
   height: auto;
   max-height: none;
   object-fit: contain;
@@ -1453,7 +1453,7 @@ body::after { display: none; }
 
 @media (max-width: 1180px) {
   .hero-deck .vessel-card { min-height: 276px; }
-  .hero-deck .vessel-card img { right: -5%; bottom: -18%; width: 111%; }
+  .hero-deck .vessel-card img { right: 2%; bottom: -9%; width: 96%; }
   .hero-deck .bow-splash { left: 4%; }
 }
 @media (max-width: 760px) {
