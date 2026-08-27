@@ -307,6 +307,15 @@ function renderPositions(focusSearch = false, cursor = null) {
   const departments = ["全部部门", ...new Set(state.items.map((item) => item.department))];
   const progressValues = ["全部进展", ...new Set(state.items.map((item) => item.currentProgress))];
   const filtered = filteredItems();
+  const filteredTotals = {
+    plannedCount: total("plannedCount", filtered),
+    suitableCount: total("suitableCount", filtered),
+    interviewCount: total("interviewCount", filtered),
+    salaryCount: total("salaryCount", filtered),
+    offerCount: total("offerCount", filtered),
+    onboardCount: total("onboardCount", filtered),
+    remainingCount: total("remainingCount", filtered),
+  };
 
   content.innerHTML = `
     <section class="positions-head">
@@ -338,7 +347,22 @@ function renderPositions(focusSearch = false, cursor = null) {
             <td><mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark></td>
             <td class="time-cell">${formatTime(item.updatedAt)}</td>
             ${state.canEdit ? `<td><button class="edit-button" data-edit-id="${item.id}" type="button">更新</button></td>` : ""}
-          </tr>`).join("") : '<tr><td class="empty-cell" colspan="13">没有符合当前筛选条件的岗位</td></tr>'}</tbody>
+          </tr>`).join("") : '<tr><td class="empty-cell" colspan="13">没有符合当前筛选条件的岗位</td></tr>'}
+          <tr>
+            <td class="row-number">合计</td>
+            <td class="position-cell"><strong>当前筛选合计</strong><span>${filtered.length} 条岗位记录</span></td>
+            <td><label class="type-chip">—</label></td>
+            <td class="number planned">${filteredTotals.plannedCount}</td>
+            <td class="number">${filteredTotals.suitableCount}</td>
+            <td class="number">${filteredTotals.interviewCount}</td>
+            <td class="number">${filteredTotals.salaryCount}</td>
+            <td class="number offer">${filteredTotals.offerCount}</td>
+            <td class="number onboard">${filteredTotals.onboardCount}</td>
+            <td class="number gap-number">${filteredTotals.remainingCount}</td>
+            <td>—</td>
+            <td class="time-cell">—</td>
+            ${state.canEdit ? "<td>—</td>" : ""}
+          </tr></tbody>
         </table>
       </div>
     </section>`;
@@ -841,3 +865,4 @@ initOceanEffects();
 initPerformanceGuard();
 void load();
 window.setInterval(() => void load(), 60000);
+
