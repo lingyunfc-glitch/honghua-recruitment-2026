@@ -1998,3 +1998,106 @@ body::before {
   .hero-deck .bow-splash { left: 2%; width: 154px; }
   .hero-deck .ship-wake { width: 84%; }
 }
+
+/* Adaptive motion: preserve the ocean identity while protecting office PCs. */
+.metric-card,
+.overview-position-card,
+.flow-node,
+.priority-panel,
+.positions-head,
+.filter-bar,
+.positions-table-panel { contain: paint; }
+
+.page-inactive *,
+.page-inactive *::before,
+.page-inactive *::after { animation-play-state: paused !important; }
+
+.performance-balanced .kinetic-light i {
+  opacity: .3;
+  filter: blur(18px) saturate(1.1);
+  animation-duration: 18s;
+}
+.performance-balanced .ocean-beams { opacity: .3; }
+.performance-balanced .ocean-beams i {
+  filter: blur(10px);
+  animation-duration: 16s;
+}
+.performance-balanced .ocean-beams i:nth-child(n+4),
+.performance-balanced .marine-decor i:nth-child(n+6) { display: none; }
+.performance-balanced .topbar,
+.performance-balanced .metric-card,
+.performance-balanced .flow-panel,
+.performance-balanced .priority-panel,
+.performance-balanced .overview-position-card,
+.performance-balanced .positions-head,
+.performance-balanced .filter-bar,
+.performance-balanced .positions-table-panel {
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+}
+.performance-balanced .flow-node,
+.performance-balanced .recruitment-table th {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.performance-balanced .hero-deck .metric-card,
+.performance-balanced .overview-position-card { animation: none; }
+.performance-balanced .positions-head::after,
+.performance-balanced .filter-bar::after,
+.performance-balanced .positions-table-panel::before { animation: none; opacity: 0; }
+.performance-balanced .ripple-card { transform: none; }
+.performance-balanced .flow-panel { animation-duration: 12s; }
+.performance-balanced .flow-node { animation-duration: 5.4s; }
+
+.performance-lite body { animation-duration: 28s; }
+.performance-lite .kinetic-light,
+.performance-lite .ocean-beams,
+.performance-lite .marine-decor { display: none; }
+.performance-lite .ocean-ambient { opacity: .38; }
+.performance-lite .ocean-ambient i:nth-child(n+2) { display: none; }
+.performance-lite #ocean-effects { opacity: .58; }
+.performance-lite .topbar,
+.performance-lite .metric-card,
+.performance-lite .flow-panel,
+.performance-lite .priority-panel,
+.performance-lite .overview-position-card,
+.performance-lite .positions-head,
+.performance-lite .filter-bar,
+.performance-lite .positions-table-panel,
+.performance-lite .flow-node,
+.performance-lite .recruitment-table th {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.performance-lite .topbar { background: rgba(248,252,255,.96); }
+.performance-lite .metric-card,
+.performance-lite .flow-panel,
+.performance-lite .priority-panel,
+.performance-lite .overview-position-card,
+.performance-lite .positions-head,
+.performance-lite .filter-bar,
+.performance-lite .positions-table-panel { background-color: rgba(247,252,255,.94); }
+.performance-lite .hero-deck .metric-card,
+.performance-lite .hero-deck .metric-card::before,
+.performance-lite .overview-position-card,
+.performance-lite .overview-position-card::before,
+.performance-lite .flow-node,
+.performance-lite .flow-node::before,
+.performance-lite .topbar::before,
+.performance-lite .primary-nav::after,
+.performance-lite .positions-head::after,
+.performance-lite .filter-bar::after,
+.performance-lite .positions-table-panel::before { animation: none; }
+.performance-lite .ripple-card { transform: none; }
+.performance-lite .ripple-card::after { display: none; }
+.performance-lite .flow-panel { animation-duration: 16s; }
+.performance-lite .flow-panel::before { animation-duration: 8s; }
+.performance-lite .flow-ribbon { animation-duration: 3.8s; }
+.performance-lite .flow-ribbon::after { animation-duration: 2.4s; }
+.performance-lite .flow-spark { animation-duration: 5.5s; }
+.performance-lite .hero-deck .vessel-card img { animation-duration: 6.4s; }
+.performance-lite .hero-deck .ship-sea::before,
+.performance-lite .hero-deck .ship-sea::after,
+.performance-lite .hero-deck .ship-wake i,
+.performance-lite .hero-deck .bow-splash::before,
+.performance-lite .hero-deck .bow-splash::after { animation-duration: 6s; }
