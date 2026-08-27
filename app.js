@@ -3,6 +3,36 @@ const SNAPSHOT_URL = "./data.json";
 const TOKEN_KEY = "hh_recruitment_editor_token";
 const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
 
+const MOTION_PROFILES = {
+  full: { fps: 45, dpr: 1.5, currents: 5, motes: 36, tracers: 8, trail: 12, drops: 2, burst: 10 },
+  balanced: { fps: 30, dpr: 1.2, currents: 4, motes: 24, tracers: 5, trail: 6, drops: 1, burst: 5 },
+  lite: { fps: 24, dpr: 1, currents: 3, motes: 12, tracers: 3, trail: 0, drops: 0, burst: 0 },
+};
+
+function detectMotionTier() {
+  const cores = Number(navigator.hardwareConcurrency || 4);
+  const memory = Number(navigator.deviceMemory || 4);
+  const dpr = Number(window.devicePixelRatio || 1);
+  const saveData = Boolean(navigator.connection?.saveData);
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  if (saveData || reducedMotion || cores <= 4 || memory <= 4 || dpr > 1.75 || window.innerWidth < 820) return "lite";
+  if (cores >= 12 && memory >= 8 && dpr <= 1.5) return "full";
+  return "balanced";
+}
+
+const motionState = { tier: detectMotionTier() };
+
+function setMotionTier(tier) {
+  if (!MOTION_PROFILES[tier]) return;
+  document.documentElement.classList.remove("performance-full", "performance-balanced", "performance-lite");
+  document.documentElement.classList.add(`performance-${tier}`);
+  document.documentElement.dataset.motion = tier;
+  motionState.tier = tier;
+  window.dispatchEvent(new CustomEvent("motiontierchange", { detail: tier }));
+}
+
+setMotionTier(motionState.tier);
+
 const stages = [
   ["suitableCount", "合适人选"],
   ["interviewCount", "已面试"],
@@ -331,17 +361,25 @@ function renderPositions(focusSearch = false, cursor = null) {
 }
 
 function bindRippleCards() {
+  if (motionState.tier !== "full") return;
   document.querySelectorAll(".ripple-card").forEach((card) => {
+    let frame = 0;
     card.addEventListener("pointermove", (event) => {
-      const box = card.getBoundingClientRect();
-      const x = event.clientX - box.left;
-      const y = event.clientY - box.top;
-      card.style.setProperty("--pointer-x", `${x}px`);
-      card.style.setProperty("--pointer-y", `${y}px`);
-      card.style.setProperty("--tilt-x", `${((y / box.height) - 0.5) * -2.4}deg`);
-      card.style.setProperty("--tilt-y", `${((x / box.width) - 0.5) * 2.4}deg`);
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        const box = card.getBoundingClientRect();
+        const x = event.clientX - box.left;
+        const y = event.clientY - box.top;
+        card.style.setProperty("--pointer-x", `${x}px`);
+        card.style.setProperty("--pointer-y", `${y}px`);
+        card.style.setProperty("--tilt-x", `${((y / box.height) - 0.5) * -2.4}deg`);
+        card.style.setProperty("--tilt-y", `${((x / box.width) - 0.5) * 2.4}deg`);
+        frame = 0;
+      });
     });
     card.addEventListener("pointerleave", () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      frame = 0;
       card.style.setProperty("--tilt-x", "0deg");
       card.style.setProperty("--tilt-y", "0deg");
     });
@@ -350,25 +388,28 @@ function bindRippleCards() {
 
 function initOceanEffects() {
   const canvas = document.querySelector("#ocean-effects");
-  const context = canvas?.getContext("2d");
+  const context = canvas?.getContext("2d", { alpha: true, desynchronized: true });
   if (!canvas || !context) return;
   let width = 0;
   let height = 0;
   let ratio = 1;
   let lastSpawn = 0;
+  let lastFrame = 0;
+  let animationFrame = 0;
+  let resizeTimer = 0;
   const particles = [];
   const rings = [];
   const motes = [];
   const tracers = [];
   const pointerTrail = [];
-  const currents = Array.from({ length: 5 }, (_, index) => ({
-    phase: index * 1.37,
-    speed: .00028 + index * .000035,
-    amplitude: 8 + index * 2.4,
-  }));
+  let currents = [];
+  let currentGradients = [];
+
+  const profile = () => MOTION_PROFILES[motionState.tier];
 
   const resize = () => {
-    ratio = Math.min(window.devicePixelRatio || 1, 2);
+    const settings = profile();
+    ratio = Math.min(window.devicePixelRatio || 1, settings.dpr);
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = Math.round(width * ratio);
@@ -376,9 +417,22 @@ function initOceanEffects() {
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    currents = Array.from({ length: settings.currents }, (_, index) => ({
+      phase: index * 1.37,
+      speed: .00028 + index * .000035,
+      amplitude: 8 + index * 2.4,
+    }));
+    currentGradients = currents.map((_, index) => {
+      const gradient = context.createLinearGradient(0, 0, width, 0);
+      gradient.addColorStop(0, "rgba(35, 171, 216, 0)");
+      gradient.addColorStop(.14, `rgba(35, 171, 216, ${.045 + index * .008})`);
+      gradient.addColorStop(.48, `rgba(255, 255, 255, ${.07 + index * .008})`);
+      gradient.addColorStop(.78, `rgba(33, 185, 220, ${.05 + index * .008})`);
+      gradient.addColorStop(1, "rgba(35, 171, 216, 0)");
+      return gradient;
+    });
     motes.length = 0;
-    const moteCount = Math.max(20, Math.min(48, Math.round(width / 34)));
-    for (let index = 0; index < moteCount; index += 1) {
+    for (let index = 0; index < settings.motes; index += 1) {
       motes.push({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -389,7 +443,7 @@ function initOceanEffects() {
       });
     }
     tracers.length = 0;
-    for (let index = 0; index < 9; index += 1) {
+    for (let index = 0; index < settings.tracers; index += 1) {
       tracers.push({
         x: Math.random() * width,
         y: height * (.34 + Math.random() * .58),
@@ -402,7 +456,9 @@ function initOceanEffects() {
   };
 
   const addDrop = (x, y, burst = false) => {
-    const count = burst ? 16 : 3;
+    const settings = profile();
+    const count = burst ? settings.burst : settings.drops;
+    if (!count) return;
     for (let index = 0; index < count; index += 1) {
       const angle = burst ? Math.random() * Math.PI * 2 : Math.PI + (Math.random() - 0.5) * 1.1;
       const speed = burst ? 1.2 + Math.random() * 2.8 : 0.35 + Math.random();
@@ -416,35 +472,36 @@ function initOceanEffects() {
         life: 1,
       });
     }
-    if (particles.length > 90) particles.splice(0, particles.length - 90);
+    const particleLimit = motionState.tier === "full" ? 64 : 30;
+    if (particles.length > particleLimit) particles.splice(0, particles.length - particleLimit);
     if (burst) {
       rings.push({ x, y, radius: 8, growth: 1.9, alpha: .5, life: 1 });
-      rings.push({ x, y, radius: 3, growth: 1.32, alpha: .34, life: 1 });
-      rings.push({ x, y, radius: 15, growth: 2.35, alpha: .2, life: 1 });
+      if (motionState.tier === "full") rings.push({ x, y, radius: 15, growth: 2.35, alpha: .2, life: 1 });
     }
-    if (rings.length > 24) rings.splice(0, rings.length - 24);
+    if (rings.length > 10) rings.splice(0, rings.length - 10);
   };
 
   const draw = (time = 0) => {
+    animationFrame = 0;
+    if (document.hidden) return;
+    animationFrame = window.requestAnimationFrame(draw);
+    const interval = 1000 / profile().fps;
+    if (time - lastFrame < interval) return;
+    lastFrame = time - ((time - lastFrame) % interval);
     context.clearRect(0, 0, width, height);
 
     currents.forEach((current, index) => {
       const baseY = height * (.38 + index * .125);
-      const gradient = context.createLinearGradient(0, 0, width, 0);
-      gradient.addColorStop(0, "rgba(35, 171, 216, 0)");
-      gradient.addColorStop(.14, `rgba(35, 171, 216, ${.05 + index * .009})`);
-      gradient.addColorStop(.48, `rgba(255, 255, 255, ${.08 + index * .009})`);
-      gradient.addColorStop(.78, `rgba(33, 185, 220, ${.055 + index * .009})`);
-      gradient.addColorStop(1, "rgba(35, 171, 216, 0)");
       context.beginPath();
-      for (let x = -40; x <= width + 40; x += 24) {
+      const step = motionState.tier === "full" ? 28 : 42;
+      for (let x = -40; x <= width + 40; x += step) {
         const y = baseY
           + Math.sin(x * .008 + time * current.speed + current.phase) * current.amplitude
           + Math.sin(x * .0027 - time * .00019 + index) * 6;
         if (x === -40) context.moveTo(x, y); else context.lineTo(x, y);
       }
       context.lineWidth = .75 + index * .16;
-      context.strokeStyle = gradient;
+      context.strokeStyle = currentGradients[index];
       context.stroke();
     });
 
@@ -470,15 +527,11 @@ function initOceanEffects() {
         tracer.y = height * (.34 + Math.random() * .58);
       }
       const y = tracer.y + Math.sin(time * .0011 + tracer.phase) * 7;
-      const tracerGradient = context.createLinearGradient(tracer.x - tracer.length, y, tracer.x, y);
-      tracerGradient.addColorStop(0, "rgba(27, 171, 221, 0)");
-      tracerGradient.addColorStop(.72, `rgba(41, 194, 226, ${tracer.alpha})`);
-      tracerGradient.addColorStop(1, `rgba(255, 255, 255, ${tracer.alpha * 2.2})`);
       context.beginPath();
       context.moveTo(tracer.x - tracer.length, y + Math.sin(time * .001 + tracer.phase) * 2);
       context.quadraticCurveTo(tracer.x - tracer.length * .42, y - 8, tracer.x, y);
       context.lineWidth = 1.2;
-      context.strokeStyle = tracerGradient;
+      context.strokeStyle = `rgba(41, 194, 226, ${tracer.alpha * 1.35})`;
       context.stroke();
       context.beginPath();
       context.arc(tracer.x, y, 1.5, 0, Math.PI * 2);
@@ -523,15 +576,28 @@ function initOceanEffects() {
       context.fill();
     });
     for (let index = particles.length - 1; index >= 0; index -= 1) if (particles[index].life <= 0) particles.splice(index, 1);
-    window.requestAnimationFrame(draw);
   };
 
-  window.addEventListener("resize", resize, { passive: true });
+  const scheduleResize = () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(resize, 140);
+  };
+
+  window.addEventListener("resize", scheduleResize, { passive: true });
+  window.addEventListener("motiontierchange", resize);
+  document.addEventListener("visibilitychange", () => {
+    document.documentElement.classList.toggle("page-inactive", document.hidden);
+    if (!document.hidden && !animationFrame) animationFrame = window.requestAnimationFrame(draw);
+  });
   window.addEventListener("pointermove", (event) => {
     if (!event.target.closest("main")) return;
-    pointerTrail.push({ x: event.clientX, y: event.clientY, life: 1 });
-    if (pointerTrail.length > 14) pointerTrail.shift();
-    if (performance.now() - lastSpawn < 54) return;
+    const settings = profile();
+    if (settings.trail) {
+      pointerTrail.push({ x: event.clientX, y: event.clientY, life: 1 });
+      if (pointerTrail.length > settings.trail) pointerTrail.shift();
+    }
+    const spawnInterval = motionState.tier === "full" ? 72 : 130;
+    if (performance.now() - lastSpawn < spawnInterval) return;
     lastSpawn = performance.now();
     addDrop(event.clientX, event.clientY);
   }, { passive: true });
@@ -539,10 +605,11 @@ function initOceanEffects() {
     if (event.target.closest("button, .ripple-card")) addDrop(event.clientX, event.clientY, true);
   }, { passive: true });
   resize();
-  draw();
+  animationFrame = window.requestAnimationFrame(draw);
 }
 
 function initSceneParallax() {
+  if (motionState.tier !== "full") return;
   const root = document.documentElement;
   let frame = 0;
   window.addEventListener("pointermove", (event) => {
@@ -557,6 +624,27 @@ function initSceneParallax() {
       frame = 0;
     });
   }, { passive: true });
+}
+
+function initPerformanceGuard() {
+  if (typeof PerformanceObserver !== "function" || motionState.tier === "lite") return;
+  let longTasks = 0;
+  let observer;
+  const start = () => {
+    try {
+      observer = new PerformanceObserver((list) => {
+        longTasks += list.getEntries().filter((entry) => entry.duration >= 70).length;
+        if (longTasks < 4) return;
+        setMotionTier(motionState.tier === "full" ? "balanced" : "lite");
+        observer.disconnect();
+      });
+      observer.observe({ entryTypes: ["longtask"] });
+      window.setTimeout(() => observer?.disconnect(), 9000);
+    } catch {
+      // Older browsers simply keep the initial hardware-based profile.
+    }
+  };
+  window.setTimeout(start, 1800);
 }
 
 function animateRenderedScene() {
@@ -750,5 +838,6 @@ adminButton.addEventListener("click", async () => {
 
 initSceneParallax();
 initOceanEffects();
+initPerformanceGuard();
 void load();
 window.setInterval(() => void load(), 60000);
