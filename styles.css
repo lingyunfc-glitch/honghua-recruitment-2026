@@ -2706,7 +2706,7 @@ body {
 .hero-deck.single-vessel > .metrics {
   grid-column: 1;
   grid-row: 1;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   gap: 13px !important;
 }
 .hero-deck.single-vessel > .vessel-right {
@@ -3341,6 +3341,85 @@ body * {
 }
 .hero-deck .metric-card.teal strong { color: #087d87; }
 .hero-deck .metric-card.teal .metric-icon { color: #0994a0; border-color: rgba(41,176,184,.25); background: linear-gradient(145deg, #fff, rgba(219,247,249,.92)); }
+
+/* Channel-first headline cards: one total plus three independently readable staffing routes. */
+.hero-deck.single-vessel .channel-metric-card {
+  min-height: 240px;
+  padding: 22px 15px 15px;
+}
+.hero-deck.single-vessel .channel-metric-card .metric-copy {
+  width: 100%;
+  height: 100%;
+  align-items: flex-start;
+  padding-right: 0;
+}
+.hero-deck.single-vessel .channel-metric-card .metric-copy > span {
+  padding-right: 50px;
+  font-size: 18px;
+  letter-spacing: .02em;
+}
+.hero-deck.single-vessel .channel-metric-card .metric-copy > strong {
+  margin: 13px 0 16px;
+  font-size: clamp(42px, 3.65vw, 56px);
+}
+.hero-deck.single-vessel .channel-metric-card .metric-copy > strong em {
+  margin-left: 5px;
+  font-size: 14px;
+  letter-spacing: .02em;
+}
+.channel-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  margin-top: auto;
+  overflow: hidden;
+  border: 1px solid rgba(89, 162, 195, .16);
+  border-radius: 13px;
+  background: rgba(255,255,255,.56);
+}
+.channel-card-stats > span {
+  display: flex;
+  min-width: 0;
+  min-height: 55px;
+  padding: 7px 3px 6px !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: inherit !important;
+  font-size: inherit !important;
+  letter-spacing: 0 !important;
+  white-space: normal !important;
+}
+.channel-card-stats > span + span { border-left: 1px solid rgba(89, 162, 195, .15); }
+.channel-card-stats small {
+  min-height: 0 !important;
+  margin: 0 !important;
+  color: #627e97 !important;
+  font-size: 11px !important;
+  font-weight: 700;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+.channel-card-stats b {
+  color: #124f7f;
+  font-size: 23px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.channel-metric-card.green .channel-card-stats b { color: #087b70; }
+.channel-metric-card.coral .channel-card-stats b { color: #b65e22; }
+.channel-metric-card.amber .channel-card-stats b { color: #bd641d; }
+.channel-metric-card .metric-tide { display: none; }
+
+@media (max-width: 900px) {
+  .hero-deck.single-vessel > .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+@media (max-width: 430px) {
+  .hero-deck.single-vessel > .metrics { grid-template-columns: 1fr !important; }
+}
 
 /* Two parallel conversion streams: blue for social recruitment, orange for partner staffing. */
 .conversion-flow-groups { display: grid; gap: 15px; }

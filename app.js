@@ -195,6 +195,20 @@ function metricCard(kind, label, value, note, accent = "blue") {
   </article>`;
 }
 
+function channelMetricCard(kind, label, planned, stats, accent = "blue", overall = false) {
+  return `<article class="metric-card channel-metric-card ripple-card ${accent}" tabindex="0">
+    <div class="metric-icon">${iconSvg(kind)}</div>
+    <div class="metric-copy">
+      <span>${label}</span>
+      <strong>${planned}<em>${overall ? "人" : "人计划"}</em></strong>
+      <div class="channel-card-stats">
+        ${stats.map(([name, value]) => `<span><small>${name}</small><b>${value}</b></span>`).join("")}
+      </div>
+    </div>
+    <i class="metric-tide" aria-hidden="true"></i>
+  </article>`;
+}
+
 function progressFromCounts(row) {
   if (row.onboardCount > 0) return "已到岗";
   if (row.offerCount > 0) return "已发Offer";
@@ -254,13 +268,20 @@ function conversionFlowGroup(rows, recruitmentType, tone) {
 function renderOverview() {
   const recruitmentPlanned = total("plannedCount");
   const overallPlanned = recruitmentPlanned + INTERNAL_COORDINATION.plannedCount;
-  const interviewed = total("interviewCount");
-  const offers = total("offerCount");
-  const onboard = total("onboardCount");
   const socialRows = state.items.filter((item) => item.recruitmentType === "社会招聘");
   const partnerRows = state.items.filter((item) => item.recruitmentType === "协力人员");
   const socialPlanned = total("plannedCount", socialRows);
   const partnerPlanned = total("plannedCount", partnerRows);
+  const socialProgress = {
+    interview: total("interviewCount", socialRows),
+    offer: total("offerCount", socialRows),
+    onboard: total("onboardCount", socialRows),
+  };
+  const partnerProgress = {
+    interview: total("interviewCount", partnerRows),
+    offer: total("offerCount", partnerRows),
+    onboard: total("onboardCount", partnerRows),
+  };
   const departmentFocus = [...new Set(state.items.map((item) => item.department))]
     .map((department) => {
       const rows = state.items.filter((item) => item.department === department);
@@ -290,11 +311,10 @@ function renderOverview() {
   content.innerHTML = `
     <section class="hero-deck single-vessel">
       <div class="metrics">
-          ${metricCard("wind", "计划补充", overallPlanned, `社会招聘 ${socialPlanned} · 内部统筹 ${INTERNAL_COORDINATION.plannedCount} · 协力人员 ${partnerPlanned}`, "amber")}
-          ${metricCard("ship", "已面试", interviewed, "", "blue")}
-          ${metricCard("beacon", "已发Offer", offers, "", "coral")}
-          ${metricCard("onboard", "已到岗", onboard, "", "teal")}
-          ${metricCard("coordination", "内部统筹", INTERNAL_COORDINATION.confirmedCount, `计划 ${INTERNAL_COORDINATION.plannedCount} · 待协调 ${INTERNAL_COORDINATION.pendingCount}`, "green")}
+          ${channelMetricCard("wind", "补充总计划", overallPlanned, [["社会招聘", socialPlanned], ["内部统筹", INTERNAL_COORDINATION.plannedCount], ["协力人员", partnerPlanned]], "amber", true)}
+          ${channelMetricCard("ship", "社会招聘", socialPlanned, [["已面试", socialProgress.interview], ["已发Offer", socialProgress.offer], ["已到岗", socialProgress.onboard]], "blue")}
+          ${channelMetricCard("coordination", "内部统筹", INTERNAL_COORDINATION.plannedCount, [["已明确", INTERNAL_COORDINATION.confirmedCount], ["待协调", INTERNAL_COORDINATION.pendingCount], ["已到岗", INTERNAL_COORDINATION.onboardCount]], "green")}
+          ${channelMetricCard("beacon", "协力人员", partnerPlanned, [["已面试", partnerProgress.interview], ["已发Offer", partnerProgress.offer], ["已到岗", partnerProgress.onboard]], "coral")}
       </div>
 
       <article class="vessel-card vessel-side vessel-right ripple-card">
