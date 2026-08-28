@@ -199,6 +199,17 @@ function overviewRecruitmentGroup(rows, recruitmentType) {
   const groupRows = rows.filter((item) => item.recruitmentType === recruitmentType);
   if (!groupRows.length) return "";
   const tone = recruitmentType === "协力人员" ? "partner" : "social";
+  if (recruitmentType === "协力人员") {
+    return `<section class="overview-recruitment-group partner partner-summary-only">
+      <div class="overview-group-heading"><b>协力人员</b><span>部门汇总</span></div>
+      <div class="partner-big-numbers">
+        <span><small>计划</small><strong>${total("plannedCount", groupRows)}</strong></span>
+        <span><small>已面试</small><strong>${total("interviewCount", groupRows)}</strong></span>
+        <span><small>已发Offer</small><strong>${total("offerCount", groupRows)}</strong></span>
+        <span><small>已到岗</small><strong>${total("onboardCount", groupRows)}</strong></span>
+      </div>
+    </section>`;
+  }
   return `<section class="overview-recruitment-group ${tone}">
     <div class="overview-group-heading"><b>${escapeHtml(recruitmentType)}</b><span>计划 ${total("plannedCount", groupRows)} 人</span></div>
     <div class="overview-role-list">${groupRows.map((item) => {
