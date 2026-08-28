@@ -332,10 +332,11 @@ function renderPositions(focusSearch = false, cursor = null) {
     <section class="positions-table-panel ripple-card">
       <div class="table-scroll">
         <table class="recruitment-table">
-          <thead><tr><th>序号</th><th class="position-column">部门 / 岗位</th><th>补充方式</th><th>计划</th><th>合适人选</th><th>已面试</th><th>薪酬谈判</th><th>已发Offer</th><th>已到岗</th><th>剩余缺口</th><th>当前进度</th><th>最后更新</th>${state.canEdit ? "<th>操作</th>" : ""}</tr></thead>
+          <thead><tr><th>序号</th><th class="department-column">部门</th><th class="position-column">岗位</th><th>补充方式</th><th>计划</th><th>合适人选</th><th>已面试</th><th>薪酬谈判</th><th>已发Offer</th><th>已到岗</th><th>剩余缺口</th><th>当前进度</th><th>最后更新</th>${state.canEdit ? "<th>操作</th>" : ""}</tr></thead>
           <tbody>${filtered.length ? filtered.map((item, index) => `<tr>
             <td class="row-number">${String(index + 1).padStart(2, "0")}</td>
-            <td class="position-cell"><strong>${escapeHtml(item.position)}</strong><span>${escapeHtml(item.department)} · ${escapeHtml(item.detail)}</span>${state.canEdit ? `<small>人员：${escapeHtml(item.candidateNames || "尚未填写")}</small>` : ""}</td>
+            <td class="department-cell"><strong>${escapeHtml(item.department)}</strong></td>
+            <td class="position-cell"><strong>${escapeHtml(item.position)}</strong><span>${escapeHtml(item.detail)}</span>${state.canEdit ? `<small>人员：${escapeHtml(item.candidateNames || "尚未填写")}</small>` : ""}</td>
             <td><label class="type-chip ${item.recruitmentType === "协力人员" ? "partner" : "social"}">${escapeHtml(item.recruitmentType)}</label></td>
             <td class="number planned">${item.plannedCount}</td>
             <td class="number">${item.suitableCount}</td>
@@ -347,9 +348,10 @@ function renderPositions(focusSearch = false, cursor = null) {
             <td><mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark></td>
             <td class="time-cell">${formatTime(item.updatedAt)}</td>
             ${state.canEdit ? `<td><button class="edit-button" data-edit-id="${item.id}" type="button">更新</button></td>` : ""}
-          </tr>`).join("") : '<tr><td class="empty-cell" colspan="13">没有符合当前筛选条件的岗位</td></tr>'}
+          </tr>`).join("") : `<tr><td class="empty-cell" colspan="${state.canEdit ? 14 : 13}">没有符合当前筛选条件的岗位</td></tr>`}
           <tr>
             <td class="row-number">合计</td>
+            <td class="department-cell"><strong>筛选范围</strong></td>
             <td class="position-cell"><strong>当前筛选合计</strong><span>${filtered.length} 条岗位记录</span></td>
             <td><label class="type-chip">—</label></td>
             <td class="number planned">${filteredTotals.plannedCount}</td>
