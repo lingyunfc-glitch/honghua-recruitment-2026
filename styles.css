@@ -3090,3 +3090,213 @@ body * {
   .hero-deck.single-vessel .vessel-side .fleet-dream { width: min(78%, 340px) !important; }
   .hero-deck.single-vessel .vessel-side .fleet-ship figcaption { right: 11% !important; bottom: -15px !important; }
 }
+
+/* Meeting view: replace repeated number grids with two readable progress tracks. */
+.department-progress-matrix {
+  display: grid;
+  gap: 11px;
+}
+.department-track-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(170px, .62fr) minmax(0, 2.9fr);
+  gap: 18px;
+  align-items: center;
+  min-height: 126px;
+  padding: 15px 18px;
+  overflow: hidden;
+  border: 1px solid rgba(116, 183, 215, .28);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255,255,255,.88), rgba(234,247,253,.68));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 9px 22px rgba(28, 96, 137, .07);
+}
+.department-track-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.36) 50%, transparent 62%);
+  transform: translateX(-110%);
+  animation: department-track-sheen 10s ease-in-out infinite;
+}
+.department-track-card:nth-child(2n)::before { animation-delay: -5s; }
+.performance-lite .department-track-card::before { display: none; }
+.department-track-heading {
+  position: relative;
+  z-index: 2;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+  padding-right: 16px;
+  border-right: 1px solid rgba(121, 182, 210, .24);
+}
+.department-track-heading small {
+  color: #42a1c6;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .15em;
+}
+.department-track-heading h3 {
+  margin: 3px 0 8px;
+  color: #073f75;
+  font-size: 24px;
+  line-height: 1.12;
+}
+.department-track-heading .department-jump {
+  justify-self: auto;
+  align-self: flex-start;
+  padding: 2px 0;
+  font-size: 13px;
+}
+.department-track-lines {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 8px;
+}
+.department-progress-track {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 42px;
+}
+.track-identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+}
+.track-identity b { color: #0b689f; font-size: 15px; white-space: nowrap; }
+.department-progress-track.partner .track-identity b { color: #b76124; }
+.track-identity em {
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #4e7b93;
+  background: rgba(215,241,250,.76);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.department-progress-track.partner .track-identity em { color: #9b663f; background: rgba(255,235,218,.78); }
+.track-stages {
+  --track-progress: 0%;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.track-stages::before,
+.track-stages::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 12.5%;
+  top: 50%;
+  height: 3px;
+  border-radius: 99px;
+  transform: translateY(-50%);
+}
+.track-stages::before { right: 12.5%; background: rgba(134,187,211,.23); }
+.track-stages::after {
+  width: var(--track-progress);
+  background: linear-gradient(90deg, #55bddb, #168fd2 55%, #f2a35f 82%, #30b29e);
+  box-shadow: 0 0 10px rgba(27,154,203,.18);
+}
+.track-stages > span {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 42px;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border: 1px solid rgba(137,187,210,.22);
+  border-radius: 11px;
+  background: rgba(248,252,254,.92);
+  box-shadow: 0 4px 10px rgba(42,105,143,.05);
+}
+.track-stages small { color: #7890a5; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.track-stages strong { color: #9aabb9; font-size: 19px; line-height: 1; font-variant-numeric: tabular-nums; }
+.track-stages > span.reached { border-color: rgba(66,164,208,.34); background: rgba(229,246,252,.96); }
+.track-stages > span.reached strong { color: #0b5792; }
+.track-stages > span.stage-2.reached { border-color: rgba(232,139,70,.34); background: rgba(255,242,231,.96); }
+.track-stages > span.stage-2.reached strong { color: #de681e; }
+.track-stages > span.stage-3.reached { border-color: rgba(42,168,143,.34); background: rgba(229,248,242,.96); }
+.track-stages > span.stage-3.reached strong { color: #078579; }
+.department-progress-track.empty { opacity: .5; }
+.department-progress-track.empty .track-stages::after { width: 0; }
+
+.internal-track-card {
+  border-color: rgba(65,177,157,.3);
+  background: linear-gradient(145deg, rgba(249,255,253,.92), rgba(226,248,242,.76));
+}
+.internal-track-status {
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #087c71;
+  background: rgba(214,245,236,.9);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.internal-track-content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  gap: 24px;
+  align-items: center;
+}
+.internal-track-numbers {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid rgba(65,177,157,.2);
+  border-radius: 13px;
+  background: rgba(255,255,255,.6);
+}
+.internal-track-numbers span { display: flex; min-height: 64px; align-items: baseline; justify-content: center; gap: 6px; padding: 10px 8px; }
+.internal-track-numbers span + span { border-left: 1px solid rgba(65,177,157,.17); }
+.internal-track-numbers small { color: #688b85; font-size: 12px; font-weight: 700; }
+.internal-track-numbers strong { color: #0b5792; font-size: 24px; line-height: 1; }
+.internal-track-numbers span:nth-child(2) strong,
+.internal-track-numbers span:nth-child(4) strong { color: #078579; }
+.internal-track-numbers span:nth-child(3) strong { color: #d96a20; }
+.internal-track-progress { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.internal-track-progress i { height: 10px; overflow: hidden; border-radius: 99px; background: rgba(94,177,163,.2); }
+.internal-track-progress i b { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #3cc2a7, #168fd2); box-shadow: 0 0 13px rgba(38,172,155,.28); }
+.internal-track-progress > strong { color: #078579; font-size: 23px; }
+
+@keyframes department-track-sheen {
+  0%, 40% { transform: translateX(-110%); opacity: 0; }
+  52% { opacity: .65; }
+  64%, 100% { transform: translateX(110%); opacity: 0; }
+}
+
+@media (max-width: 980px) {
+  .department-track-card { grid-template-columns: 1fr; gap: 12px; }
+  .department-track-heading { min-height: 54px; padding: 0 0 10px; border-right: 0; border-bottom: 1px solid rgba(121,182,210,.22); }
+  .department-track-heading .department-jump,
+  .internal-track-status { position: absolute; right: 0; top: 12px; }
+  .internal-track-content { grid-template-columns: 1fr 180px; }
+}
+
+@media (max-width: 620px) {
+  .department-track-card { padding: 14px 12px; }
+  .department-track-heading h3 { font-size: 21px; }
+  .department-progress-track { grid-template-columns: 94px minmax(0, 1fr); gap: 8px; }
+  .track-identity { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .track-stages { gap: 5px; }
+  .track-stages > span { min-height: 48px; flex-direction: column; align-items: center; gap: 2px; padding: 5px 3px; }
+  .track-stages strong { font-size: 17px; }
+  .internal-track-content { grid-template-columns: 1fr; gap: 12px; }
+  .internal-track-numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .internal-track-numbers span:nth-child(3) { border-left: 0; border-top: 1px solid rgba(65,177,157,.17); }
+  .internal-track-numbers span:nth-child(4) { border-top: 1px solid rgba(65,177,157,.17); }
+}

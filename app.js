@@ -203,19 +203,32 @@ function progressFromCounts(row) {
   return "待更新";
 }
 
-function overviewRecruitmentGroup(rows, recruitmentType) {
+function departmentRecruitmentTrack(rows, recruitmentType) {
   const groupRows = rows.filter((item) => item.recruitmentType === recruitmentType);
-  if (!groupRows.length) return "";
   const tone = recruitmentType === "协力人员" ? "partner" : "social";
-  return `<section class="overview-recruitment-group ${tone} recruitment-summary-only">
-    <div class="overview-group-heading"><b>${escapeHtml(recruitmentType)}</b></div>
-    <div class="recruitment-big-numbers">
-      <span><small>计划</small><strong>${total("plannedCount", groupRows)}</strong></span>
-      <span><small>已面试</small><strong>${total("interviewCount", groupRows)}</strong></span>
-      <span><small>已发Offer</small><strong>${total("offerCount", groupRows)}</strong></span>
-      <span><small>已到岗</small><strong>${total("onboardCount", groupRows)}</strong></span>
+  const counts = {
+    planned: total("plannedCount", groupRows),
+    suitable: total("suitableCount", groupRows),
+    interview: total("interviewCount", groupRows),
+    offer: total("offerCount", groupRows),
+    onboard: total("onboardCount", groupRows),
+  };
+  const hasPlan = counts.planned > 0;
+  const stageIndex = counts.onboard > 0 ? 3 : counts.offer > 0 ? 2 : counts.interview > 0 ? 1 : 0;
+  const stageLabel = !hasPlan ? "无计划" : counts.onboard > 0 ? "已有到岗" : counts.offer > 0 ? "已发Offer" : counts.interview > 0 ? "面试推进" : counts.suitable > 0 ? "简历筛选" : "待启动";
+  const trackProgress = hasPlan ? stageIndex * 25 : 0;
+  const trackStages = [
+    ["计划", counts.planned],
+    ["面试", counts.interview],
+    ["Offer", counts.offer],
+    ["到岗", counts.onboard],
+  ];
+  return `<div class="department-progress-track ${tone} ${hasPlan ? "" : "empty"}">
+    <div class="track-identity"><b>${escapeHtml(recruitmentType)}</b><em>${stageLabel}</em></div>
+    <div class="track-stages" style="--track-progress:${trackProgress}%">
+      ${trackStages.map(([label, value], index) => `<span class="${hasPlan && index <= stageIndex ? "reached" : ""} stage-${index}"><small>${label}</small><strong>${value}</strong></span>`).join("")}
     </div>
-  </section>`;
+  </div>`;
 }
 
 function renderOverview() {
@@ -267,7 +280,6 @@ function renderOverview() {
         <div class="fleet-visual" aria-label="梦想号海工船">
           <figure class="fleet-ship fleet-dream">
             <img src="./assets/dream-ship-cutout-v4.webp?v=20260828" alt="宏华海洋梦想号海工船" fetchpriority="high" decoding="async" />
-            <figcaption>梦想号</figcaption>
           </figure>
         </div>
       </article>
@@ -290,42 +302,32 @@ function renderOverview() {
     </section>
 
     <section class="priority-panel meeting-progress-panel">
-      <div class="panel-heading meeting-progress-heading"><div><span>RECRUITMENT PANORAMA</span><h2>部门招聘进展全景</h2><p>部门汇总看总量｜分类大数看进度</p></div><button id="view-all-positions" type="button">进入数据维护 →</button></div>
-      <div class="meeting-department-grid">
-        ${departmentFocus.map((item) => `<article class="meeting-department-card">
-          <div class="meeting-department-heading">
+      <div class="panel-heading meeting-progress-heading"><div><span>RECRUITMENT PANORAMA</span><h2>部门招聘进展全景</h2><p>一行看部门｜双轨看进度</p></div><button id="view-all-positions" type="button">进入数据维护 →</button></div>
+      <div class="department-progress-matrix">
+        ${departmentFocus.map((item) => `<article class="department-track-card">
+          <div class="department-track-heading">
             <div><small>DEPARTMENT</small><h3>${escapeHtml(item.department)}</h3></div>
             <button class="department-jump" data-department="${escapeHtml(item.department)}" type="button" aria-label="查看${escapeHtml(item.department)}岗位明细">查看明细 →</button>
           </div>
-          <div class="meeting-department-summary">
-            <span><small>计划</small><b>${item.plannedCount}</b></span>
-            <span><small>合适</small><b>${item.suitableCount}</b></span>
-            <span><small>面试</small><b>${item.interviewCount}</b></span>
-            <span><small>谈薪</small><b>${item.salaryCount}</b></span>
-            <span><small>Offer</small><b>${item.offerCount}</b></span>
-            <span><small>到岗</small><b>${item.onboardCount}</b></span>
-          </div>
-          <div class="meeting-recruitment-groups">
-            ${overviewRecruitmentGroup(item.rows, "社会招聘")}
-            ${overviewRecruitmentGroup(item.rows, "协力人员")}
+          <div class="department-track-lines">
+            ${departmentRecruitmentTrack(item.rows, "社会招聘")}
+            ${departmentRecruitmentTrack(item.rows, "协力人员")}
           </div>
         </article>`).join("")}
-        <article class="meeting-department-card internal-coordination-card">
-          <div class="meeting-department-heading">
+        <article class="department-track-card internal-track-card">
+          <div class="department-track-heading">
             <div><small>INTERNAL COORDINATION</small><h3>内部统筹</h3></div>
-            <span class="internal-plan-badge">计划 ${INTERNAL_COORDINATION.plannedCount} 人</span>
+            <span class="internal-track-status">已明确 ${INTERNAL_COORDINATION.confirmedCount} / ${INTERNAL_COORDINATION.plannedCount}</span>
           </div>
-          <div class="internal-coordination-numbers">
-            <span><small>计划统筹</small><b>${INTERNAL_COORDINATION.plannedCount}</b></span>
-            <span><small>已明确</small><b>${INTERNAL_COORDINATION.confirmedCount}</b></span>
-            <span><small>待协调</small><b>${INTERNAL_COORDINATION.pendingCount}</b></span>
-            <span><small>已到岗</small><b>${INTERNAL_COORDINATION.onboardCount}</b></span>
+          <div class="internal-track-content">
+            <div class="internal-track-numbers">
+              <span><small>计划</small><strong>${INTERNAL_COORDINATION.plannedCount}</strong></span>
+              <span><small>已明确</small><strong>${INTERNAL_COORDINATION.confirmedCount}</strong></span>
+              <span><small>待协调</small><strong>${INTERNAL_COORDINATION.pendingCount}</strong></span>
+              <span><small>已到岗</small><strong>${INTERNAL_COORDINATION.onboardCount}</strong></span>
+            </div>
+            <div class="internal-track-progress"><i><b style="width:${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%"></b></i><strong>${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%</strong></div>
           </div>
-          <div class="internal-progress" aria-label="内部统筹已明确 ${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%">
-            <div><span>人员明确进度</span><strong>${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%</strong></div>
-            <i><b style="width:${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%"></b></i>
-          </div>
-          <p class="internal-coordination-note">已明确 ${INTERNAL_COORDINATION.confirmedCount} 人，剩余 ${INTERNAL_COORDINATION.pendingCount} 人持续协调。</p>
         </article>
       </div>
     </section>`;
@@ -414,17 +416,6 @@ function renderPositions(focusSearch = false, cursor = null) {
             <td class="time-cell">${formatTime(item.updatedAt)}</td>
             ${state.canEdit ? `<td><button class="edit-button" data-edit-id="${item.id}" type="button">更新</button></td>` : ""}
           </tr>`).join("") : `<tr><td class="empty-cell" colspan="${state.canEdit ? 14 : 13}">没有符合当前筛选条件的岗位</td></tr>`}
-          ${showInternalCoordination ? `<tr class="internal-coordination-table-row">
-            <td colspan="${state.canEdit ? 14 : 13}">
-              <div class="internal-table-summary">
-                <div><small>INTERNAL COORDINATION</small><strong>内部统筹</strong><span>单列展示，不纳入岗位筛选合计</span></div>
-                <b><small>计划</small><strong>${INTERNAL_COORDINATION.plannedCount}</strong></b>
-                <b><small>已明确</small><strong>${INTERNAL_COORDINATION.confirmedCount}</strong></b>
-                <b><small>待协调</small><strong>${INTERNAL_COORDINATION.pendingCount}</strong></b>
-                <b><small>已到岗</small><strong>${INTERNAL_COORDINATION.onboardCount}</strong></b>
-              </div>
-            </td>
-          </tr>` : ""}
           <tr class="recruitment-total-row">
             <td class="row-number">合计</td>
             <td class="department-cell"><strong>筛选范围</strong></td>
@@ -440,7 +431,18 @@ function renderPositions(focusSearch = false, cursor = null) {
             <td>—</td>
             <td class="time-cell">—</td>
             ${state.canEdit ? "<td>—</td>" : ""}
-          </tr></tbody>
+          </tr>
+          ${showInternalCoordination ? `<tr class="internal-coordination-table-row">
+            <td colspan="${state.canEdit ? 14 : 13}">
+              <div class="internal-table-summary">
+                <div><small>INTERNAL COORDINATION</small><strong>内部统筹</strong><span>单列展示，不纳入岗位筛选合计</span></div>
+                <b><small>计划</small><strong>${INTERNAL_COORDINATION.plannedCount}</strong></b>
+                <b><small>已明确</small><strong>${INTERNAL_COORDINATION.confirmedCount}</strong></b>
+                <b><small>待协调</small><strong>${INTERNAL_COORDINATION.pendingCount}</strong></b>
+                <b><small>已到岗</small><strong>${INTERNAL_COORDINATION.onboardCount}</strong></b>
+              </div>
+            </td>
+          </tr>` : ""}</tbody>
         </table>
       </div>
     </section>`;
@@ -774,7 +776,7 @@ function animateRenderedScene() {
   if (lastAnimatedTab === state.tab) return;
   lastAnimatedTab = state.tab;
   const selector = state.tab === "overview"
-    ? ".hero-deck .metric-card, .hero-deck .vessel-card, .flow-panel, .meeting-department-card"
+    ? ".hero-deck .metric-card, .hero-deck .vessel-card, .flow-panel, .department-track-card"
     : ".positions-head, .filter-bar, .positions-table-panel";
   window.requestAnimationFrame(() => {
     document.querySelectorAll(selector).forEach((element, index) => {
