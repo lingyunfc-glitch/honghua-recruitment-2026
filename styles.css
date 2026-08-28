@@ -2709,15 +2709,21 @@ body {
   width: min(84%, 300px) !important;
 }
 .hero-deck.single-vessel .vessel-side .fleet-ship figcaption {
-  right: 50% !important;
-  bottom: -8px !important;
-  transform: translateX(50%);
+  z-index: 20 !important;
+  right: 7% !important;
+  left: auto !important;
+  bottom: -18px !important;
+  transform: none !important;
+  background: rgba(249, 254, 255, .96) !important;
+  box-shadow: 0 6px 16px rgba(25, 94, 135, .14) !important;
 }
 
-/* Water-splash cursor replaces text-selection feedback on overview metrics. */
+/* A restrained water-drop cursor replaces text-selection feedback in data areas. */
 .hero-deck.single-vessel .metric-card,
-.hero-deck.single-vessel .metric-card * {
-  cursor: url("./assets/wave-cursor.svg") 7 7, pointer !important;
+.hero-deck.single-vessel .metric-card *,
+.flow-panel,
+.flow-panel * {
+  cursor: url("./assets/water-ripple-cursor.svg") 9 8, default !important;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -2742,10 +2748,12 @@ body {
   }
   .hero-deck.single-vessel .vessel-side { min-height: 218px !important; }
   .hero-deck.single-vessel .vessel-side .fleet-dream { width: min(58%, 400px) !important; }
+  .hero-deck.single-vessel .vessel-side .fleet-ship figcaption { right: 18% !important; }
 }
 
 @media (max-width: 620px) {
   .hero-deck.single-vessel > .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .hero-deck.single-vessel .vessel-side { min-height: 180px !important; }
   .hero-deck.single-vessel .vessel-side .fleet-dream { width: min(78%, 340px) !important; }
+  .hero-deck.single-vessel .vessel-side .fleet-ship figcaption { right: 11% !important; bottom: -15px !important; }
 }
