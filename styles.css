@@ -2610,13 +2610,13 @@ body {
 }
 .hero-deck .vessel-side > .fleet-visual {
   box-sizing: border-box;
-  padding-bottom: 28px;
+  padding-bottom: 14px;
 }
 .hero-deck .vessel-side > .fleet-visual::after {
   content: "";
   position: absolute;
   z-index: 8;
-  top: 16%;
+  top: 24%;
   bottom: 15%;
   left: -28%;
   width: 27%;
@@ -2645,7 +2645,7 @@ body {
 
 @keyframes fleet-hover-sync {
   0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(3px, -5px, 0); }
+  50% { transform: translate3d(2px, -3px, 0); }
 }
 @keyframes fleet-shadow-sync {
   0%, 100% { opacity: .46; transform: scaleX(.93); }

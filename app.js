@@ -243,7 +243,7 @@ function renderOverview() {
       <article class="vessel-card vessel-side vessel-right ripple-card">
         <div class="fleet-visual" aria-label="梦想号海工船">
           <figure class="fleet-ship fleet-dream">
-            <img src="./assets/dream-ship-cutout-v3.webp?v=20260828" alt="宏华海洋梦想号海工船" fetchpriority="high" decoding="async" />
+            <img src="./assets/dream-ship-cutout-v4.webp?v=20260828" alt="宏华海洋梦想号海工船" fetchpriority="high" decoding="async" />
             <figcaption>梦想号</figcaption>
           </figure>
         </div>
