@@ -6,6 +6,7 @@ const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
 const INTERNAL_COORDINATION = Object.freeze({
   plannedCount: 20,
   confirmedCount: 11,
+  salaryCount: 10,
   pendingCount: 9,
   onboardCount: 0,
 });
@@ -265,6 +266,28 @@ function conversionFlowGroup(rows, recruitmentType, tone) {
   </section>`;
 }
 
+function internalCoordinationFlowGroup() {
+  const internalStages = [
+    ["协调人选", INTERNAL_COORDINATION.confirmedCount],
+    ["薪酬谈判", INTERNAL_COORDINATION.salaryCount],
+    ["已到岗", INTERNAL_COORDINATION.onboardCount],
+  ];
+  return `<section class="conversion-flow-group internal compact-flow" aria-label="内部统筹转化链路">
+    <div class="flow-group-heading"><strong>内部统筹</strong><span>计划 ${INTERNAL_COORDINATION.plannedCount} 人</span></div>
+    <div class="flow-track">
+      <div class="flow-ribbon" aria-hidden="true"><i></i><i></i></div>
+      <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div><div class="flow-spark spark-three" aria-hidden="true"></div>
+      ${internalStages.map(([label, value], index) => {
+        const previous = index === 0 ? INTERNAL_COORDINATION.plannedCount : internalStages[index - 1][1];
+        const conversion = clampPercent(value, previous);
+        return `<article class="flow-node ${index === 1 ? "focus" : ""}" tabindex="0" aria-label="内部统筹${label} ${value} 人，阶段转化率 ${conversion}%">
+          <strong>${conversion}%</strong><small>${label}</small><em>${value}人</em>
+        </article>`;
+      }).join("")}
+    </div>
+  </section>`;
+}
+
 function renderOverview() {
   const recruitmentPlanned = total("plannedCount");
   const overallPlanned = recruitmentPlanned + INTERNAL_COORDINATION.plannedCount;
@@ -327,9 +350,10 @@ function renderOverview() {
     </section>
 
     <section class="flow-panel ripple-card">
-      <div class="panel-heading"><div><h2>招聘转化链路</h2></div><b>社会招聘 · 协力人员</b></div>
+      <div class="panel-heading"><div><h2>招聘转化链路</h2></div><b>社会招聘 · 内部统筹 · 协力人员</b></div>
       <div class="conversion-flow-groups">
         ${conversionFlowGroup(socialRows, "社会招聘", "social")}
+        ${internalCoordinationFlowGroup()}
         ${conversionFlowGroup(partnerRows, "协力人员", "partner")}
       </div>
     </section>

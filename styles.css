@@ -3432,8 +3432,12 @@ body * {
   background: linear-gradient(145deg, rgba(255,255,255,.72), rgba(225,246,253,.5));
 }
 .conversion-flow-group.partner {
-  border-color: rgba(229,151,88,.24);
-  background: linear-gradient(145deg, rgba(255,253,250,.78), rgba(255,237,221,.55));
+  border-color: rgba(235,115,91,.28);
+  background: linear-gradient(145deg, rgba(255,253,251,.8), rgba(255,235,230,.62));
+}
+.conversion-flow-group.internal {
+  border-color: rgba(57,181,143,.28);
+  background: linear-gradient(145deg, rgba(250,255,253,.8), rgba(226,248,239,.64));
 }
 .flow-group-heading {
   position: relative;
@@ -3445,34 +3449,65 @@ body * {
 }
 .flow-group-heading strong { color: #0a649e; font-size: 16px; }
 .flow-group-heading span { padding: 4px 9px; border-radius: 999px; color: #3b789a; background: rgba(216,242,251,.78); font-size: 12px; font-weight: 800; }
-.conversion-flow-group.partner .flow-group-heading strong { color: #b65e22; }
-.conversion-flow-group.partner .flow-group-heading span { color: #9d6338; background: rgba(255,233,214,.82); }
+.conversion-flow-group.partner .flow-group-heading strong { color: #d94d31; }
+.conversion-flow-group.partner .flow-group-heading span { color: #b54e38; background: rgba(255,229,223,.86); }
+.conversion-flow-group.internal .flow-group-heading strong { color: #07836f; }
+.conversion-flow-group.internal .flow-group-heading span { color: #087b70; background: rgba(219,248,238,.86); }
 .conversion-flow-group .flow-track { padding-top: 6px; padding-bottom: 5px; }
 .conversion-flow-group .flow-node { min-height: 116px !important; }
 .conversion-flow-group .flow-node strong { font-size: 35px; }
 .conversion-flow-group.partner .flow-ribbon {
-  background: linear-gradient(90deg, #ffe9d3, #f6b16e 18%, #e87932 48%, #f3a45d 74%, #fff0df) !important;
-  box-shadow: 0 0 27px rgba(226,123,48,.35), inset 0 3px 8px rgba(255,255,255,.72) !important;
+  background: linear-gradient(90deg, #ffe8e2, #f29a83 18%, #df6248 48%, #ed8a72 74%, #fff0ec) !important;
+  box-shadow: 0 0 27px rgba(230,101,77,.34), inset 0 3px 8px rgba(255,255,255,.72) !important;
 }
 .conversion-flow-group.partner .flow-ribbon::after {
-  background: repeating-linear-gradient(90deg, transparent 0 23px, rgba(255,248,237,.92) 24px 27px, transparent 28px 44px) !important;
+  background: repeating-linear-gradient(90deg, transparent 0 23px, rgba(255,247,244,.92) 24px 27px, transparent 28px 44px) !important;
 }
-.conversion-flow-group.partner .flow-ribbon > i { background: linear-gradient(90deg, transparent, #fff, rgba(255,211,163,.98), transparent); }
+.conversion-flow-group.partner .flow-ribbon > i { background: linear-gradient(90deg, transparent, #fff, rgba(255,190,174,.98), transparent); }
 .conversion-flow-group.partner .flow-spark {
-  box-shadow: 0 0 8px #fff, 0 0 19px #ffc184, 0 0 33px #df6b25 !important;
+  box-shadow: 0 0 8px #fff, 0 0 19px #ffad98, 0 0 33px #df6248 !important;
 }
 .conversion-flow-group.partner .flow-node {
-  border-color: rgba(229,145,80,.6) !important;
-  background: radial-gradient(circle at 34% 24%, #fff 0 11%, rgba(255,252,248,.98) 30%, rgba(255,237,220,.97) 73%, rgba(247,199,158,.88)) !important;
-  box-shadow: 0 14px 30px rgba(170,94,41,.14), inset 0 0 0 7px rgba(255,255,255,.58), inset -8px -8px 20px rgba(229,145,80,.12), 0 0 20px rgba(235,139,65,.09) !important;
+  border-color: rgba(235,115,91,.6) !important;
+  background: radial-gradient(circle at 34% 24%, #fff 0 11%, rgba(255,252,250,.98) 30%, rgba(255,235,230,.97) 73%, rgba(248,190,177,.88)) !important;
+  box-shadow: 0 14px 30px rgba(186,81,61,.14), inset 0 0 0 7px rgba(255,255,255,.58), inset -8px -8px 20px rgba(230,101,77,.12), 0 0 20px rgba(235,115,91,.09) !important;
 }
 .conversion-flow-group.partner .flow-node::before {
-  background: conic-gradient(from 90deg, transparent 0 28%, rgba(238,145,75,.72) 39%, rgba(255,255,255,.95) 45%, transparent 55% 100%) !important;
+  background: conic-gradient(from 90deg, transparent 0 28%, rgba(230,101,77,.72) 39%, rgba(255,255,255,.95) 45%, transparent 55% 100%) !important;
 }
-.conversion-flow-group.partner .flow-node strong { color: #a84e18; }
-.conversion-flow-group.partner .flow-node small { color: #8f5e3d; }
-.conversion-flow-group.partner .flow-node em { color: #a77c60; }
-.conversion-flow-group.partner .flow-node.focus::after { border-color: rgba(224,111,39,.42); }
+.conversion-flow-group.partner .flow-node strong { color: #c64d34; }
+.conversion-flow-group.partner .flow-node small { color: #9b4f3e; }
+.conversion-flow-group.partner .flow-node em { color: #a97569; }
+.conversion-flow-group.partner .flow-node.focus::after { border-color: rgba(217,77,49,.42); }
+
+.conversion-flow-group.internal .flow-track {
+  grid-template-columns: repeat(3, 132px);
+  justify-content: space-around;
+  gap: 0;
+  min-width: 620px;
+  padding-inline: 8%;
+}
+.conversion-flow-group.internal .flow-ribbon {
+  background: linear-gradient(90deg, #e2f8ef, #68d1b0 18%, #079884 48%, #52c4a2 74%, #e9faf4) !important;
+  box-shadow: 0 0 27px rgba(42,169,137,.32), inset 0 3px 8px rgba(255,255,255,.72) !important;
+}
+.conversion-flow-group.internal .flow-ribbon::after {
+  background: repeating-linear-gradient(90deg, transparent 0 23px, rgba(246,255,251,.94) 24px 27px, transparent 28px 44px) !important;
+}
+.conversion-flow-group.internal .flow-ribbon > i { background: linear-gradient(90deg, transparent, #fff, rgba(164,239,215,.98), transparent); }
+.conversion-flow-group.internal .flow-spark { box-shadow: 0 0 8px #fff, 0 0 19px #7ee0c2, 0 0 33px #079884 !important; }
+.conversion-flow-group.internal .flow-node {
+  border-color: rgba(57,181,143,.6) !important;
+  background: radial-gradient(circle at 34% 24%, #fff 0 11%, rgba(250,255,253,.98) 30%, rgba(226,248,239,.97) 73%, rgba(178,230,211,.88)) !important;
+  box-shadow: 0 14px 30px rgba(29,139,112,.14), inset 0 0 0 7px rgba(255,255,255,.58), inset -8px -8px 20px rgba(42,169,137,.12), 0 0 20px rgba(57,181,143,.09) !important;
+}
+.conversion-flow-group.internal .flow-node::before {
+  background: conic-gradient(from 90deg, transparent 0 28%, rgba(42,169,137,.72) 39%, rgba(255,255,255,.95) 45%, transparent 55% 100%) !important;
+}
+.conversion-flow-group.internal .flow-node strong { color: #07836f; }
+.conversion-flow-group.internal .flow-node small { color: #236c61; }
+.conversion-flow-group.internal .flow-node em { color: #648e85; }
+.conversion-flow-group.internal .flow-node.focus::after { border-color: rgba(7,131,111,.42); }
 
 @media (max-width: 840px) {
   .conversion-flow-group { padding-inline: 12px; }
