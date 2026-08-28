@@ -195,6 +195,27 @@ function progressFromCounts(row) {
   return "待更新";
 }
 
+function overviewRoleStages(item) {
+  const roleStages = [["plannedCount", "计划"], ...stages];
+  return `<div class="overview-role-stages">${roleStages.map(([key, label]) => `<span><small>${label}</small><strong>${Number(item[key] || 0)}</strong></span>`).join("")}</div>`;
+}
+
+function overviewRecruitmentGroup(rows, recruitmentType) {
+  const groupRows = rows.filter((item) => item.recruitmentType === recruitmentType);
+  if (!groupRows.length) return "";
+  const tone = recruitmentType === "协力人员" ? "partner" : "social";
+  return `<section class="overview-recruitment-group ${tone}">
+    <div class="overview-group-heading"><b>${escapeHtml(recruitmentType)}</b><span>计划 ${total("plannedCount", groupRows)} 人</span></div>
+    <div class="overview-role-list">${groupRows.map((item) => {
+      const detail = item.detail && item.detail !== item.position ? ` · ${item.detail}` : "";
+      return `<article class="overview-role-row">
+        <div class="overview-role-heading"><strong>${escapeHtml(item.position)}${escapeHtml(detail)}</strong><mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark></div>
+        ${overviewRoleStages(item)}
+      </article>`;
+    }).join("")}</div>
+  </section>`;
+}
+
 function renderOverview() {
   const planned = total("plannedCount");
   const suitable = total("suitableCount");
@@ -202,13 +223,12 @@ function renderOverview() {
   const offers = total("offerCount");
   const socialPlanned = total("plannedCount", state.items.filter((item) => item.recruitmentType === "社会招聘"));
   const partnerPlanned = planned - socialPlanned;
-  const socialItems = state.items.filter((item) => item.recruitmentType === "社会招聘");
-  const departmentFocus = [...new Set(socialItems.map((item) => item.department))]
+  const departmentFocus = [...new Set(state.items.map((item) => item.department))]
     .map((department) => {
-      const rows = socialItems.filter((item) => item.department === department);
+      const rows = state.items.filter((item) => item.department === department);
       const summary = {
         department,
-        itemCount: rows.length,
+        rows,
         plannedCount: total("plannedCount", rows),
         suitableCount: total("suitableCount", rows),
         interviewCount: total("interviewCount", rows),
@@ -219,8 +239,7 @@ function renderOverview() {
       };
       return { ...summary, currentProgress: progressFromCounts(summary) };
     })
-    .sort((a, b) => b.plannedCount - a.plannedCount || b.suitableCount - a.suitableCount)
-    .slice(0, 6);
+    .sort((a, b) => b.plannedCount - a.plannedCount || b.suitableCount - a.suitableCount);
 
   content.innerHTML = `
     <section class="hero-deck single-vessel">
@@ -257,16 +276,29 @@ function renderOverview() {
       </div>
     </section>
 
-    <section class="priority-panel">
-      <div class="panel-heading"><div><span>SOCIAL RECRUITMENT</span><h2>岗位进度</h2></div><button id="view-all-positions" type="button">查看全部岗位 →</button></div>
-      <div class="priority-grid">
-        ${departmentFocus.map((item) => `<button class="overview-position-card ripple-card" data-department="${escapeHtml(item.department)}" type="button">
-          <span class="position-emblem">${iconSvg(item.department.includes("安全") ? "beacon" : item.department.includes("技术") ? "wind" : item.department.includes("项目") ? "ship" : "rig")}</span>
-          <div class="overview-position-title"><small>社会招聘 · ${item.itemCount}个岗位</small><strong>${escapeHtml(item.department)}</strong></div>
-          <mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark>
-          <div class="overview-position-stats"><span>计划 <b>${item.plannedCount}</b></span><span>合适 <b>${item.suitableCount}</b></span><span>缺口 <b>${item.remainingCount}</b></span></div>
-          ${stageRail(item)}
-        </button>`).join("")}
+    <section class="priority-panel meeting-progress-panel">
+      <div class="panel-heading meeting-progress-heading"><div><span>RECRUITMENT PANORAMA</span><h2>部门招聘进展全景</h2><p>社会招聘与协力人员同步展示｜按部门逐项汇报</p></div><button id="view-all-positions" type="button">进入岗位明细 →</button></div>
+      <div class="meeting-department-grid">
+        ${departmentFocus.map((item, index) => `<article class="meeting-department-card">
+          <div class="meeting-department-heading">
+            <span class="department-index">${String(index + 1).padStart(2, "0")}</span>
+            <div><small>DEPARTMENT</small><h3>${escapeHtml(item.department)}</h3></div>
+            <mark class="department-gap">剩余缺口 <b>${item.remainingCount}</b> 人</mark>
+            <button class="department-jump" data-department="${escapeHtml(item.department)}" type="button" aria-label="查看${escapeHtml(item.department)}岗位明细">查看明细 →</button>
+          </div>
+          <div class="meeting-department-summary">
+            <span><small>计划</small><b>${item.plannedCount}</b></span>
+            <span><small>合适</small><b>${item.suitableCount}</b></span>
+            <span><small>面试</small><b>${item.interviewCount}</b></span>
+            <span><small>谈薪</small><b>${item.salaryCount}</b></span>
+            <span><small>Offer</small><b>${item.offerCount}</b></span>
+            <span><small>到岗</small><b>${item.onboardCount}</b></span>
+          </div>
+          <div class="meeting-recruitment-groups">
+            ${overviewRecruitmentGroup(item.rows, "社会招聘")}
+            ${overviewRecruitmentGroup(item.rows, "协力人员")}
+          </div>
+        </article>`).join("")}
       </div>
     </section>`;
 
@@ -280,7 +312,7 @@ function renderOverview() {
   document.querySelectorAll("[data-department]").forEach((button) => button.addEventListener("click", () => {
     state.tab = "positions";
     state.department = button.dataset.department;
-    state.recruitmentType = "社会招聘";
+    state.recruitmentType = "全部方式";
     state.query = "";
     render();
   }));
@@ -698,7 +730,7 @@ function animateRenderedScene() {
   if (lastAnimatedTab === state.tab) return;
   lastAnimatedTab = state.tab;
   const selector = state.tab === "overview"
-    ? ".hero-deck .metric-card, .hero-deck .vessel-card, .flow-panel, .overview-position-card"
+    ? ".hero-deck .metric-card, .hero-deck .vessel-card, .flow-panel, .meeting-department-card"
     : ".positions-head, .filter-bar, .positions-table-panel";
   window.requestAnimationFrame(() => {
     document.querySelectorAll(selector).forEach((element, index) => {

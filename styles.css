@@ -2821,6 +2821,90 @@ body {
   100% { opacity: 0; transform: translate(-50%, -50%) scale(4.2, 3.1); }
 }
 
+/* Meeting view: complete department panorama with larger, report-friendly typography. */
+.meeting-progress-panel { padding: 28px !important; }
+.meeting-progress-heading { align-items: flex-end; margin-bottom: 22px; }
+.meeting-progress-heading h2 { margin-top: 3px; font-size: 34px; letter-spacing: -.025em; }
+.meeting-progress-heading p { margin: 7px 0 0; color: #6d8aa4; font-size: 15px; font-weight: 600; }
+.meeting-progress-heading > button { min-height: 42px; padding: 0 16px; font-size: 14px; }
+.meeting-department-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.meeting-department-card {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid rgba(127, 188, 216, .3);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(255,255,255,.92), rgba(232,247,252,.76));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 12px 26px rgba(28, 96, 137, .09);
+}
+.meeting-department-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 34%, rgba(255,255,255,.42) 49%, transparent 64%);
+  transform: translateX(-110%);
+  animation: department-card-sheen 9s ease-in-out infinite;
+}
+.meeting-department-card:nth-child(2n)::before { animation-delay: -4.5s; }
+.meeting-department-heading { position: relative; z-index: 1; display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "index title gap" "index title jump"; column-gap: 12px; align-items: center; padding-bottom: 14px; border-bottom: 1px solid rgba(123,181,209,.22); }
+.department-index { grid-area: index; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; color: #0970b3; background: rgba(217,244,252,.9); font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.meeting-department-heading > div { grid-area: title; }
+.meeting-department-heading small { display: block; color: #42a1c6; font-size: 10px; font-weight: 800; letter-spacing: .15em; }
+.meeting-department-heading h3 { margin: 2px 0 0; color: #073f75; font-size: 24px; line-height: 1.12; }
+.department-gap { grid-area: gap; justify-self: end; padding: 4px 9px; border-radius: 999px; color: #a9571b; background: rgba(255,235,217,.76); font-size: 12px; font-weight: 700; }
+.department-gap b { margin: 0 2px; color: #e56315; font-size: 19px; }
+.department-jump { grid-area: jump; justify-self: end; align-self: end; padding: 0; border: 0; color: #2085b4; background: transparent; font-size: 12px; font-weight: 800; cursor: pointer; }
+.meeting-department-summary { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; margin: 14px 0; }
+.meeting-department-summary span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 58px; border-radius: 12px; background: rgba(232,247,252,.74); }
+.meeting-department-summary small { color: #6d8ba4; font-size: 12px; font-weight: 700; }
+.meeting-department-summary b { margin-top: 2px; color: #0b5792; font-size: 22px; line-height: 1; font-variant-numeric: tabular-nums; }
+.meeting-department-summary span:nth-child(5) b { color: #df651b; }
+.meeting-department-summary span:nth-child(6) b { color: #07857c; }
+.meeting-recruitment-groups { position: relative; z-index: 1; display: grid; gap: 12px; }
+.overview-recruitment-group { overflow: hidden; border: 1px solid rgba(103,178,211,.2); border-radius: 15px; background: rgba(255,255,255,.54); }
+.overview-recruitment-group.partner { border-color: rgba(226,156,99,.26); background: rgba(255,249,244,.68); }
+.overview-group-heading { display: flex; align-items: center; justify-content: space-between; min-height: 38px; padding: 0 12px; background: rgba(216,243,252,.65); }
+.overview-recruitment-group.partner .overview-group-heading { background: rgba(255,234,216,.66); }
+.overview-group-heading b { color: #0a689f; font-size: 15px; }
+.overview-recruitment-group.partner .overview-group-heading b { color: #b35d1f; }
+.overview-group-heading span { color: #607f99; font-size: 13px; font-weight: 700; }
+.overview-role-list { display: grid; }
+.overview-role-row { padding: 11px 12px 12px; border-top: 1px solid rgba(126,184,211,.17); }
+.overview-role-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.overview-role-heading > strong { color: #0b3f72; font-size: 16px; line-height: 1.3; }
+.overview-role-heading mark { flex: 0 0 auto; min-width: 76px; padding: 4px 8px; font-size: 11px; text-align: center; }
+.overview-role-stages { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin-top: 9px; }
+.overview-role-stages span { display: flex; align-items: baseline; justify-content: center; gap: 4px; min-width: 0; padding: 6px 3px; border-radius: 8px; background: rgba(225,243,250,.58); }
+.overview-recruitment-group.partner .overview-role-stages span { background: rgba(252,236,224,.58); }
+.overview-role-stages small { color: #718da4; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.overview-role-stages strong { color: #0b548b; font-size: 17px; font-variant-numeric: tabular-nums; }
+.overview-role-stages span:nth-child(5) strong { color: #d9651d; }
+.overview-role-stages span:nth-child(6) strong { color: #07847c; }
+
+@keyframes department-card-sheen {
+  0%, 34% { transform: translateX(-110%); opacity: 0; }
+  48% { opacity: .72; }
+  62%, 100% { transform: translateX(110%); opacity: 0; }
+}
+
+@media (max-width: 1060px) {
+  .meeting-department-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .meeting-progress-panel { padding: 18px 14px !important; }
+  .meeting-progress-heading { align-items: flex-start; }
+  .meeting-progress-heading h2 { font-size: 29px; }
+  .meeting-progress-heading p { font-size: 13px; }
+  .meeting-department-card { padding: 15px 12px; }
+  .meeting-department-heading { grid-template-columns: auto 1fr; grid-template-areas: "index title" "gap jump"; row-gap: 9px; }
+  .department-gap { justify-self: start; }
+  .meeting-department-summary, .overview-role-stages { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .overview-role-heading { align-items: flex-start; }
+  .overview-role-heading > strong { font-size: 15px; }
+}
+
 @media (max-width: 1180px) {
   .hero-deck.single-vessel {
     grid-template-columns: minmax(0, 3fr) minmax(290px, 1fr) !important;
