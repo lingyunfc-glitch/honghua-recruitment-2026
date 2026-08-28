@@ -223,16 +223,7 @@ function renderOverview() {
     .slice(0, 6);
 
   content.innerHTML = `
-    <section class="hero-deck">
-      <article class="vessel-card vessel-side vessel-left ripple-card">
-        <div class="fleet-visual" aria-label="70米OCV海工作业船">
-          <figure class="fleet-ship fleet-ocv">
-            <img src="./assets/ocv-70m-cutout-v2.webp?v=20260828" alt="宏华海洋在建70米OCV海工作业船" fetchpriority="high" decoding="async" />
-            <figcaption>70m OCV</figcaption>
-          </figure>
-        </div>
-      </article>
-
+    <section class="hero-deck single-vessel">
       <div class="metrics">
           ${metricCard("wind", "计划补充", planned, `社会招聘 ${socialPlanned} · 协力人员 ${partnerPlanned}`, "orange")}
           ${metricCard("rig", "合适人员", suitable, "")}

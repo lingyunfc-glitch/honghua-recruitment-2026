@@ -2682,3 +2682,70 @@ body {
   .hero-deck .vessel-side .fleet-dream { width: 102% !important; }
   .hero-deck .vessel-side > .fleet-visual::after { display: none; }
 }
+
+/* Single-vessel hero: recruitment data leads, Dream ship anchors the right side. */
+.hero-deck.single-vessel {
+  grid-template-columns: minmax(0, 3fr) minmax(330px, 1.08fr) !important;
+  gap: 18px !important;
+}
+.hero-deck.single-vessel > .metrics {
+  grid-column: 1;
+  grid-row: 1;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 13px !important;
+}
+.hero-deck.single-vessel > .vessel-right {
+  grid-column: 2;
+  grid-row: 1;
+}
+.hero-deck.single-vessel .vessel-side,
+.hero-deck.single-vessel .vessel-side:hover {
+  min-height: 240px !important;
+}
+.hero-deck.single-vessel .vessel-side > .fleet-visual {
+  padding-bottom: 10px;
+}
+.hero-deck.single-vessel .vessel-side .fleet-dream {
+  width: min(84%, 300px) !important;
+}
+.hero-deck.single-vessel .vessel-side .fleet-ship figcaption {
+  right: 50% !important;
+  bottom: -8px !important;
+  transform: translateX(50%);
+}
+
+/* Water-splash cursor replaces text-selection feedback on overview metrics. */
+.hero-deck.single-vessel .metric-card,
+.hero-deck.single-vessel .metric-card * {
+  cursor: url("./assets/wave-cursor.svg") 7 7, pointer !important;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (max-width: 1180px) {
+  .hero-deck.single-vessel {
+    grid-template-columns: minmax(0, 3fr) minmax(290px, 1fr) !important;
+    gap: 12px !important;
+  }
+  .hero-deck.single-vessel .vessel-side .fleet-dream { width: min(82%, 280px) !important; }
+}
+
+@media (max-width: 900px) {
+  .hero-deck.single-vessel { grid-template-columns: 1fr !important; }
+  .hero-deck.single-vessel > .metrics {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .hero-deck.single-vessel > .vessel-right {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .hero-deck.single-vessel .vessel-side { min-height: 218px !important; }
+  .hero-deck.single-vessel .vessel-side .fleet-dream { width: min(58%, 400px) !important; }
+}
+
+@media (max-width: 620px) {
+  .hero-deck.single-vessel > .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .hero-deck.single-vessel .vessel-side { min-height: 180px !important; }
+  .hero-deck.single-vessel .vessel-side .fleet-dream { width: min(78%, 340px) !important; }
+}
