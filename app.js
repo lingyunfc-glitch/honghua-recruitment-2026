@@ -409,6 +409,28 @@ function bindRippleCards() {
   });
 }
 
+function initWaterClickRipple() {
+  const interactiveWaterAreas = ".hero-deck.single-vessel .metric-card, .flow-panel";
+
+  document.addEventListener("pointerdown", (event) => {
+    if (!event.isPrimary || event.button !== 0) return;
+    const element = event.target instanceof Element ? event.target : null;
+    if (!element?.closest(interactiveWaterAreas)) return;
+
+    const activeEffects = document.querySelectorAll(".water-click-impact");
+    if (activeEffects.length >= 5) activeEffects[0].remove();
+
+    const effect = document.createElement("span");
+    effect.className = "water-click-impact";
+    effect.setAttribute("aria-hidden", "true");
+    effect.style.left = `${event.clientX}px`;
+    effect.style.top = `${event.clientY}px`;
+    effect.innerHTML = '<i class="water-falling-drop"></i><i class="water-impact-glow"></i><i class="water-impact-ring ring-one"></i><i class="water-impact-ring ring-two"></i><i class="water-impact-ring ring-three"></i>';
+    document.body.append(effect);
+    window.setTimeout(() => effect.remove(), 1050);
+  }, { passive: true });
+}
+
 function initOceanEffects() {
   const canvas = document.querySelector("#ocean-effects");
   const context = canvas?.getContext("2d", { alpha: true, desynchronized: true });
@@ -859,6 +881,7 @@ adminButton.addEventListener("click", async () => {
   }
 });
 
+initWaterClickRipple();
 void load();
 window.setInterval(() => void load(), 60000);
 

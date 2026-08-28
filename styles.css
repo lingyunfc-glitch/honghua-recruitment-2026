@@ -2728,6 +2728,84 @@ body {
   user-select: none;
 }
 
+/* Lightweight click feedback: one falling drop, a soft impact and three water ripples. */
+.water-click-impact {
+  position: fixed;
+  z-index: 95;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  contain: layout style paint;
+}
+.water-falling-drop {
+  position: absolute;
+  left: -5px;
+  top: -25px;
+  width: 10px;
+  height: 13px;
+  border: 1px solid rgba(54, 169, 201, .45);
+  border-radius: 68% 48% 66% 48%;
+  background: radial-gradient(circle at 32% 25%, rgba(255,255,255,.92), rgba(171,236,242,.68) 38%, rgba(43,164,199,.28) 76%, rgba(43,164,199,.08));
+  box-shadow: inset 1px 1px 2px rgba(255,255,255,.78), 0 2px 5px rgba(22,126,170,.14);
+  transform: rotate(45deg) scale(.55);
+  opacity: 0;
+  animation: water-drop-fall 330ms cubic-bezier(.3,.04,.65,1) forwards;
+}
+.water-impact-glow {
+  position: absolute;
+  left: -9px;
+  top: -3px;
+  width: 18px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(235,253,255,.92), rgba(76,190,215,.28) 46%, transparent 72%);
+  filter: blur(.4px);
+  opacity: 0;
+  animation: water-impact-soften 620ms 245ms ease-out forwards;
+}
+.water-impact-ring {
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 14px;
+  height: 5px;
+  border: 1px solid rgba(50, 169, 201, .52);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(114, 220, 232, .16), inset 0 0 3px rgba(255,255,255,.45);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.25);
+  animation: water-ring-spread 760ms 250ms cubic-bezier(.16,.7,.26,1) forwards;
+}
+.water-impact-ring.ring-two {
+  width: 18px;
+  height: 6px;
+  border-color: rgba(94, 199, 218, .38);
+  animation-delay: 325ms;
+}
+.water-impact-ring.ring-three {
+  width: 20px;
+  height: 7px;
+  border-color: rgba(154, 224, 232, .34);
+  animation-delay: 405ms;
+}
+
+@keyframes water-drop-fall {
+  0% { opacity: 0; transform: translate3d(0, -8px, 0) rotate(45deg) scale(.48); }
+  18% { opacity: .86; }
+  82% { opacity: .78; transform: translate3d(0, 22px, 0) rotate(45deg) scale(.72); }
+  100% { opacity: 0; transform: translate3d(0, 26px, 0) rotate(45deg) scale(.94, .34); }
+}
+@keyframes water-impact-soften {
+  0% { opacity: 0; transform: scale(.28); }
+  22% { opacity: .62; }
+  100% { opacity: 0; transform: scale(2.5, 1.65); }
+}
+@keyframes water-ring-spread {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.25); }
+  14% { opacity: .62; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(4.2, 3.1); }
+}
+
 @media (max-width: 1180px) {
   .hero-deck.single-vessel {
     grid-template-columns: minmax(0, 3fr) minmax(290px, 1fr) !important;
