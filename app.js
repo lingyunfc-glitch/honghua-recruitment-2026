@@ -233,18 +233,15 @@ function renderOverview() {
 
       <article class="vessel-card ripple-card">
         <div class="vessel-copy"><span>OFFSHORE ENGINEERING</span><strong>梦想号</strong><small>逐浪深蓝 · 向新而行</small></div>
-        <img src="./assets/meng-xiang-hero-hd.webp?v=20260826" alt="宏华海洋梦想号海工船" fetchpriority="high" decoding="sync" />
-        <div class="ship-sea" aria-hidden="true"><i></i><i></i><i></i><b></b></div>
-        <div class="bow-splash" aria-hidden="true"><b></b><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="ship-wake" aria-hidden="true"><i></i><i></i><i></i></div>
+        <img src="./assets/dream-ship-cutout-v2.webp?v=20260828" alt="宏华海洋梦想号海工船" fetchpriority="high" decoding="async" />
       </article>
     </section>
 
     <section class="flow-panel ripple-card">
       <div class="panel-heading"><div><span>OCEAN FLOW</span><h2>招聘转化链路</h2></div><b>相邻阶段转化率 · 对应人数</b></div>
       <div class="flow-track">
-        <div class="flow-ribbon" aria-hidden="true"></div>
-        <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div>
+        <div class="flow-ribbon" aria-hidden="true"><i></i><i></i></div>
+        <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div><div class="flow-spark spark-three" aria-hidden="true"></div>
         ${stages.map(([key, label], index) => {
           const value = total(key);
           const previous = index === 0 ? planned : total(stages[index - 1][0]);
