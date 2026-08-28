@@ -283,7 +283,6 @@ function renderOverview() {
     state.query = "";
     render();
   }));
-  bindRippleCards();
 }
 
 function filteredItems() {
@@ -377,7 +376,6 @@ function renderPositions(focusSearch = false, cursor = null) {
   document.querySelector("#type-select").addEventListener("change", (event) => { state.recruitmentType = event.target.value; renderPositions(); });
   document.querySelector("#progress-select").addEventListener("change", (event) => { state.progress = event.target.value; renderPositions(); });
   document.querySelectorAll("[data-edit-id]").forEach((button) => button.addEventListener("click", () => openEditor(Number(button.dataset.editId))));
-  bindRippleCards();
   if (focusSearch) {
     searchInput.focus();
     if (cursor !== null) searchInput.setSelectionRange(cursor, cursor);
@@ -860,9 +858,6 @@ adminButton.addEventListener("click", async () => {
   }
 });
 
-initSceneParallax();
-initOceanEffects();
-initPerformanceGuard();
 void load();
 window.setInterval(() => void load(), 60000);
 
