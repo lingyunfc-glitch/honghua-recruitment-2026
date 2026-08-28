@@ -3,12 +3,13 @@ const SNAPSHOT_URL = "./data.json";
 const TOKEN_KEY = "hh_recruitment_editor_token";
 const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
 
-const INTERNAL_COORDINATION = Object.freeze({
+const DEFAULT_INTERNAL_COORDINATION = Object.freeze({
   plannedCount: 20,
   confirmedCount: 11,
   salaryCount: 10,
   pendingCount: 9,
   onboardCount: 0,
+  updatedAt: null,
 });
 
 const MOTION_PROFILES = {
@@ -51,6 +52,7 @@ const stages = [
 
 const state = {
   items: [],
+  internalCoordination: { ...DEFAULT_INTERNAL_COORDINATION },
   tab: "overview",
   canEdit: false,
   department: "全部部门",
@@ -180,7 +182,7 @@ function iconSvg(kind) {
 }
 
 function syncHeader() {
-  const latest = state.items.map((item) => item.updatedAt).filter(Boolean).sort().at(-1);
+  const latest = [...state.items.map((item) => item.updatedAt), state.internalCoordination.updatedAt].filter(Boolean).sort().at(-1);
   latestTime.textContent = formatTime(latest || null);
   overviewTab.classList.toggle("active", state.tab === "overview");
   positionsTab.classList.toggle("active", state.tab === "positions");
@@ -268,17 +270,17 @@ function conversionFlowGroup(rows, recruitmentType, tone) {
 
 function internalCoordinationFlowGroup() {
   const internalStages = [
-    ["协调人选", INTERNAL_COORDINATION.confirmedCount],
-    ["薪酬谈判", INTERNAL_COORDINATION.salaryCount],
-    ["已到岗", INTERNAL_COORDINATION.onboardCount],
+    ["协调人选", state.internalCoordination.confirmedCount],
+    ["薪酬谈判", state.internalCoordination.salaryCount],
+    ["已到岗", state.internalCoordination.onboardCount],
   ];
   return `<section class="conversion-flow-group internal compact-flow" aria-label="内部统筹转化链路">
-    <div class="flow-group-heading"><strong>内部统筹</strong><span>计划 ${INTERNAL_COORDINATION.plannedCount} 人</span></div>
+    <div class="flow-group-heading"><strong>内部统筹</strong><span>计划 ${state.internalCoordination.plannedCount} 人</span></div>
     <div class="flow-track">
       <div class="flow-ribbon" aria-hidden="true"><i></i><i></i></div>
       <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div><div class="flow-spark spark-three" aria-hidden="true"></div>
       ${internalStages.map(([label, value], index) => {
-        const previous = index === 0 ? INTERNAL_COORDINATION.plannedCount : internalStages[index - 1][1];
+        const previous = index === 0 ? state.internalCoordination.plannedCount : internalStages[index - 1][1];
         const conversion = clampPercent(value, previous);
         return `<article class="flow-node ${index === 1 ? "focus" : ""}" tabindex="0" aria-label="内部统筹${label} ${value} 人，阶段转化率 ${conversion}%">
           <strong>${conversion}%</strong><small>${label}</small><em>${value}人</em>
@@ -290,7 +292,7 @@ function internalCoordinationFlowGroup() {
 
 function renderOverview() {
   const recruitmentPlanned = total("plannedCount");
-  const overallPlanned = recruitmentPlanned + INTERNAL_COORDINATION.plannedCount;
+  const overallPlanned = recruitmentPlanned + state.internalCoordination.plannedCount;
   const socialRows = state.items.filter((item) => item.recruitmentType === "社会招聘");
   const partnerRows = state.items.filter((item) => item.recruitmentType === "协力人员");
   const socialPlanned = total("plannedCount", socialRows);
@@ -334,9 +336,9 @@ function renderOverview() {
   content.innerHTML = `
     <section class="hero-deck single-vessel">
       <div class="metrics">
-          ${channelMetricCard("wind", "补充总计划", overallPlanned, [["社会招聘", socialPlanned], ["内部统筹", INTERNAL_COORDINATION.plannedCount], ["协力人员", partnerPlanned]], "amber", true)}
+          ${channelMetricCard("wind", "补充总计划", overallPlanned, [["社会招聘", socialPlanned], ["内部统筹", state.internalCoordination.plannedCount], ["协力人员", partnerPlanned]], "amber", true)}
           ${channelMetricCard("ship", "社会招聘", socialPlanned, [["已面试", socialProgress.interview], ["已发Offer", socialProgress.offer], ["已到岗", socialProgress.onboard]], "blue")}
-          ${channelMetricCard("coordination", "内部统筹", INTERNAL_COORDINATION.plannedCount, [["已明确", INTERNAL_COORDINATION.confirmedCount], ["待协调", INTERNAL_COORDINATION.pendingCount], ["已到岗", INTERNAL_COORDINATION.onboardCount]], "green")}
+          ${channelMetricCard("coordination", "内部统筹", state.internalCoordination.plannedCount, [["已明确", state.internalCoordination.confirmedCount], ["待协调", state.internalCoordination.pendingCount], ["已到岗", state.internalCoordination.onboardCount]], "green")}
           ${channelMetricCard("beacon", "协力人员", partnerPlanned, [["已面试", partnerProgress.interview], ["已发Offer", partnerProgress.offer], ["已到岗", partnerProgress.onboard]], "coral")}
       </div>
 
@@ -374,16 +376,16 @@ function renderOverview() {
         <article class="department-track-card internal-track-card">
           <div class="department-track-heading">
             <div><h3>内部统筹</h3></div>
-            <span class="internal-track-status">已明确 ${INTERNAL_COORDINATION.confirmedCount} / ${INTERNAL_COORDINATION.plannedCount}</span>
+            <div class="internal-track-actions"><span class="internal-track-status">已明确 ${state.internalCoordination.confirmedCount} / ${state.internalCoordination.plannedCount}</span>${state.canEdit ? '<button class="internal-edit-button" data-edit-internal type="button">更新数据</button>' : ""}</div>
           </div>
           <div class="internal-track-content">
             <div class="internal-track-numbers">
-              <span><small>计划</small><strong>${INTERNAL_COORDINATION.plannedCount}</strong></span>
-              <span><small>已明确</small><strong>${INTERNAL_COORDINATION.confirmedCount}</strong></span>
-              <span><small>待协调</small><strong>${INTERNAL_COORDINATION.pendingCount}</strong></span>
-              <span><small>已到岗</small><strong>${INTERNAL_COORDINATION.onboardCount}</strong></span>
+              <span><small>计划</small><strong>${state.internalCoordination.plannedCount}</strong></span>
+              <span><small>已明确</small><strong>${state.internalCoordination.confirmedCount}</strong></span>
+              <span><small>待协调</small><strong>${state.internalCoordination.pendingCount}</strong></span>
+              <span><small>已到岗</small><strong>${state.internalCoordination.onboardCount}</strong></span>
             </div>
-            <div class="internal-track-progress"><i><b style="width:${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%"></b></i><strong>${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%</strong></div>
+            <div class="internal-track-progress"><i><b style="width:${clampPercent(state.internalCoordination.confirmedCount, state.internalCoordination.plannedCount)}%"></b></i><strong>${clampPercent(state.internalCoordination.confirmedCount, state.internalCoordination.plannedCount)}%</strong></div>
           </div>
         </article>
       </div>
@@ -404,6 +406,7 @@ function renderOverview() {
     state.query = "";
     render();
   }));
+  document.querySelectorAll("[data-edit-internal]").forEach((button) => button.addEventListener("click", openInternalEditor));
 }
 
 function filteredItems() {
@@ -492,11 +495,11 @@ function renderPositions(focusSearch = false, cursor = null) {
           ${showInternalCoordination ? `<tr class="internal-coordination-table-row">
             <td colspan="${state.canEdit ? 14 : 13}">
               <div class="internal-table-summary">
-                <div><strong>内部统筹</strong><span>单列展示，不纳入岗位筛选合计</span></div>
-                <b><small>计划</small><strong>${INTERNAL_COORDINATION.plannedCount}</strong></b>
-                <b><small>已明确</small><strong>${INTERNAL_COORDINATION.confirmedCount}</strong></b>
-                <b><small>待协调</small><strong>${INTERNAL_COORDINATION.pendingCount}</strong></b>
-                <b><small>已到岗</small><strong>${INTERNAL_COORDINATION.onboardCount}</strong></b>
+                <div><strong>内部统筹</strong><span>单列展示，不纳入岗位筛选合计</span>${state.canEdit ? '<button class="internal-summary-edit" data-edit-internal type="button">更新内部统筹</button>' : ""}</div>
+                <b><small>计划</small><strong>${state.internalCoordination.plannedCount}</strong></b>
+                <b><small>已明确</small><strong>${state.internalCoordination.confirmedCount}</strong></b>
+                <b><small>待协调</small><strong>${state.internalCoordination.pendingCount}</strong></b>
+                <b><small>已到岗</small><strong>${state.internalCoordination.onboardCount}</strong></b>
               </div>
             </td>
           </tr>` : ""}</tbody>
@@ -514,6 +517,7 @@ function renderPositions(focusSearch = false, cursor = null) {
   document.querySelector("#type-select").addEventListener("change", (event) => { state.recruitmentType = event.target.value; renderPositions(); });
   document.querySelector("#progress-select").addEventListener("change", (event) => { state.progress = event.target.value; renderPositions(); });
   document.querySelectorAll("[data-edit-id]").forEach((button) => button.addEventListener("click", () => openEditor(Number(button.dataset.editId))));
+  document.querySelectorAll("[data-edit-internal]").forEach((button) => button.addEventListener("click", openInternalEditor));
   if (focusSearch) {
     searchInput.focus();
     if (cursor !== null) searchInput.setSelectionRange(cursor, cursor);
@@ -868,12 +872,19 @@ function render() {
 
 async function readData() {
   const token = editorToken();
+  const internalCoordinationPromise = api("/api/internal-coordination")
+    .then(async (response) => {
+      const data = await response.json();
+      if (!response.ok || !data.item) throw new Error(data.error || "内部统筹数据读取失败");
+      return data.item;
+    })
+    .catch(() => state.internalCoordination);
   if (token) {
     try {
       const response = await api("/api/recruitment");
       const data = await response.json();
       if (!response.ok || !data.items) throw new Error(data.error || "读取失败");
-      return data;
+      return { ...data, internalCoordination: await internalCoordinationPromise };
     } catch {
       window.sessionStorage.removeItem(TOKEN_KEY);
       showNotice("编辑后台暂时无法连接，已切换为公开只读模式", 4500);
@@ -882,7 +893,7 @@ async function readData() {
   const response = await fetch(`${SNAPSHOT_URL}?t=${Date.now()}`, { cache: "no-store" });
   const data = await response.json();
   if (!response.ok || !data.items) throw new Error(data.error || "读取失败");
-  return { ...data, items: mergePublicItems(data.items, recentPublicItems()), canEdit: false };
+  return { ...data, items: mergePublicItems(data.items, recentPublicItems()), internalCoordination: await internalCoordinationPromise, canEdit: false };
 }
 
 async function load() {
@@ -892,6 +903,7 @@ async function load() {
   try {
     const data = await readData();
     state.items = data.items;
+    state.internalCoordination = { ...DEFAULT_INTERNAL_COORDINATION, ...(data.internalCoordination || {}) };
     state.canEdit = Boolean(data.canEdit);
     if (editorToken() && !state.canEdit) window.sessionStorage.removeItem(TOKEN_KEY);
   } catch (error) {
@@ -907,7 +919,7 @@ function closeOverlay() {
 }
 
 function openLogin() {
-  overlayRoot.innerHTML = `<div class="backdrop"><form class="login-modal"><button type="button" class="close" aria-label="关闭">×</button><div class="login-icon">⌁</div><small>SECURE EDITING</small><h2>进入编辑模式</h2><p>验证后可更新岗位计划、各阶段人数和人员姓名。</p><label><span>编辑密码</span><input name="password" type="password" autofocus autocomplete="current-password" placeholder="请输入密码" /></label><div id="login-error" class="login-error hidden"></div><button class="login-submit">确认进入</button><em>登录状态保留 8 小时，关闭浏览器后自动退出。</em></form></div>`;
+  overlayRoot.innerHTML = `<div class="backdrop"><form class="login-modal"><button type="button" class="close" aria-label="关闭">×</button><div class="login-icon">⌁</div><small>SECURE EDITING</small><h2>进入编辑模式</h2><p>验证后可更新岗位进度、内部统筹数据和人员姓名。</p><label><span>编辑密码</span><input name="password" type="password" autofocus autocomplete="current-password" placeholder="请输入密码" /></label><div id="login-error" class="login-error hidden"></div><button class="login-submit">确认进入</button><em>登录状态保留 8 小时，关闭浏览器后自动退出。</em></form></div>`;
   const backdrop = overlayRoot.querySelector(".backdrop");
   const form = overlayRoot.querySelector("form");
   const input = overlayRoot.querySelector("input");
@@ -933,7 +945,7 @@ function openLogin() {
       await load();
       state.tab = "positions";
       render();
-      showNotice("已进入编辑模式，可直接更新岗位数据");
+      showNotice("已进入编辑模式，可更新岗位和内部统筹数据");
     } catch (error) {
       errorBox.textContent = error instanceof Error ? error.message : "登录失败";
       errorBox.classList.remove("hidden");
@@ -978,6 +990,56 @@ function openEditor(id) {
       closeOverlay();
       render();
       showNotice("岗位进度已保存；公网数据约 5 分钟内同步", 5000);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "保存失败";
+      showNotice(message, 4000);
+      if (message.includes("会话已失效")) {
+        window.sessionStorage.removeItem(TOKEN_KEY);
+        state.canEdit = false;
+        closeOverlay();
+        render();
+        openLogin();
+      } else {
+        saveButton.disabled = false;
+        saveButton.textContent = "保存更新";
+      }
+    }
+  });
+}
+
+function openInternalEditor() {
+  if (!state.canEdit) return;
+  const item = state.internalCoordination;
+  overlayRoot.innerHTML = `<div class="backdrop"><form class="edit-modal internal-edit-modal"><button type="button" class="close" aria-label="关闭">×</button><small>内部统筹 · 单列维护</small><h2>更新内部统筹进度</h2><p>保存后将同步更新顶部卡片、转化链路、部门全景和岗位进度页。</p><div class="fields internal-edit-fields"><label class="planned-field"><span>计划人数</span><input name="plannedCount" type="number" min="0" max="999" value="${item.plannedCount}" required /></label><label><span>协调人选</span><input name="confirmedCount" type="number" min="0" max="999" value="${item.confirmedCount}" required /></label><label><span>薪酬谈判</span><input name="salaryCount" type="number" min="0" max="999" value="${item.salaryCount}" required /></label><label><span>已到岗</span><input name="onboardCount" type="number" min="0" max="999" value="${item.onboardCount}" required /></label></div><div class="hint">待协调人数由“计划人数－协调人选”自动计算。各阶段人数应依次递减。</div><div class="actions"><button class="cancel" type="button">取消</button><button class="save">保存更新</button></div></form></div>`;
+  const backdrop = overlayRoot.querySelector(".backdrop");
+  const form = overlayRoot.querySelector("form");
+  overlayRoot.querySelector(".close").addEventListener("click", closeOverlay);
+  form.querySelector(".cancel").addEventListener("click", closeOverlay);
+  backdrop.addEventListener("mousedown", (event) => event.target === backdrop && closeOverlay());
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const saveButton = form.querySelector(".save");
+    saveButton.disabled = true;
+    saveButton.textContent = "正在保存…";
+    const values = new FormData(form);
+    const body = {
+      plannedCount: Number(values.get("plannedCount")),
+      confirmedCount: Number(values.get("confirmedCount")),
+      salaryCount: Number(values.get("salaryCount")),
+      onboardCount: Number(values.get("onboardCount")),
+    };
+    try {
+      const response = await api("/api/internal-coordination", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.item) throw new Error(data.error || "保存失败");
+      state.internalCoordination = { ...DEFAULT_INTERNAL_COORDINATION, ...data.item };
+      closeOverlay();
+      render();
+      showNotice("内部统筹进度已保存并同步更新", 5000);
     } catch (error) {
       const message = error instanceof Error ? error.message : "保存失败";
       showNotice(message, 4000);
