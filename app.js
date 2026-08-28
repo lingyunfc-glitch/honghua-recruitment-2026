@@ -199,28 +199,14 @@ function overviewRecruitmentGroup(rows, recruitmentType) {
   const groupRows = rows.filter((item) => item.recruitmentType === recruitmentType);
   if (!groupRows.length) return "";
   const tone = recruitmentType === "协力人员" ? "partner" : "social";
-  if (recruitmentType === "协力人员") {
-    return `<section class="overview-recruitment-group partner partner-summary-only">
-      <div class="overview-group-heading"><b>协力人员</b><span>部门汇总</span></div>
-      <div class="partner-big-numbers">
-        <span><small>计划</small><strong>${total("plannedCount", groupRows)}</strong></span>
-        <span><small>已面试</small><strong>${total("interviewCount", groupRows)}</strong></span>
-        <span><small>已发Offer</small><strong>${total("offerCount", groupRows)}</strong></span>
-        <span><small>已到岗</small><strong>${total("onboardCount", groupRows)}</strong></span>
-      </div>
-    </section>`;
-  }
-  return `<section class="overview-recruitment-group ${tone}">
-    <div class="overview-group-heading"><b>${escapeHtml(recruitmentType)}</b><span>计划 ${total("plannedCount", groupRows)} 人</span></div>
-    <div class="overview-role-list">${groupRows.map((item) => {
-      const detail = item.detail && item.detail !== item.position ? ` · ${item.detail}` : "";
-      return `<article class="overview-role-row">
-        <div class="overview-role-heading">
-          <strong>${escapeHtml(item.position)}${escapeHtml(detail)}</strong>
-          <div class="overview-role-meta"><span>计划 <b>${Number(item.plannedCount || 0)}</b> 人</span><mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark></div>
-        </div>
-      </article>`;
-    }).join("")}</div>
+  return `<section class="overview-recruitment-group ${tone} recruitment-summary-only">
+    <div class="overview-group-heading"><b>${escapeHtml(recruitmentType)}</b><span>分类汇总</span></div>
+    <div class="recruitment-big-numbers">
+      <span><small>计划</small><strong>${total("plannedCount", groupRows)}</strong></span>
+      <span><small>已面试</small><strong>${total("interviewCount", groupRows)}</strong></span>
+      <span><small>已发Offer</small><strong>${total("offerCount", groupRows)}</strong></span>
+      <span><small>已到岗</small><strong>${total("onboardCount", groupRows)}</strong></span>
+    </div>
   </section>`;
 }
 
@@ -285,14 +271,12 @@ function renderOverview() {
     </section>
 
     <section class="priority-panel meeting-progress-panel">
-      <div class="panel-heading meeting-progress-heading"><div><span>RECRUITMENT PANORAMA</span><h2>部门招聘进展全景</h2><p>部门汇总看数据｜岗位清单看阶段</p></div><button id="view-all-positions" type="button">进入数据维护 →</button></div>
+      <div class="panel-heading meeting-progress-heading"><div><span>RECRUITMENT PANORAMA</span><h2>部门招聘进展全景</h2><p>部门汇总看总量｜分类大数看进度</p></div><button id="view-all-positions" type="button">进入数据维护 →</button></div>
       <div class="meeting-department-grid">
         ${departmentFocus.map((item, index) => `<article class="meeting-department-card">
           <div class="meeting-department-heading">
             <span class="department-index">${String(index + 1).padStart(2, "0")}</span>
             <div><small>DEPARTMENT</small><h3>${escapeHtml(item.department)}</h3></div>
-            <mark class="department-gap">剩余缺口 <b>${item.remainingCount}</b> 人</mark>
-            <button class="department-jump" data-department="${escapeHtml(item.department)}" type="button" aria-label="查看${escapeHtml(item.department)}岗位明细">查看明细 →</button>
           </div>
           <div class="meeting-department-summary">
             <span><small>计划</small><b>${item.plannedCount}</b></span>
@@ -317,13 +301,6 @@ function renderOverview() {
     state.query = "";
     render();
   });
-  document.querySelectorAll("[data-department]").forEach((button) => button.addEventListener("click", () => {
-    state.tab = "positions";
-    state.department = button.dataset.department;
-    state.recruitmentType = "全部方式";
-    state.query = "";
-    render();
-  }));
 }
 
 function filteredItems() {
