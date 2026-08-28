@@ -2101,3 +2101,130 @@ body::before {
 .performance-lite .hero-deck .ship-wake i,
 .performance-lite .hero-deck .bow-splash::before,
 .performance-lite .hero-deck .bow-splash::after { animation-duration: 6s; }
+
+/* Smooth office mode — static 3D vessel with only two lightweight motion cues. */
+.ocean-ambient,
+.kinetic-light,
+.ocean-beams,
+.marine-decor,
+#ocean-effects { display: none !important; }
+
+body {
+  animation: none !important;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(186, 229, 248, .42), transparent 32%),
+    radial-gradient(circle at 88% 18%, rgba(203, 241, 235, .34), transparent 30%),
+    linear-gradient(180deg, #f5fbff 0%, #edf7fc 48%, #f8fbfd 100%);
+}
+
+.topbar,
+.metric-card,
+.flow-panel,
+.priority-panel,
+.overview-position-card,
+.positions-head,
+.filter-bar,
+.positions-table-panel,
+.flow-node,
+.recruitment-table th {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.topbar {
+  background: rgba(249, 252, 255, .97) !important;
+  box-shadow: 0 8px 28px rgba(30, 91, 137, .09) !important;
+}
+
+.metric-card,
+.flow-panel,
+.priority-panel,
+.overview-position-card,
+.positions-head,
+.filter-bar,
+.positions-table-panel {
+  background-color: rgba(249, 253, 255, .96) !important;
+}
+
+.topbar::before,
+.primary-nav::after,
+.metric-card,
+.metric-card::before,
+.metric-icon,
+.flow-panel,
+.flow-panel::before,
+.flow-ribbon,
+.flow-node,
+.flow-node::before,
+.overview-position-card,
+.overview-position-card::before,
+.stage-step.active > i::after,
+.positions-head::after,
+.filter-bar::after,
+.positions-table-panel::before,
+.live i {
+  animation: none !important;
+}
+
+.ripple-card,
+.ripple-card:hover {
+  transform: none !important;
+}
+.ripple-card::after { display: none !important; }
+
+/* Keep the dashboard alive with one compositor-only navigation stream. */
+.nav-item.active::after {
+  animation: nav-stream 4.8s linear infinite !important;
+}
+
+/* Keep one low-cost recruitment flow cue; all report text remains still. */
+.flow-ribbon::after {
+  animation: flow 3.6s linear infinite !important;
+  opacity: .58 !important;
+}
+.flow-spark { animation: spark-run 7.5s linear infinite !important; }
+.flow-spark.spark-two { display: none !important; }
+
+/* Embedded static naked-eye 3D vessel. The source image already contains water and reflection. */
+.hero-deck .vessel-card {
+  isolation: isolate;
+  perspective: 1100px;
+  contain: layout paint;
+}
+.hero-deck .vessel-card::before {
+  display: block !important;
+  inset: 7% -2% -8% 16% !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: radial-gradient(ellipse at 58% 62%, rgba(74, 174, 215, .2), rgba(210, 240, 250, .13) 46%, transparent 72%) !important;
+  filter: none !important;
+  opacity: .78 !important;
+  animation: none !important;
+  transform: perspective(900px) rotateX(68deg) translateY(23px) !important;
+}
+.hero-deck .vessel-card::after {
+  display: block !important;
+  opacity: .34 !important;
+  animation: none !important;
+  transform: translateX(18%) !important;
+}
+.hero-deck .vessel-card img,
+.hero-deck .vessel-card:hover img {
+  animation: none !important;
+  will-change: auto !important;
+  transform: perspective(1100px) translate3d(0, -3px, 28px) rotateX(.8deg) rotateY(-3.8deg) scale(1.018) !important;
+  filter: saturate(1.14) contrast(1.14) brightness(1.02) drop-shadow(-14px 25px 17px rgba(4, 55, 96, .25)) !important;
+}
+.hero-deck .ship-sea,
+.hero-deck .ship-wake,
+.hero-deck .bow-splash,
+.hero-deck .ship-halo,
+.hero-deck .vessel-mountains { display: none !important; }
+
+@media (max-width: 760px) {
+  .flow-spark { display: none !important; }
+  .hero-deck .vessel-card img,
+  .hero-deck .vessel-card:hover img {
+    transform: perspective(900px) translate3d(0, -2px, 18px) rotateY(-2.5deg) scale(1.01) !important;
+  }
+}
