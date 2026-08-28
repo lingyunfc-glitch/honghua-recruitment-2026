@@ -2905,6 +2905,39 @@ body {
   .overview-role-heading > strong { font-size: 15px; }
 }
 
+/* Clear meeting mode: keep all roles, remove repeated per-role funnels and decorative motion. */
+.meeting-department-card::before { display: none; }
+.meeting-department-card { padding: 18px 20px; }
+.meeting-department-summary { gap: 0; margin: 13px 0 15px; border: 1px solid rgba(126,184,211,.18); border-radius: 13px; background: rgba(236,248,252,.56); }
+.meeting-department-summary span { min-height: 56px; border-radius: 0; background: transparent; }
+.meeting-department-summary span + span { border-left: 1px solid rgba(126,184,211,.2); }
+.meeting-department-summary small { font-size: 12px; }
+.meeting-department-summary b { font-size: 23px; }
+.meeting-recruitment-groups { gap: 10px; }
+.overview-recruitment-group { background: rgba(255,255,255,.72); box-shadow: none; }
+.overview-recruitment-group.partner { background: rgba(255,250,246,.76); }
+.overview-group-heading { min-height: 40px; }
+.overview-group-heading b { font-size: 16px; }
+.overview-group-heading span { font-size: 14px; }
+.overview-role-row { padding: 12px; }
+.overview-role-heading { min-height: 34px; }
+.overview-role-heading > strong { flex: 1 1 auto; font-size: 17px; }
+.overview-role-meta { flex: 0 0 auto; display: flex; align-items: center; gap: 9px; }
+.overview-role-meta > span { color: #5d7b94; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.overview-role-meta > span b { margin: 0 2px; color: #0b5792; font-size: 19px; }
+.overview-role-heading mark { min-width: 92px; padding: 5px 9px; font-size: 12px; font-weight: 800; }
+
+@media (max-width: 620px) {
+  .meeting-department-card { padding: 15px 12px; }
+  .meeting-department-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .meeting-department-summary span:nth-child(4) { border-left: 0; border-top: 1px solid rgba(126,184,211,.2); }
+  .meeting-department-summary span:nth-child(5),
+  .meeting-department-summary span:nth-child(6) { border-top: 1px solid rgba(126,184,211,.2); }
+  .overview-role-heading { align-items: flex-start; }
+  .overview-role-meta { flex-direction: column; align-items: flex-end; gap: 4px; }
+  .overview-role-heading > strong { font-size: 15px; }
+}
+
 @media (max-width: 1180px) {
   .hero-deck.single-vessel {
     grid-template-columns: minmax(0, 3fr) minmax(290px, 1fr) !important;

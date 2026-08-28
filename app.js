@@ -195,11 +195,6 @@ function progressFromCounts(row) {
   return "待更新";
 }
 
-function overviewRoleStages(item) {
-  const roleStages = [["plannedCount", "计划"], ...stages];
-  return `<div class="overview-role-stages">${roleStages.map(([key, label]) => `<span><small>${label}</small><strong>${Number(item[key] || 0)}</strong></span>`).join("")}</div>`;
-}
-
 function overviewRecruitmentGroup(rows, recruitmentType) {
   const groupRows = rows.filter((item) => item.recruitmentType === recruitmentType);
   if (!groupRows.length) return "";
@@ -209,8 +204,10 @@ function overviewRecruitmentGroup(rows, recruitmentType) {
     <div class="overview-role-list">${groupRows.map((item) => {
       const detail = item.detail && item.detail !== item.position ? ` · ${item.detail}` : "";
       return `<article class="overview-role-row">
-        <div class="overview-role-heading"><strong>${escapeHtml(item.position)}${escapeHtml(detail)}</strong><mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark></div>
-        ${overviewRoleStages(item)}
+        <div class="overview-role-heading">
+          <strong>${escapeHtml(item.position)}${escapeHtml(detail)}</strong>
+          <div class="overview-role-meta"><span>计划 <b>${Number(item.plannedCount || 0)}</b> 人</span><mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark></div>
+        </div>
       </article>`;
     }).join("")}</div>
   </section>`;
@@ -277,7 +274,7 @@ function renderOverview() {
     </section>
 
     <section class="priority-panel meeting-progress-panel">
-      <div class="panel-heading meeting-progress-heading"><div><span>RECRUITMENT PANORAMA</span><h2>部门招聘进展全景</h2><p>社会招聘与协力人员同步展示｜按部门逐项汇报</p></div><button id="view-all-positions" type="button">进入岗位明细 →</button></div>
+      <div class="panel-heading meeting-progress-heading"><div><span>RECRUITMENT PANORAMA</span><h2>部门招聘进展全景</h2><p>部门汇总看数据｜岗位清单看阶段</p></div><button id="view-all-positions" type="button">进入数据维护 →</button></div>
       <div class="meeting-department-grid">
         ${departmentFocus.map((item, index) => `<article class="meeting-department-card">
           <div class="meeting-department-heading">
