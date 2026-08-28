@@ -2733,12 +2733,17 @@ body {
   box-shadow: 0 6px 16px rgba(25, 94, 135, .14) !important;
 }
 
-/* A restrained water-drop cursor replaces text-selection feedback in data areas. */
+/* Use the compact Honghua Offshore emblem as the site-wide pointer. */
+html,
+body,
+body * {
+  cursor: url("./assets/honghua-logo-cursor.png?v=20260828") 5 4, default !important;
+}
+
 .hero-deck.single-vessel .metric-card,
 .hero-deck.single-vessel .metric-card *,
 .flow-panel,
 .flow-panel * {
-  cursor: url("./assets/water-ripple-cursor.svg") 9 8, default !important;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -2847,14 +2852,13 @@ body {
   animation: department-card-sheen 9s ease-in-out infinite;
 }
 .meeting-department-card:nth-child(2n)::before { animation-delay: -4.5s; }
-.meeting-department-heading { position: relative; z-index: 1; display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "index title gap" "index title jump"; column-gap: 12px; align-items: center; padding-bottom: 14px; border-bottom: 1px solid rgba(123,181,209,.22); }
-.department-index { grid-area: index; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; color: #0970b3; background: rgba(217,244,252,.9); font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.meeting-department-heading { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title jump"; column-gap: 16px; align-items: center; padding-bottom: 14px; border-bottom: 1px solid rgba(123,181,209,.22); }
 .meeting-department-heading > div { grid-area: title; }
 .meeting-department-heading small { display: block; color: #42a1c6; font-size: 10px; font-weight: 800; letter-spacing: .15em; }
 .meeting-department-heading h3 { margin: 2px 0 0; color: #073f75; font-size: 24px; line-height: 1.12; }
 .department-gap { grid-area: gap; justify-self: end; padding: 4px 9px; border-radius: 999px; color: #a9571b; background: rgba(255,235,217,.76); font-size: 12px; font-weight: 700; }
 .department-gap b { margin: 0 2px; color: #e56315; font-size: 19px; }
-.department-jump { grid-area: jump; justify-self: end; align-self: end; padding: 0; border: 0; color: #2085b4; background: transparent; font-size: 12px; font-weight: 800; cursor: pointer; }
+.department-jump { grid-area: jump; justify-self: end; align-self: center; padding: 6px 0 6px 10px; border: 0; color: #147eaf; background: transparent; font-size: 13px; font-weight: 800; white-space: nowrap; }
 .meeting-department-summary { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; margin: 14px 0; }
 .meeting-department-summary span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 58px; border-radius: 12px; background: rgba(232,247,252,.74); }
 .meeting-department-summary small { color: #6d8ba4; font-size: 12px; font-weight: 700; }
@@ -2898,7 +2902,7 @@ body {
   .meeting-progress-heading h2 { font-size: 29px; }
   .meeting-progress-heading p { font-size: 13px; }
   .meeting-department-card { padding: 15px 12px; }
-  .meeting-department-heading { grid-template-columns: auto 1fr; grid-template-areas: "index title" "gap jump"; row-gap: 9px; }
+  .meeting-department-heading { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title jump"; row-gap: 9px; }
   .department-gap { justify-self: start; }
   .meeting-department-summary, .overview-role-stages { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .overview-role-heading { align-items: flex-start; }
@@ -2948,7 +2952,7 @@ body {
   .overview-role-heading { align-items: flex-start; }
   .overview-role-meta { flex-direction: column; align-items: flex-end; gap: 4px; }
   .overview-role-heading > strong { font-size: 15px; }
-  .meeting-department-heading { grid-template-columns: auto 1fr; grid-template-areas: "index title"; }
+  .meeting-department-heading { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title jump"; }
   .recruitment-big-numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .recruitment-big-numbers span:nth-child(3) { border-left: 0; border-top: 1px solid rgba(112,182,211,.22); }
   .recruitment-big-numbers span:nth-child(4) { border-top: 1px solid rgba(112,182,211,.22); }

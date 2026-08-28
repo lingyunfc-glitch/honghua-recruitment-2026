@@ -200,7 +200,7 @@ function overviewRecruitmentGroup(rows, recruitmentType) {
   if (!groupRows.length) return "";
   const tone = recruitmentType === "协力人员" ? "partner" : "social";
   return `<section class="overview-recruitment-group ${tone} recruitment-summary-only">
-    <div class="overview-group-heading"><b>${escapeHtml(recruitmentType)}</b><span>分类汇总</span></div>
+    <div class="overview-group-heading"><b>${escapeHtml(recruitmentType)}</b></div>
     <div class="recruitment-big-numbers">
       <span><small>计划</small><strong>${total("plannedCount", groupRows)}</strong></span>
       <span><small>已面试</small><strong>${total("interviewCount", groupRows)}</strong></span>
@@ -235,6 +235,12 @@ function renderOverview() {
     })
     .sort((a, b) => b.plannedCount - a.plannedCount || b.suitableCount - a.suitableCount);
 
+  const safetyIndex = departmentFocus.findIndex((item) => item.department === "安全保障部");
+  const procurementIndex = departmentFocus.findIndex((item) => item.department === "采购储运部");
+  if (safetyIndex >= 0 && procurementIndex >= 0) {
+    [departmentFocus[safetyIndex], departmentFocus[procurementIndex]] = [departmentFocus[procurementIndex], departmentFocus[safetyIndex]];
+  }
+
   content.innerHTML = `
     <section class="hero-deck single-vessel">
       <div class="metrics">
@@ -264,7 +270,7 @@ function renderOverview() {
           const previous = index === 0 ? planned : total(stages[index - 1][0]);
           const conversion = clampPercent(value, previous);
           return `<article class="flow-node ${index === 2 ? "focus" : ""}" tabindex="0" aria-label="${label} ${value} 人，阶段转化率 ${conversion}%">
-            <span>0${index + 1}</span><strong>${conversion}%</strong><small>${label}</small><em>${value}人</em>
+            <strong>${conversion}%</strong><small>${label}</small><em>${value}人</em>
           </article>`;
         }).join("")}
       </div>
@@ -273,10 +279,10 @@ function renderOverview() {
     <section class="priority-panel meeting-progress-panel">
       <div class="panel-heading meeting-progress-heading"><div><span>RECRUITMENT PANORAMA</span><h2>部门招聘进展全景</h2><p>部门汇总看总量｜分类大数看进度</p></div><button id="view-all-positions" type="button">进入数据维护 →</button></div>
       <div class="meeting-department-grid">
-        ${departmentFocus.map((item, index) => `<article class="meeting-department-card">
+        ${departmentFocus.map((item) => `<article class="meeting-department-card">
           <div class="meeting-department-heading">
-            <span class="department-index">${String(index + 1).padStart(2, "0")}</span>
             <div><small>DEPARTMENT</small><h3>${escapeHtml(item.department)}</h3></div>
+            <button class="department-jump" data-department="${escapeHtml(item.department)}" type="button" aria-label="查看${escapeHtml(item.department)}岗位明细">查看明细 →</button>
           </div>
           <div class="meeting-department-summary">
             <span><small>计划</small><b>${item.plannedCount}</b></span>
@@ -301,6 +307,14 @@ function renderOverview() {
     state.query = "";
     render();
   });
+
+  document.querySelectorAll("[data-department]").forEach((button) => button.addEventListener("click", () => {
+    state.tab = "positions";
+    state.department = button.dataset.department;
+    state.recruitmentType = "全部方式";
+    state.query = "";
+    render();
+  }));
 }
 
 function filteredItems() {
