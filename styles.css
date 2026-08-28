@@ -2519,7 +2519,7 @@ body {
   bottom: auto !important;
   flex: 0 0 auto;
   margin: 0 !important;
-  transform: none !important;
+  transform-style: preserve-3d;
 }
 .hero-deck .vessel-side .fleet-ocv {
   width: 100% !important;
@@ -2579,4 +2579,106 @@ body {
   .hero-deck .vessel-side .fleet-ocv,
   .hero-deck .vessel-side .fleet-dream { width: 96% !important; }
   .hero-deck .vessel-side .fleet-ship figcaption { bottom: -14px !important; }
+}
+
+/* Parallel fleet motion: equal baseline, larger vessels and synchronized movement. */
+.hero-deck {
+  grid-template-columns: minmax(245px, 1.05fr) minmax(0, 3fr) minmax(255px, 1.1fr) !important;
+  gap: 16px !important;
+}
+.hero-deck .vessel-side,
+.hero-deck .vessel-side:hover {
+  min-height: 240px !important;
+  isolation: isolate;
+}
+.hero-deck .vessel-side::before {
+  content: "";
+  display: block !important;
+  position: absolute;
+  z-index: 1;
+  left: 7%;
+  right: 7%;
+  bottom: 15px;
+  height: 30px;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: radial-gradient(ellipse, rgba(9,77,116,.24), rgba(43,162,198,.12) 48%, transparent 72%) !important;
+  filter: blur(5px) !important;
+  opacity: .56 !important;
+  animation: fleet-shadow-sync 5.6s ease-in-out infinite !important;
+  pointer-events: none;
+}
+.hero-deck .vessel-side > .fleet-visual {
+  box-sizing: border-box;
+  padding-bottom: 28px;
+}
+.hero-deck .vessel-side > .fleet-visual::after {
+  content: "";
+  position: absolute;
+  z-index: 8;
+  top: 16%;
+  bottom: 15%;
+  left: -28%;
+  width: 27%;
+  border-radius: 50%;
+  background: linear-gradient(104deg, transparent, rgba(255,255,255,.72) 48%, rgba(125,231,243,.24) 58%, transparent 74%);
+  opacity: 0;
+  transform: skewX(-10deg);
+  animation: fleet-light-sweep 6.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.hero-deck .vessel-side .fleet-ship {
+  margin-bottom: 0 !important;
+  animation: fleet-hover-sync 5.6s ease-in-out infinite !important;
+  will-change: transform;
+}
+.hero-deck .vessel-side .fleet-ocv { width: 118% !important; }
+.hero-deck .vessel-side .fleet-dream { width: 112% !important; }
+.hero-deck .vessel-side .fleet-ship img,
+.hero-deck .vessel-side:hover .fleet-ship img {
+  filter: saturate(1.1) contrast(1.12) brightness(1.025) drop-shadow(0 19px 14px rgba(4,55,96,.25)) !important;
+}
+.hero-deck .vessel-left .fleet-ship figcaption,
+.hero-deck .vessel-right .fleet-ship figcaption {
+  bottom: -22px !important;
+}
+
+@keyframes fleet-hover-sync {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(3px, -5px, 0); }
+}
+@keyframes fleet-shadow-sync {
+  0%, 100% { opacity: .46; transform: scaleX(.93); }
+  50% { opacity: .62; transform: scaleX(1.02); }
+}
+@keyframes fleet-light-sweep {
+  0%, 18% { opacity: 0; transform: translateX(0) skewX(-10deg); }
+  29% { opacity: .72; }
+  52%, 100% { opacity: 0; transform: translateX(560%) skewX(-10deg); }
+}
+
+@media (max-width: 1180px) {
+  .hero-deck {
+    grid-template-columns: minmax(205px, .9fr) minmax(0, 3fr) minmax(215px, .95fr) !important;
+    gap: 11px !important;
+  }
+  .hero-deck .vessel-side { min-height: 226px !important; }
+  .hero-deck .vessel-side .fleet-ocv { width: 112% !important; }
+  .hero-deck .vessel-side .fleet-dream { width: 108% !important; }
+}
+
+@media (max-width: 980px) {
+  .hero-deck { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .hero-deck .vessel-side { min-height: 218px !important; }
+  .hero-deck .vessel-side > .fleet-visual { padding-bottom: 24px; }
+  .hero-deck .vessel-side .fleet-ocv,
+  .hero-deck .vessel-side .fleet-dream { width: min(88%, 390px) !important; }
+}
+
+@media (max-width: 620px) {
+  .hero-deck .vessel-side { min-height: 165px !important; }
+  .hero-deck .vessel-side > .fleet-visual { padding-bottom: 20px; }
+  .hero-deck .vessel-side .fleet-ocv,
+  .hero-deck .vessel-side .fleet-dream { width: 102% !important; }
+  .hero-deck .vessel-side > .fleet-visual::after { display: none; }
 }

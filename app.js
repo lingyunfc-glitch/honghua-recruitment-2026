@@ -227,7 +227,7 @@ function renderOverview() {
       <article class="vessel-card vessel-side vessel-left ripple-card">
         <div class="fleet-visual" aria-label="70米OCV海工作业船">
           <figure class="fleet-ship fleet-ocv">
-            <img src="./assets/ocv-70m-cutout-v1.webp?v=20260828" alt="宏华海洋在建70米OCV海工作业船" fetchpriority="high" decoding="async" />
+            <img src="./assets/ocv-70m-cutout-v2.webp?v=20260828" alt="宏华海洋在建70米OCV海工作业船" fetchpriority="high" decoding="async" />
             <figcaption>70m OCV</figcaption>
           </figure>
         </div>
@@ -243,7 +243,7 @@ function renderOverview() {
       <article class="vessel-card vessel-side vessel-right ripple-card">
         <div class="fleet-visual" aria-label="梦想号海工船">
           <figure class="fleet-ship fleet-dream">
-            <img src="./assets/dream-ship-cutout-v2.webp?v=20260828" alt="宏华海洋梦想号海工船" fetchpriority="high" decoding="async" />
+            <img src="./assets/dream-ship-cutout-v3.webp?v=20260828" alt="宏华海洋梦想号海工船" fetchpriority="high" decoding="async" />
             <figcaption>梦想号</figcaption>
           </figure>
         </div>
