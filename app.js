@@ -232,6 +232,25 @@ function departmentRecruitmentTrack(rows, recruitmentType) {
   </div>`;
 }
 
+function conversionFlowGroup(rows, recruitmentType, tone) {
+  const planned = total("plannedCount", rows);
+  return `<section class="conversion-flow-group ${tone}" aria-label="${escapeHtml(recruitmentType)}转化链路">
+    <div class="flow-group-heading"><strong>${escapeHtml(recruitmentType)}</strong><span>计划 ${planned} 人</span></div>
+    <div class="flow-track">
+      <div class="flow-ribbon" aria-hidden="true"><i></i><i></i></div>
+      <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div><div class="flow-spark spark-three" aria-hidden="true"></div>
+      ${stages.map(([key, label], index) => {
+        const value = total(key, rows);
+        const previous = index === 0 ? planned : total(stages[index - 1][0], rows);
+        const conversion = clampPercent(value, previous);
+        return `<article class="flow-node ${index === 2 ? "focus" : ""}" tabindex="0" aria-label="${recruitmentType}${label} ${value} 人，阶段转化率 ${conversion}%">
+          <strong>${conversion}%</strong><small>${label}</small><em>${value}人</em>
+        </article>`;
+      }).join("")}
+    </div>
+  </section>`;
+}
+
 function renderOverview() {
   const recruitmentPlanned = total("plannedCount");
   const overallPlanned = recruitmentPlanned + INTERNAL_COORDINATION.plannedCount;
@@ -239,8 +258,9 @@ function renderOverview() {
   const offers = total("offerCount");
   const onboard = total("onboardCount");
   const socialRows = state.items.filter((item) => item.recruitmentType === "社会招聘");
+  const partnerRows = state.items.filter((item) => item.recruitmentType === "协力人员");
   const socialPlanned = total("plannedCount", socialRows);
-  const partnerPlanned = recruitmentPlanned - socialPlanned;
+  const partnerPlanned = total("plannedCount", partnerRows);
   const departmentFocus = [...new Set(state.items.map((item) => item.department))]
     .map((department) => {
       const rows = state.items.filter((item) => item.department === department);
@@ -270,11 +290,11 @@ function renderOverview() {
   content.innerHTML = `
     <section class="hero-deck single-vessel">
       <div class="metrics">
-          ${metricCard("wind", "计划补充", overallPlanned, `社会招聘 ${socialPlanned} · 内部统筹 ${INTERNAL_COORDINATION.plannedCount} · 协力人员 ${partnerPlanned}`, "orange")}
-          ${metricCard("ship", "已面试", interviewed, "")}
-          ${metricCard("beacon", "已发Offer", offers, "", "orange")}
+          ${metricCard("wind", "计划补充", overallPlanned, `社会招聘 ${socialPlanned} · 内部统筹 ${INTERNAL_COORDINATION.plannedCount} · 协力人员 ${partnerPlanned}`, "amber")}
+          ${metricCard("ship", "已面试", interviewed, "", "blue")}
+          ${metricCard("beacon", "已发Offer", offers, "", "coral")}
           ${metricCard("onboard", "已到岗", onboard, "", "green")}
-          ${metricCard("coordination", "内部统筹", INTERNAL_COORDINATION.confirmedCount, `计划 ${INTERNAL_COORDINATION.plannedCount} · 待协调 ${INTERNAL_COORDINATION.pendingCount}`, "green")}
+          ${metricCard("coordination", "内部统筹", INTERNAL_COORDINATION.confirmedCount, `计划 ${INTERNAL_COORDINATION.plannedCount} · 待协调 ${INTERNAL_COORDINATION.pendingCount}`, "violet")}
       </div>
 
       <article class="vessel-card vessel-side vessel-right ripple-card">
@@ -287,18 +307,10 @@ function renderOverview() {
     </section>
 
     <section class="flow-panel ripple-card">
-      <div class="panel-heading"><div><h2>社会招聘转化链路</h2></div><b>相邻阶段转化率 · 对应人数</b></div>
-      <div class="flow-track">
-        <div class="flow-ribbon" aria-hidden="true"><i></i><i></i></div>
-        <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div><div class="flow-spark spark-three" aria-hidden="true"></div>
-        ${stages.map(([key, label], index) => {
-          const value = total(key, socialRows);
-          const previous = index === 0 ? socialPlanned : total(stages[index - 1][0], socialRows);
-          const conversion = clampPercent(value, previous);
-          return `<article class="flow-node ${index === 2 ? "focus" : ""}" tabindex="0" aria-label="${label} ${value} 人，阶段转化率 ${conversion}%">
-            <strong>${conversion}%</strong><small>${label}</small><em>${value}人</em>
-          </article>`;
-        }).join("")}
+      <div class="panel-heading"><div><h2>招聘转化链路</h2></div><b>社会招聘 · 协力人员</b></div>
+      <div class="conversion-flow-groups">
+        ${conversionFlowGroup(socialRows, "社会招聘", "social")}
+        ${conversionFlowGroup(partnerRows, "协力人员", "partner")}
       </div>
     </section>
 
