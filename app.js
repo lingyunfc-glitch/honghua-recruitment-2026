@@ -224,6 +224,15 @@ function renderOverview() {
 
   content.innerHTML = `
     <section class="hero-deck">
+      <article class="vessel-card vessel-side vessel-left ripple-card">
+        <div class="fleet-visual" aria-label="70米OCV海工作业船">
+          <figure class="fleet-ship fleet-ocv">
+            <img src="./assets/ocv-70m-cutout-v1.webp?v=20260828" alt="宏华海洋在建70米OCV海工作业船" fetchpriority="high" decoding="async" />
+            <figcaption>70m OCV</figcaption>
+          </figure>
+        </div>
+      </article>
+
       <div class="metrics">
           ${metricCard("wind", "计划补充", planned, `社会招聘 ${socialPlanned} · 协力人员 ${partnerPlanned}`, "orange")}
           ${metricCard("rig", "合适人员", suitable, "")}
@@ -231,13 +240,8 @@ function renderOverview() {
           ${metricCard("beacon", "已发Offer", offers, "", "orange")}
       </div>
 
-      <article class="vessel-card ripple-card">
-        <div class="vessel-copy"><span>OFFSHORE ENGINEERING FLEET</span><strong>海工双舰</strong><small>逐浪深蓝 · 向新而行</small></div>
-        <div class="fleet-visual" aria-label="梦想号与70米OCV海工作业船">
-          <figure class="fleet-ship fleet-ocv">
-            <img src="./assets/ocv-70m-cutout-v1.webp?v=20260828" alt="宏华海洋在建70米OCV海工作业船" decoding="async" />
-            <figcaption>70m OCV</figcaption>
-          </figure>
+      <article class="vessel-card vessel-side vessel-right ripple-card">
+        <div class="fleet-visual" aria-label="梦想号海工船">
           <figure class="fleet-ship fleet-dream">
             <img src="./assets/dream-ship-cutout-v2.webp?v=20260828" alt="宏华海洋梦想号海工船" fetchpriority="high" decoding="async" />
             <figcaption>梦想号</figcaption>
