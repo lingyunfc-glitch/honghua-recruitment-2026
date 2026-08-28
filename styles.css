@@ -3334,13 +3334,13 @@ body * {
 .hero-deck .metric-card.green strong { color: #07836f; }
 .hero-deck .metric-card.green .metric-icon { color: #079884; border-color: rgba(47,174,143,.25); background: linear-gradient(145deg, #fff, rgba(219,248,238,.9)); }
 
-.hero-deck .metric-card.violet {
-  border-color: rgba(139, 119, 209, .42);
-  background: linear-gradient(160deg, rgba(255,255,255,.99), rgba(239,235,253,.94));
-  box-shadow: inset 0 1px 0 #fff, inset 0 0 26px rgba(126,105,199,.08), 0 14px 32px rgba(91,74,158,.11);
+.hero-deck .metric-card.teal {
+  border-color: rgba(45, 185, 192, .42);
+  background: linear-gradient(160deg, rgba(255,255,255,.99), rgba(224,248,249,.94));
+  box-shadow: inset 0 1px 0 #fff, inset 0 0 26px rgba(35,172,180,.08), 0 14px 32px rgba(26,130,138,.11);
 }
-.hero-deck .metric-card.violet strong { color: #6755bd; }
-.hero-deck .metric-card.violet .metric-icon { color: #7563c8; border-color: rgba(126,105,199,.25); background: linear-gradient(145deg, #fff, rgba(235,230,252,.92)); }
+.hero-deck .metric-card.teal strong { color: #087d87; }
+.hero-deck .metric-card.teal .metric-icon { color: #0994a0; border-color: rgba(41,176,184,.25); background: linear-gradient(145deg, #fff, rgba(219,247,249,.92)); }
 
 /* Two parallel conversion streams: blue for social recruitment, orange for partner staffing. */
 .conversion-flow-groups { display: grid; gap: 15px; }

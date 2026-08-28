@@ -293,8 +293,8 @@ function renderOverview() {
           ${metricCard("wind", "计划补充", overallPlanned, `社会招聘 ${socialPlanned} · 内部统筹 ${INTERNAL_COORDINATION.plannedCount} · 协力人员 ${partnerPlanned}`, "amber")}
           ${metricCard("ship", "已面试", interviewed, "", "blue")}
           ${metricCard("beacon", "已发Offer", offers, "", "coral")}
-          ${metricCard("onboard", "已到岗", onboard, "", "green")}
-          ${metricCard("coordination", "内部统筹", INTERNAL_COORDINATION.confirmedCount, `计划 ${INTERNAL_COORDINATION.plannedCount} · 待协调 ${INTERNAL_COORDINATION.pendingCount}`, "violet")}
+          ${metricCard("onboard", "已到岗", onboard, "", "teal")}
+          ${metricCard("coordination", "内部统筹", INTERNAL_COORDINATION.confirmedCount, `计划 ${INTERNAL_COORDINATION.plannedCount} · 待协调 ${INTERNAL_COORDINATION.pendingCount}`, "green")}
       </div>
 
       <article class="vessel-card vessel-side vessel-right ripple-card">
