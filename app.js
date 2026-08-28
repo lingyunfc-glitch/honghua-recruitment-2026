@@ -3,6 +3,13 @@ const SNAPSHOT_URL = "./data.json";
 const TOKEN_KEY = "hh_recruitment_editor_token";
 const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
 
+const INTERNAL_COORDINATION = Object.freeze({
+  plannedCount: 20,
+  confirmedCount: 11,
+  pendingCount: 9,
+  onboardCount: 0,
+});
+
 const MOTION_PROFILES = {
   full: { fps: 45, dpr: 1.5, currents: 5, motes: 36, tracers: 8, trail: 12, drops: 2, burst: 10 },
   balanced: { fps: 30, dpr: 1.2, currents: 4, motes: 24, tracers: 5, trail: 6, drops: 1, burst: 5 },
@@ -165,6 +172,7 @@ function iconSvg(kind) {
     rig: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 54h28M22 54l7-38h8l7 38M25 38h14M27 27h10M20 46h24M29 16l4-8 4 8"/></svg>',
     ship: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 39h45l-8 13H19zM21 39V25h25v14M27 25v-9h12v9M14 55c6 3 11 3 17 0 6 3 11 3 18 0"/></svg>',
     beacon: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M23 54h18M27 54l3-31h4l3 31M25 38h14M26 30h12M32 13v-5M21 17l-5-4M43 17l5-4"/><path d="M19 48c8 4 18 4 26 0"/></svg>',
+    coordination: '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="24" cy="23" r="8"/><circle cx="43" cy="26" r="6"/><path d="M10 51c1-11 6-17 14-17s13 6 14 17M36 50c1-8 4-13 10-13 5 0 8 4 9 11M43 10v8M39 14h8"/></svg>',
   };
   return icons[kind] || icons.ship;
 }
@@ -211,12 +219,14 @@ function overviewRecruitmentGroup(rows, recruitmentType) {
 }
 
 function renderOverview() {
-  const planned = total("plannedCount");
+  const recruitmentPlanned = total("plannedCount");
+  const overallPlanned = recruitmentPlanned + INTERNAL_COORDINATION.plannedCount;
   const suitable = total("suitableCount");
   const interviewed = total("interviewCount");
   const offers = total("offerCount");
-  const socialPlanned = total("plannedCount", state.items.filter((item) => item.recruitmentType === "社会招聘"));
-  const partnerPlanned = planned - socialPlanned;
+  const socialRows = state.items.filter((item) => item.recruitmentType === "社会招聘");
+  const socialPlanned = total("plannedCount", socialRows);
+  const partnerPlanned = recruitmentPlanned - socialPlanned;
   const departmentFocus = [...new Set(state.items.map((item) => item.department))]
     .map((department) => {
       const rows = state.items.filter((item) => item.department === department);
@@ -240,14 +250,17 @@ function renderOverview() {
   if (safetyIndex >= 0 && procurementIndex >= 0) {
     [departmentFocus[safetyIndex], departmentFocus[procurementIndex]] = [departmentFocus[procurementIndex], departmentFocus[safetyIndex]];
   }
+  const planningIndex = departmentFocus.findIndex((item) => item.department === "企划部");
+  if (planningIndex >= 0) departmentFocus.push(departmentFocus.splice(planningIndex, 1)[0]);
 
   content.innerHTML = `
     <section class="hero-deck single-vessel">
       <div class="metrics">
-          ${metricCard("wind", "计划补充", planned, `社会招聘 ${socialPlanned} · 协力人员 ${partnerPlanned}`, "orange")}
+          ${metricCard("wind", "计划补充", overallPlanned, `社会招聘 ${socialPlanned} · 内部统筹 ${INTERNAL_COORDINATION.plannedCount} · 协力人员 ${partnerPlanned}`, "orange")}
           ${metricCard("rig", "合适人员", suitable, "")}
           ${metricCard("ship", "已面试", interviewed, "")}
           ${metricCard("beacon", "已发Offer", offers, "", "orange")}
+          ${metricCard("coordination", "内部统筹", INTERNAL_COORDINATION.confirmedCount, `计划 ${INTERNAL_COORDINATION.plannedCount} · 待协调 ${INTERNAL_COORDINATION.pendingCount}`, "green")}
       </div>
 
       <article class="vessel-card vessel-side vessel-right ripple-card">
@@ -261,13 +274,13 @@ function renderOverview() {
     </section>
 
     <section class="flow-panel ripple-card">
-      <div class="panel-heading"><div><span>OCEAN FLOW</span><h2>招聘转化链路</h2></div><b>相邻阶段转化率 · 对应人数</b></div>
+      <div class="panel-heading"><div><span>OCEAN FLOW</span><h2>社会招聘转化链路</h2></div><b>相邻阶段转化率 · 对应人数</b></div>
       <div class="flow-track">
         <div class="flow-ribbon" aria-hidden="true"><i></i><i></i></div>
         <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div><div class="flow-spark spark-three" aria-hidden="true"></div>
         ${stages.map(([key, label], index) => {
-          const value = total(key);
-          const previous = index === 0 ? planned : total(stages[index - 1][0]);
+          const value = total(key, socialRows);
+          const previous = index === 0 ? socialPlanned : total(stages[index - 1][0], socialRows);
           const conversion = clampPercent(value, previous);
           return `<article class="flow-node ${index === 2 ? "focus" : ""}" tabindex="0" aria-label="${label} ${value} 人，阶段转化率 ${conversion}%">
             <strong>${conversion}%</strong><small>${label}</small><em>${value}人</em>
@@ -297,6 +310,23 @@ function renderOverview() {
             ${overviewRecruitmentGroup(item.rows, "协力人员")}
           </div>
         </article>`).join("")}
+        <article class="meeting-department-card internal-coordination-card">
+          <div class="meeting-department-heading">
+            <div><small>INTERNAL COORDINATION</small><h3>内部统筹</h3></div>
+            <span class="internal-plan-badge">计划 ${INTERNAL_COORDINATION.plannedCount} 人</span>
+          </div>
+          <div class="internal-coordination-numbers">
+            <span><small>计划统筹</small><b>${INTERNAL_COORDINATION.plannedCount}</b></span>
+            <span><small>已明确</small><b>${INTERNAL_COORDINATION.confirmedCount}</b></span>
+            <span><small>待协调</small><b>${INTERNAL_COORDINATION.pendingCount}</b></span>
+            <span><small>已到岗</small><b>${INTERNAL_COORDINATION.onboardCount}</b></span>
+          </div>
+          <div class="internal-progress" aria-label="内部统筹已明确 ${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%">
+            <div><span>人员明确进度</span><strong>${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%</strong></div>
+            <i><b style="width:${clampPercent(INTERNAL_COORDINATION.confirmedCount, INTERNAL_COORDINATION.plannedCount)}%"></b></i>
+          </div>
+          <p class="internal-coordination-note">已明确 ${INTERNAL_COORDINATION.confirmedCount} 人，剩余 ${INTERNAL_COORDINATION.pendingCount} 人持续协调。</p>
+        </article>
       </div>
     </section>`;
 
@@ -347,6 +377,10 @@ function renderPositions(focusSearch = false, cursor = null) {
     onboardCount: total("onboardCount", filtered),
     remainingCount: total("remainingCount", filtered),
   };
+  const showInternalCoordination = state.department === "全部部门"
+    && state.recruitmentType === "全部方式"
+    && state.progress === "全部进展"
+    && !state.query.trim();
 
   content.innerHTML = `
     <section class="positions-head">
@@ -380,7 +414,18 @@ function renderPositions(focusSearch = false, cursor = null) {
             <td class="time-cell">${formatTime(item.updatedAt)}</td>
             ${state.canEdit ? `<td><button class="edit-button" data-edit-id="${item.id}" type="button">更新</button></td>` : ""}
           </tr>`).join("") : `<tr><td class="empty-cell" colspan="${state.canEdit ? 14 : 13}">没有符合当前筛选条件的岗位</td></tr>`}
-          <tr>
+          ${showInternalCoordination ? `<tr class="internal-coordination-table-row">
+            <td colspan="${state.canEdit ? 14 : 13}">
+              <div class="internal-table-summary">
+                <div><small>INTERNAL COORDINATION</small><strong>内部统筹</strong><span>单列展示，不纳入岗位筛选合计</span></div>
+                <b><small>计划</small><strong>${INTERNAL_COORDINATION.plannedCount}</strong></b>
+                <b><small>已明确</small><strong>${INTERNAL_COORDINATION.confirmedCount}</strong></b>
+                <b><small>待协调</small><strong>${INTERNAL_COORDINATION.pendingCount}</strong></b>
+                <b><small>已到岗</small><strong>${INTERNAL_COORDINATION.onboardCount}</strong></b>
+              </div>
+            </td>
+          </tr>` : ""}
+          <tr class="recruitment-total-row">
             <td class="row-number">合计</td>
             <td class="department-cell"><strong>筛选范围</strong></td>
             <td class="position-cell"><strong>当前筛选合计</strong><span>${filtered.length} 条岗位记录</span></td>

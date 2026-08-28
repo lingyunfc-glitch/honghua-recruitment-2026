@@ -2706,7 +2706,7 @@ body {
 .hero-deck.single-vessel > .metrics {
   grid-column: 1;
   grid-row: 1;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   gap: 13px !important;
 }
 .hero-deck.single-vessel > .vessel-right {
@@ -2930,7 +2930,7 @@ body * {
 .overview-role-meta > span { color: #5d7b94; font-size: 13px; font-weight: 700; white-space: nowrap; }
 .overview-role-meta > span b { margin: 0 2px; color: #0b5792; font-size: 19px; }
 .overview-role-heading mark { min-width: 92px; padding: 5px 9px; font-size: 12px; font-weight: 800; }
-.meeting-department-heading { grid-template-columns: auto 1fr; grid-template-areas: "index title"; }
+.meeting-department-heading { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title jump"; }
 .recruitment-summary-only.social { background: linear-gradient(135deg, rgba(247,253,255,.94), rgba(224,245,252,.72)); }
 .recruitment-summary-only.partner { background: linear-gradient(135deg, rgba(255,249,243,.9), rgba(255,239,226,.68)); }
 .recruitment-big-numbers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 11px 8px 12px; }
@@ -2942,6 +2942,105 @@ body * {
 .recruitment-big-numbers strong { margin-top: 3px; color: #0b5792; font-size: 27px; line-height: 1; font-variant-numeric: tabular-nums; }
 .recruitment-big-numbers span:nth-child(3) strong { color: #df651b; }
 .recruitment-big-numbers span:nth-child(4) strong { color: #07857c; }
+
+/* Internal coordination — one summary layer, separate from the social recruitment funnel. */
+.hero-deck .metric-card.green {
+  border-color: rgba(58, 183, 158, .4);
+  background: linear-gradient(160deg, rgba(255,255,255,.99), rgba(229,249,243,.94));
+  box-shadow: inset 0 1px 0 #fff, inset 0 0 25px rgba(42,169,145,.08), 0 14px 32px rgba(29,139,120,.11);
+}
+.hero-deck .metric-card.green strong { color: #078579; }
+.hero-deck .metric-card.green .metric-icon {
+  color: #098f83;
+  border-color: rgba(47,174,151,.25);
+  background: linear-gradient(145deg, rgba(255,255,255,.94), rgba(222,248,240,.82));
+}
+.hero-deck .metric-card:nth-child(5) .metric-icon { animation-delay: -3.1s; }
+.hero-deck.single-vessel .metric-card:first-child small {
+  max-width: 100%;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+.internal-coordination-card {
+  min-height: 286px;
+  border-color: rgba(66, 183, 160, .34);
+  background: linear-gradient(145deg, rgba(250,255,254,.95), rgba(225,247,241,.82));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.96), 0 13px 28px rgba(24,128,113,.1);
+}
+.internal-plan-badge {
+  grid-area: jump;
+  justify-self: end;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #087b70;
+  background: rgba(216,245,237,.92);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.internal-coordination-numbers {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 15px 0 14px;
+  overflow: hidden;
+  border: 1px solid rgba(69,175,156,.19);
+  border-radius: 14px;
+  background: rgba(255,255,255,.58);
+}
+.internal-coordination-numbers span {
+  display: flex;
+  min-height: 75px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.internal-coordination-numbers span + span { border-left: 1px solid rgba(69,175,156,.18); }
+.internal-coordination-numbers small { color: #638b84; font-size: 12px; font-weight: 700; }
+.internal-coordination-numbers b { margin-top: 4px; color: #0b5c88; font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
+.internal-coordination-numbers span:nth-child(2) b,
+.internal-coordination-numbers span:nth-child(4) b { color: #078579; }
+.internal-coordination-numbers span:nth-child(3) b { color: #d96a20; }
+.internal-progress { padding: 0 2px; }
+.internal-progress > div { display: flex; align-items: center; justify-content: space-between; color: #557d78; font-size: 13px; font-weight: 700; }
+.internal-progress strong { color: #078579; font-size: 18px; }
+.internal-progress > i { display: block; height: 8px; margin-top: 7px; overflow: hidden; border-radius: 99px; background: rgba(104,179,167,.18); }
+.internal-progress > i > b { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #38bea5, #1a92d5); box-shadow: 0 0 14px rgba(31,170,159,.32); }
+.internal-coordination-note { margin: 12px 2px 0; color: #63857e; font-size: 13px; font-weight: 600; }
+
+.internal-coordination-table-row td {
+  height: auto;
+  padding: 12px 14px !important;
+  background: linear-gradient(90deg, rgba(232,250,245,.92), rgba(231,246,253,.82)) !important;
+}
+.internal-table-summary {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.6fr) repeat(4, minmax(110px, .55fr));
+  align-items: center;
+  min-height: 76px;
+  overflow: hidden;
+  border: 1px solid rgba(59,171,151,.2);
+  border-radius: 14px;
+  background: rgba(255,255,255,.58);
+}
+.internal-table-summary > div { padding: 10px 18px; text-align: left; }
+.internal-table-summary > div small { display: block; color: #3a9c92; font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+.internal-table-summary > div strong { display: inline-block; margin-top: 2px; color: #074b79; font-size: 19px; }
+.internal-table-summary > div span { margin-left: 10px; color: #718b9d; font-size: 12px; font-weight: 600; }
+.internal-table-summary > b {
+  display: flex;
+  min-height: 54px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid rgba(69,175,156,.18);
+}
+.internal-table-summary > b small { color: #638b84; font-size: 12px; }
+.internal-table-summary > b strong { margin-top: 3px; color: #0b5c88; font-size: 25px; line-height: 1; }
+.internal-table-summary > b:nth-child(3) strong,
+.internal-table-summary > b:nth-child(5) strong { color: #078579; }
+.internal-table-summary > b:nth-child(4) strong { color: #d96a20; }
+.recruitment-total-row td { background: rgba(236,247,253,.72); font-weight: 700; }
 
 @media (max-width: 620px) {
   .meeting-department-card { padding: 15px 12px; }
@@ -2971,6 +3070,7 @@ body * {
   .hero-deck.single-vessel > .metrics {
     grid-column: 1;
     grid-row: 1;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
   .hero-deck.single-vessel > .vessel-right {
     grid-column: 1;
@@ -2983,6 +3083,9 @@ body * {
 
 @media (max-width: 620px) {
   .hero-deck.single-vessel > .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .internal-coordination-numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .internal-coordination-numbers span:nth-child(3) { border-left: 0; border-top: 1px solid rgba(69,175,156,.18); }
+  .internal-coordination-numbers span:nth-child(4) { border-top: 1px solid rgba(69,175,156,.18); }
   .hero-deck.single-vessel .vessel-side { min-height: 180px !important; }
   .hero-deck.single-vessel .vessel-side .fleet-dream { width: min(78%, 340px) !important; }
   .hero-deck.single-vessel .vessel-side .fleet-ship figcaption { right: 11% !important; bottom: -15px !important; }
