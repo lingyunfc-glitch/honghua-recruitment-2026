@@ -172,6 +172,7 @@ function iconSvg(kind) {
     rig: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 54h28M22 54l7-38h8l7 38M25 38h14M27 27h10M20 46h24M29 16l4-8 4 8"/></svg>',
     ship: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 39h45l-8 13H19zM21 39V25h25v14M27 25v-9h12v9M14 55c6 3 11 3 17 0 6 3 11 3 18 0"/></svg>',
     beacon: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M23 54h18M27 54l3-31h4l3 31M25 38h14M26 30h12M32 13v-5M21 17l-5-4M43 17l5-4"/><path d="M19 48c8 4 18 4 26 0"/></svg>',
+    onboard: '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="25" cy="21" r="8"/><path d="M11 51c1-12 6-18 14-18s13 6 14 18M38 35l6 6 11-13M38 52h18"/></svg>',
     coordination: '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="24" cy="23" r="8"/><circle cx="43" cy="26" r="6"/><path d="M10 51c1-11 6-17 14-17s13 6 14 17M36 50c1-8 4-13 10-13 5 0 8 4 9 11M43 10v8M39 14h8"/></svg>',
   };
   return icons[kind] || icons.ship;
@@ -234,9 +235,9 @@ function departmentRecruitmentTrack(rows, recruitmentType) {
 function renderOverview() {
   const recruitmentPlanned = total("plannedCount");
   const overallPlanned = recruitmentPlanned + INTERNAL_COORDINATION.plannedCount;
-  const suitable = total("suitableCount");
   const interviewed = total("interviewCount");
   const offers = total("offerCount");
+  const onboard = total("onboardCount");
   const socialRows = state.items.filter((item) => item.recruitmentType === "社会招聘");
   const socialPlanned = total("plannedCount", socialRows);
   const partnerPlanned = recruitmentPlanned - socialPlanned;
@@ -270,9 +271,9 @@ function renderOverview() {
     <section class="hero-deck single-vessel">
       <div class="metrics">
           ${metricCard("wind", "计划补充", overallPlanned, `社会招聘 ${socialPlanned} · 内部统筹 ${INTERNAL_COORDINATION.plannedCount} · 协力人员 ${partnerPlanned}`, "orange")}
-          ${metricCard("rig", "合适人员", suitable, "")}
           ${metricCard("ship", "已面试", interviewed, "")}
           ${metricCard("beacon", "已发Offer", offers, "", "orange")}
+          ${metricCard("onboard", "已到岗", onboard, "", "green")}
           ${metricCard("coordination", "内部统筹", INTERNAL_COORDINATION.confirmedCount, `计划 ${INTERNAL_COORDINATION.plannedCount} · 待协调 ${INTERNAL_COORDINATION.pendingCount}`, "green")}
       </div>
 
@@ -286,7 +287,7 @@ function renderOverview() {
     </section>
 
     <section class="flow-panel ripple-card">
-      <div class="panel-heading"><div><span>OCEAN FLOW</span><h2>社会招聘转化链路</h2></div><b>相邻阶段转化率 · 对应人数</b></div>
+      <div class="panel-heading"><div><h2>社会招聘转化链路</h2></div><b>相邻阶段转化率 · 对应人数</b></div>
       <div class="flow-track">
         <div class="flow-ribbon" aria-hidden="true"><i></i><i></i></div>
         <div class="flow-spark spark-one" aria-hidden="true"></div><div class="flow-spark spark-two" aria-hidden="true"></div><div class="flow-spark spark-three" aria-hidden="true"></div>
@@ -302,11 +303,11 @@ function renderOverview() {
     </section>
 
     <section class="priority-panel meeting-progress-panel">
-      <div class="panel-heading meeting-progress-heading"><div><span>RECRUITMENT PANORAMA</span><h2>部门招聘进展全景</h2><p>一行看部门｜双轨看进度</p></div><button id="view-all-positions" type="button">进入数据维护 →</button></div>
+      <div class="panel-heading meeting-progress-heading"><div><h2>部门招聘进展全景</h2></div><button id="view-all-positions" type="button">进入数据维护 →</button></div>
       <div class="department-progress-matrix">
         ${departmentFocus.map((item) => `<article class="department-track-card">
           <div class="department-track-heading">
-            <div><small>DEPARTMENT</small><h3>${escapeHtml(item.department)}</h3></div>
+            <div><h3>${escapeHtml(item.department)}</h3></div>
             <button class="department-jump" data-department="${escapeHtml(item.department)}" type="button" aria-label="查看${escapeHtml(item.department)}岗位明细">查看明细 →</button>
           </div>
           <div class="department-track-lines">
@@ -316,7 +317,7 @@ function renderOverview() {
         </article>`).join("")}
         <article class="department-track-card internal-track-card">
           <div class="department-track-heading">
-            <div><small>INTERNAL COORDINATION</small><h3>内部统筹</h3></div>
+            <div><h3>内部统筹</h3></div>
             <span class="internal-track-status">已明确 ${INTERNAL_COORDINATION.confirmedCount} / ${INTERNAL_COORDINATION.plannedCount}</span>
           </div>
           <div class="internal-track-content">
@@ -386,7 +387,7 @@ function renderPositions(focusSearch = false, cursor = null) {
 
   content.innerHTML = `
     <section class="positions-head">
-      <div><span>POSITION PROGRESS</span><h1>岗位进度</h1></div>
+      <div><h1>岗位进度</h1></div>
       <div class="records"><strong>${filtered.length}</strong><span>条岗位记录</span></div>
     </section>
     <section class="filter-bar">
@@ -435,7 +436,7 @@ function renderPositions(focusSearch = false, cursor = null) {
           ${showInternalCoordination ? `<tr class="internal-coordination-table-row">
             <td colspan="${state.canEdit ? 14 : 13}">
               <div class="internal-table-summary">
-                <div><small>INTERNAL COORDINATION</small><strong>内部统筹</strong><span>单列展示，不纳入岗位筛选合计</span></div>
+                <div><strong>内部统筹</strong><span>单列展示，不纳入岗位筛选合计</span></div>
                 <b><small>计划</small><strong>${INTERNAL_COORDINATION.plannedCount}</strong></b>
                 <b><small>已明确</small><strong>${INTERNAL_COORDINATION.confirmedCount}</strong></b>
                 <b><small>待协调</small><strong>${INTERNAL_COORDINATION.pendingCount}</strong></b>
