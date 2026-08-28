@@ -2392,3 +2392,89 @@ body {
   .flow-spark { display: none !important; }
   .flow-node::before { animation-duration: 10s !important; }
 }
+
+/* Offshore fleet: two static transparent vessels with a lightweight 3D depth cue. */
+.hero-deck .vessel-card {
+  min-height: 232px !important;
+  contain: layout !important;
+}
+.hero-deck .vessel-card > .fleet-visual {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  overflow: visible;
+  perspective: 1200px;
+  pointer-events: none;
+}
+.hero-deck .vessel-card .fleet-ship {
+  position: absolute;
+  margin: 0;
+  transform-style: preserve-3d;
+}
+.hero-deck .vessel-card .fleet-ship img,
+.hero-deck .vessel-card:hover .fleet-ship img {
+  position: relative !important;
+  inset: auto !important;
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  animation: none !important;
+  will-change: auto !important;
+  image-rendering: auto !important;
+}
+.hero-deck .vessel-card .fleet-ocv {
+  z-index: 3;
+  left: -2%;
+  bottom: 2%;
+  width: 56%;
+  transform: translateZ(34px) rotateY(2.5deg);
+}
+.hero-deck .vessel-card .fleet-ocv img,
+.hero-deck .vessel-card:hover .fleet-ocv img {
+  transform: none !important;
+  filter: saturate(1.08) contrast(1.1) brightness(1.02) drop-shadow(-9px 18px 13px rgba(4,55,96,.24)) !important;
+}
+.hero-deck .vessel-card .fleet-dream {
+  z-index: 2;
+  right: -1%;
+  bottom: 5%;
+  width: 57%;
+  transform: translateZ(8px) rotateY(-2.5deg);
+}
+.hero-deck .vessel-card .fleet-dream img,
+.hero-deck .vessel-card:hover .fleet-dream img {
+  transform: none !important;
+  filter: saturate(1.08) contrast(1.11) brightness(1.02) drop-shadow(-9px 18px 13px rgba(4,55,96,.22)) !important;
+}
+.hero-deck .vessel-card .fleet-ship figcaption {
+  position: absolute;
+  z-index: 4;
+  right: 11%;
+  bottom: 1%;
+  padding: 4px 9px;
+  border: 1px solid rgba(113,180,211,.3);
+  border-radius: 999px;
+  color: #22648d;
+  background: rgba(247,253,255,.9);
+  box-shadow: 0 5px 13px rgba(25,94,135,.1);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+.hero-deck .vessel-card .fleet-ocv figcaption { right: auto; left: 12%; }
+
+@media (max-width: 1180px) {
+  .hero-deck .vessel-card { min-height: 244px !important; }
+  .hero-deck .vessel-card .fleet-ocv { left: 0; bottom: 3%; width: 55%; }
+  .hero-deck .vessel-card .fleet-dream { right: 0; bottom: 6%; width: 56%; }
+}
+@media (max-width: 760px) {
+  .hero-deck .vessel-card { min-height: 224px !important; }
+  .hero-deck .vessel-card .fleet-ocv { left: -1%; bottom: 2%; width: 58%; }
+  .hero-deck .vessel-card .fleet-dream { right: -1%; bottom: 6%; width: 59%; }
+  .hero-deck .vessel-card .fleet-ship figcaption { padding: 3px 7px; font-size: 9px; }
+}
