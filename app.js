@@ -2,6 +2,7 @@ const API_BASE = "https://api.zhangxiaolei.top";
 const SNAPSHOT_URL = "./data.json";
 const TOKEN_KEY = "hh_recruitment_editor_token";
 const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
+const INTERNAL_COORDINATION_CACHE_KEY = "hh_recruitment_internal_coordination";
 
 const DEFAULT_INTERNAL_COORDINATION = Object.freeze({
   plannedCount: 20,
@@ -64,6 +65,7 @@ const state = {
 };
 
 let lastAnimatedTab = "";
+let lastLoadStartedAt = 0;
 
 const formatter = new Intl.DateTimeFormat("zh-CN", {
   timeZone: "Asia/Shanghai",
@@ -196,6 +198,24 @@ function metricCard(kind, label, value, note, accent = "blue") {
     <div class="metric-copy"><span>${label}</span><strong>${value}<em>人</em></strong>${note ? `<small>${note}</small>` : ""}</div>
     <i class="metric-tide" aria-hidden="true"></i>
   </article>`;
+}
+
+function cacheInternalCoordination(item) {
+  try {
+    window.localStorage.setItem(INTERNAL_COORDINATION_CACHE_KEY, JSON.stringify(item));
+  } catch {
+    // Local storage is only a fallback when the public API is temporarily unavailable.
+  }
+}
+
+function cachedInternalCoordination() {
+  try {
+    const item = JSON.parse(window.localStorage.getItem(INTERNAL_COORDINATION_CACHE_KEY) || "null");
+    if (!item || !Number.isFinite(Number(item.plannedCount)) || !Number.isFinite(Number(item.confirmedCount))) return null;
+    return item;
+  } catch {
+    return null;
+  }
 }
 
 function channelMetricCard(kind, label, planned, stats, accent = "blue", overall = false) {
@@ -872,13 +892,14 @@ function render() {
 
 async function readData() {
   const token = editorToken();
-  const internalCoordinationPromise = api("/api/internal-coordination")
+  const internalCoordinationPromise = api(`/api/internal-coordination?t=${Date.now()}`)
     .then(async (response) => {
       const data = await response.json();
       if (!response.ok || !data.item) throw new Error(data.error || "内部统筹数据读取失败");
+      cacheInternalCoordination(data.item);
       return data.item;
     })
-    .catch(() => state.internalCoordination);
+    .catch(() => cachedInternalCoordination() || state.internalCoordination);
   if (token) {
     try {
       const response = await api("/api/recruitment");
@@ -897,6 +918,7 @@ async function readData() {
 }
 
 async function load() {
+  lastLoadStartedAt = Date.now();
   state.loading = state.items.length === 0;
   state.error = "";
   render();
@@ -1037,6 +1059,7 @@ function openInternalEditor() {
       const data = await response.json();
       if (!response.ok || !data.item) throw new Error(data.error || "保存失败");
       state.internalCoordination = { ...DEFAULT_INTERNAL_COORDINATION, ...data.item };
+      cacheInternalCoordination(state.internalCoordination);
       closeOverlay();
       render();
       showNotice("内部统筹进度已保存并同步更新", 5000);
@@ -1083,4 +1106,10 @@ adminButton.addEventListener("click", async () => {
 initWaterClickRipple();
 void load();
 window.setInterval(() => void load(), 60000);
+window.addEventListener("focus", () => {
+  if (Date.now() - lastLoadStartedAt > 5000) void load();
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && Date.now() - lastLoadStartedAt > 5000) void load();
+});
 
