@@ -1112,4 +1112,7 @@ window.addEventListener("focus", () => {
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible" && Date.now() - lastLoadStartedAt > 5000) void load();
 });
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted || Date.now() - lastLoadStartedAt > 5000) void load();
+});
 
