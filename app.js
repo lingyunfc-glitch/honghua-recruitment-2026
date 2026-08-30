@@ -914,7 +914,12 @@ async function readData() {
   const response = await fetch(`${SNAPSHOT_URL}?t=${Date.now()}`, { cache: "no-store" });
   const data = await response.json();
   if (!response.ok || !data.items) throw new Error(data.error || "读取失败");
-  return { ...data, items: mergePublicItems(data.items, recentPublicItems()), internalCoordination: await internalCoordinationPromise, canEdit: false };
+  return {
+    ...data,
+    items: mergePublicItems(data.items, recentPublicItems()),
+    internalCoordination: data.internalCoordination || await internalCoordinationPromise,
+    canEdit: false,
+  };
 }
 
 async function load() {

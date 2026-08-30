@@ -21,10 +21,14 @@ jobs:
       - name: Download public data
         env:
           DATA_URL: https://api.zhangxiaolei.top/api/recruitment
+          INTERNAL_DATA_URL: https://api.zhangxiaolei.top/api/internal-coordination
         run: |
           curl --fail --silent --show-error --location --retry 3 \
             --user-agent "Mozilla/5.0 GitHub-Actions recruitment-sync" \
             "$DATA_URL" --output data.download.json
+          curl --fail --silent --show-error --location --retry 3 \
+            --user-agent "Mozilla/5.0 GitHub-Actions recruitment-sync" \
+            "$INTERNAL_DATA_URL" --output internal.download.json
 
       - name: Validate and remove private fields
         run: |
@@ -33,18 +37,30 @@ jobs:
           from pathlib import Path
 
           source = json.loads(Path("data.download.json").read_text(encoding="utf-8"))
+          internal_source = json.loads(Path("internal.download.json").read_text(encoding="utf-8"))
           items = source.get("items")
           if not isinstance(items, list) or len(items) != 18:
               raise SystemExit("Unexpected recruitment data")
+          internal = internal_source.get("item")
+          internal_fields = [
+              "plannedCount", "confirmedCount", "salaryCount",
+              "pendingCount", "onboardCount", "updatedAt",
+          ]
+          if not isinstance(internal, dict) or not all(key in internal for key in internal_fields):
+              raise SystemExit("Unexpected internal coordination data")
           for item in items:
               item["candidateNames"] = None
-          payload = {"items": items, "canEdit": False}
+          payload = {
+              "items": items,
+              "internalCoordination": {key: internal[key] for key in internal_fields},
+              "canEdit": False,
+          }
           Path("data.json").write_text(
               json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
               encoding="utf-8",
           )
           PY
-          rm data.download.json
+          rm data.download.json internal.download.json
 
       - name: Publish changes
         run: |

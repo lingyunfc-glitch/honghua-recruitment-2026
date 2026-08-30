@@ -307,5 +307,13 @@
       "currentProgress": "待更新"
     }
   ],
+  "internalCoordination": {
+    "plannedCount": 20,
+    "confirmedCount": 10,
+    "salaryCount": 0,
+    "pendingCount": 10,
+    "onboardCount": 0,
+    "updatedAt": "2026-08-28T08:47:41.235Z"
+  },
   "canEdit": false
 }
