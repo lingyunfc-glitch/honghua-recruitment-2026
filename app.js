@@ -5,11 +5,11 @@ const PUBLIC_CACHE_KEY = "hh_recruitment_recent_public_data";
 const INTERNAL_COORDINATION_CACHE_KEY = "hh_recruitment_internal_coordination";
 
 const DEFAULT_INTERNAL_COORDINATION = Object.freeze({
-  plannedCount: 20,
-  confirmedCount: 11,
-  salaryCount: 10,
-  pendingCount: 9,
-  onboardCount: 0,
+  plannedCount: 13,
+  confirmedCount: 13,
+  salaryCount: 13,
+  pendingCount: 0,
+  onboardCount: 13,
   updatedAt: null,
 });
 

@@ -1,6 +1,9 @@
 name: Sync public recruitment data
 
 on:
+  push:
+    paths:
+      - ".github/workflows/sync-data.yml"
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
@@ -39,8 +42,15 @@ jobs:
           source = json.loads(Path("data.download.json").read_text(encoding="utf-8"))
           internal_source = json.loads(Path("internal.download.json").read_text(encoding="utf-8"))
           items = source.get("items")
-          if not isinstance(items, list) or len(items) != 18:
+          if not isinstance(items, list) or not items:
               raise SystemExit("Unexpected recruitment data")
+          ids = [item.get("id") for item in items]
+          if any(not isinstance(value, int) or value < 1 for value in ids) or len(ids) != len(set(ids)):
+              raise SystemExit("Invalid recruitment IDs")
+          for item in items:
+              for field in ["plannedCount", "suitableCount", "interviewCount", "salaryCount", "offerCount", "onboardCount"]:
+                  if not isinstance(item.get(field), int) or item[field] < 0:
+                      raise SystemExit("Invalid recruitment counts")
           internal = internal_source.get("item")
           internal_fields = [
               "plannedCount", "confirmedCount", "salaryCount",
