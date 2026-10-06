@@ -379,8 +379,8 @@
     "plannedCount": 13,
     "confirmedCount": 13,
     "salaryCount": 13,
-    "onboardCount": 13,
     "pendingCount": 0,
+    "onboardCount": 13,
     "updatedAt": "2026-10-06T01:57:54Z"
   },
   "canEdit": false
