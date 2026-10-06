@@ -48,6 +48,8 @@ jobs:
           if any(not isinstance(value, int) or value < 1 for value in ids) or len(ids) != len(set(ids)):
               raise SystemExit("Invalid recruitment IDs")
           for item in items:
+              if not all(isinstance(item.get(field), str) and item[field].strip() for field in ["department", "position", "detail", "recruitmentType"]):
+                  raise SystemExit("Invalid recruitment position")
               for field in ["plannedCount", "suitableCount", "interviewCount", "salaryCount", "offerCount", "onboardCount"]:
                   if not isinstance(item.get(field), int) or item[field] < 0:
                       raise SystemExit("Invalid recruitment counts")

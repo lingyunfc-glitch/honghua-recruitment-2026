@@ -13,7 +13,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "待更新"
     },
@@ -30,7 +30,7 @@
       "offerCount": 1,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 0,
       "currentProgress": "已发Offer"
     },
@@ -47,7 +47,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "已面试/确认"
     },
@@ -64,7 +64,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "已面试/确认"
     },
@@ -81,7 +81,7 @@
       "offerCount": 1,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 0,
       "currentProgress": "已发Offer"
     },
@@ -98,7 +98,7 @@
       "offerCount": 1,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 0,
       "currentProgress": "已发Offer"
     },
@@ -115,7 +115,7 @@
       "offerCount": 1,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 0,
       "currentProgress": "已发Offer"
     },
@@ -132,7 +132,7 @@
       "offerCount": 6,
       "onboardCount": 1,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 6,
       "currentProgress": "部分到岗"
     },
@@ -149,7 +149,7 @@
       "offerCount": 1,
       "onboardCount": 1,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 0,
       "currentProgress": "已完成"
     },
@@ -166,7 +166,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "已面试/确认"
     },
@@ -183,29 +183,12 @@
       "offerCount": 1,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 0,
       "currentProgress": "已发Offer"
     },
     {
       "id": 12,
-      "department": "质量管理部",
-      "position": "质量检验",
-      "detail": "轮机",
-      "recruitmentType": "社会招聘",
-      "plannedCount": 1,
-      "suitableCount": 0,
-      "interviewCount": 0,
-      "salaryCount": 0,
-      "offerCount": 0,
-      "onboardCount": 0,
-      "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
-      "remainingCount": 1,
-      "currentProgress": "待更新"
-    },
-    {
-      "id": 13,
       "department": "质量管理部",
       "position": "质量检验",
       "detail": "入库检验",
@@ -217,12 +200,12 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "待更新"
     },
     {
-      "id": 14,
+      "id": 13,
       "department": "质量管理部",
       "position": "质量管理",
       "detail": "质量管理",
@@ -234,12 +217,12 @@
       "offerCount": 1,
       "onboardCount": 1,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 2,
       "currentProgress": "部分到岗"
     },
     {
-      "id": 15,
+      "id": 14,
       "department": "安全保障部",
       "position": "安全环保管理",
       "detail": "安全环保管理",
@@ -251,9 +234,26 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 5,
       "currentProgress": "已有合适人选"
+    },
+    {
+      "id": 15,
+      "department": "海风市场部",
+      "position": "产业开发",
+      "detail": "产业开发",
+      "recruitmentType": "社会招聘",
+      "plannedCount": 1,
+      "suitableCount": 0,
+      "interviewCount": 0,
+      "salaryCount": 0,
+      "offerCount": 0,
+      "onboardCount": 0,
+      "candidateNames": null,
+      "updatedAt": "2026-10-06T02:28:22Z",
+      "remainingCount": 1,
+      "currentProgress": "待更新"
     },
     {
       "id": 16,
@@ -268,7 +268,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "待更新"
     },
@@ -285,7 +285,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 20,
       "currentProgress": "薪酬谈判"
     },
@@ -302,7 +302,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 10,
       "currentProgress": "待更新"
     },
@@ -319,7 +319,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "待更新"
     },
@@ -336,7 +336,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "已面试/确认"
     },
@@ -353,7 +353,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "薪酬谈判"
     },
@@ -370,7 +370,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T01:57:54Z",
+      "updatedAt": "2026-10-06T02:28:22Z",
       "remainingCount": 1,
       "currentProgress": "待更新"
     }
@@ -379,9 +379,9 @@
     "plannedCount": 13,
     "confirmedCount": 13,
     "salaryCount": 13,
-    "pendingCount": 0,
     "onboardCount": 13,
-    "updatedAt": "2026-10-06T01:57:54Z"
+    "pendingCount": 0,
+    "updatedAt": "2026-10-06T02:28:22Z"
   },
   "canEdit": false
 }
