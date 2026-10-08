@@ -310,123 +310,77 @@ function internalCoordinationFlowGroup() {
   </section>`;
 }
 
+function recruitmentSummary(rows) {
+  const planned = total("plannedCount", rows);
+  const secured = total("offerCount", rows);
+  const onboard = total("onboardCount", rows);
+  return { planned, secured, onboard, waiting: Math.max(secured - onboard, 0), gap: total("remainingCount", rows) };
+}
+
+function progressBar(summary, label, large = false) {
+  const scale = Math.max(summary.planned, summary.onboard + summary.waiting + summary.gap, 1);
+  const segments = [["arrived", summary.onboard], ["waiting", summary.waiting], ["vacant", summary.gap]];
+  return `<div class="recruit-bar ${large ? "recruit-bar-large" : ""}" role="img" aria-label="${escapeHtml(label)}：需求 ${summary.planned} 人，已到岗 ${summary.onboard} 人，待到岗 ${summary.waiting} 人，缺口 ${summary.gap} 人">
+    ${segments.filter(([, n]) => n > 0).map(([key, n]) => `<span class="bar-${key}" style="width:${n / scale * 100}%"></span>`).join("")}
+  </div>`;
+}
+
+function progressLabels(summary) {
+  return `<div class="bar-labels"><span><i class="key-arrived"></i>已到岗 <b>${summary.onboard}</b></span><span><i class="key-waiting"></i>待到岗 <b>${summary.waiting}</b></span><span><i class="key-vacant"></i>缺口 <b>${summary.gap}</b></span></div>`;
+}
+
 function renderOverview() {
-  const recruitmentPlanned = total("plannedCount");
-  const overallPlanned = recruitmentPlanned + state.internalCoordination.plannedCount;
-  const socialRows = state.items.filter((item) => item.recruitmentType === "社会招聘");
-  const partnerRows = state.items.filter((item) => item.recruitmentType === "协力人员");
-  const socialPlanned = total("plannedCount", socialRows);
-  const partnerPlanned = total("plannedCount", partnerRows);
-  const socialProgress = {
-    interview: total("interviewCount", socialRows),
-    offer: total("offerCount", socialRows),
-    onboard: total("onboardCount", socialRows),
-  };
-  const partnerProgress = {
-    interview: total("interviewCount", partnerRows),
-    offer: total("offerCount", partnerRows),
-    onboard: total("onboardCount", partnerRows),
-  };
-  const departmentFocus = [...new Set(state.items.map((item) => item.department))]
-    .map((department) => {
-      const rows = state.items.filter((item) => item.department === department);
-      const summary = {
-        department,
-        rows,
-        plannedCount: total("plannedCount", rows),
-        suitableCount: total("suitableCount", rows),
-        interviewCount: total("interviewCount", rows),
-        salaryCount: total("salaryCount", rows),
-        offerCount: total("offerCount", rows),
-        onboardCount: total("onboardCount", rows),
-        remainingCount: total("remainingCount", rows),
-      };
-      return { ...summary, currentProgress: progressFromCounts(summary) };
-    })
-    .sort((a, b) => b.plannedCount - a.plannedCount || b.suitableCount - a.suitableCount);
-
-  const safetyIndex = departmentFocus.findIndex((item) => item.department === "安全保障部");
-  const procurementIndex = departmentFocus.findIndex((item) => item.department === "采购储运部");
-  if (safetyIndex >= 0 && procurementIndex >= 0) {
-    [departmentFocus[safetyIndex], departmentFocus[procurementIndex]] = [departmentFocus[procurementIndex], departmentFocus[safetyIndex]];
-  }
-  const planningIndex = departmentFocus.findIndex((item) => item.department === "企划部");
-  if (planningIndex >= 0) departmentFocus.push(departmentFocus.splice(planningIndex, 1)[0]);
-
+  const recruitment = recruitmentSummary(state.items);
+  const internal = state.internalCoordination;
+  const internalSummary = { planned: internal.plannedCount, secured: internal.confirmedCount, onboard: internal.onboardCount, waiting: Math.max(internal.confirmedCount - internal.onboardCount, 0), gap: internal.pendingCount };
+  const overall = Object.fromEntries(["planned", "secured", "onboard", "waiting", "gap"].map(key => [key, recruitment[key] + internalSummary[key]]));
+  const channels = ["社会招聘", "协力人员"].map(label => ({ label, ...recruitmentSummary(state.items.filter(item => item.recruitmentType === label)) }));
+  const departments = [...new Set(state.items.map(item => item.department))].map(department => {
+    const rows = state.items.filter(item => item.department === department);
+    return { department, rows, ...recruitmentSummary(rows) };
+  }).sort((a, b) => b.planned - a.planned || b.gap - a.gap);
+  const rate = clampPercent(overall.secured, overall.planned);
   content.innerHTML = `
-    <section class="hero-deck single-vessel">
-      <div class="metrics">
-          ${channelMetricCard("wind", "补充总计划", overallPlanned, [["社会招聘", socialPlanned], ["内部统筹", state.internalCoordination.plannedCount], ["协力人员", partnerPlanned]], "amber", true)}
-          ${channelMetricCard("ship", "社会招聘", socialPlanned, [["已面试", socialProgress.interview], ["已发Offer", socialProgress.offer], ["已到岗", socialProgress.onboard]], "blue")}
-          ${channelMetricCard("coordination", "内部统筹", state.internalCoordination.plannedCount, [["已明确", state.internalCoordination.confirmedCount], ["待协调", state.internalCoordination.pendingCount], ["已到岗", state.internalCoordination.onboardCount]], "green")}
-          ${channelMetricCard("beacon", "协力人员", partnerPlanned, [["已面试", partnerProgress.interview], ["已发Offer", partnerProgress.offer], ["已到岗", partnerProgress.onboard]], "coral")}
-      </div>
-
-      <article class="vessel-card vessel-side vessel-right ripple-card">
-        <div class="fleet-visual" aria-label="梦想号海工船">
-          <figure class="fleet-ship fleet-dream">
-            <img src="./assets/dream-ship-cutout-v4.webp?v=20260828" alt="宏华海洋梦想号海工船" fetchpriority="high" decoding="async" />
-          </figure>
+    <div class="overview-heading"><div><span class="heading-kicker">宏华海洋 · 2026 年下半年</span><h1>招聘进度总览</h1><p>整体进度清晰可见，每个部门一目了然。</p></div><button id="view-all-positions" class="overview-detail-button" type="button">查看全部岗位 <span aria-hidden="true">↗</span></button></div>
+    <section class="overview-summary" aria-label="总体招聘情况">
+      <div class="summary-main">
+        <div class="summary-top"><span class="section-eyebrow">人员补充总计划</span><span class="summary-badge">${departments.length} 个部门 · ${state.items.length} 个岗位</span></div>
+        <div class="overview-kpis">
+          <div class="kpi-total"><span>招聘需求</span><strong data-kpi="planned">${overall.planned}<small>人</small></strong><p>含内部统筹 ${internal.plannedCount} 人</p></div>
+          <div><span>已落实</span><strong data-kpi="secured">${overall.secured}<small>人</small></strong><p>已到岗 ${overall.onboard} · 待到岗 ${overall.waiting}</p></div>
+          <div class="kpi-gap"><span>剩余缺口</span><strong data-kpi="gap">${overall.gap}<small>人</small></strong><p>仍需继续补充</p></div>
         </div>
-      </article>
-    </section>
-
-    <section class="flow-panel ripple-card">
-      <div class="panel-heading"><div><h2>招聘转化链路</h2></div><b>社会招聘 · 内部统筹 · 协力人员</b></div>
-      <div class="conversion-flow-groups">
-        ${conversionFlowGroup(socialRows, "社会招聘", "social")}
-        ${internalCoordinationFlowGroup()}
-        ${conversionFlowGroup(partnerRows, "协力人员", "partner")}
+        <div class="overall-bar-heading"><span>总体落实进度</span><strong>${rate}%</strong></div>
+        ${progressBar(overall, "总体招聘情况", true)}${progressLabels(overall)}
+      </div>
+      <div class="summary-channels"><h2>补充渠道</h2><div class="channel-table-head"><span>渠道</span><span>需求</span><span>已落实</span><span>缺口</span></div>
+        ${[...channels, { label: "内部统筹", ...internalSummary }].map(channel => `<div class="channel-table-row"><span>${channel.label}</span><strong>${channel.planned}</strong><strong>${channel.secured}</strong><strong class="channel-gap">${channel.gap}</strong></div>`).join("")}
+        <div class="channel-note">已落实包含已到岗人员</div>
       </div>
     </section>
-
-    <section class="priority-panel meeting-progress-panel">
-      <div class="panel-heading meeting-progress-heading"><div><h2>部门招聘进展全景</h2></div><button id="view-all-positions" type="button">进入数据维护 →</button></div>
-      <div class="department-progress-matrix">
-        ${departmentFocus.map((item) => `<article class="department-track-card">
-          <div class="department-track-heading">
-            <div><h3>${escapeHtml(item.department)}</h3></div>
-            <button class="department-jump" data-department="${escapeHtml(item.department)}" type="button" aria-label="查看${escapeHtml(item.department)}岗位明细">查看明细 →</button>
-          </div>
-          <div class="department-track-lines">
-            ${departmentRecruitmentTrack(item.rows, "社会招聘")}
-            ${departmentRecruitmentTrack(item.rows, "协力人员")}
-          </div>
-        </article>`).join("")}
-        <article class="department-track-card internal-track-card">
-          <div class="department-track-heading">
-            <div><h3>内部统筹</h3></div>
-            <div class="internal-track-actions"><span class="internal-track-status">已明确 ${state.internalCoordination.confirmedCount} / ${state.internalCoordination.plannedCount}</span>${state.canEdit ? '<button class="internal-edit-button" data-edit-internal type="button">更新数据</button>' : ""}</div>
-          </div>
-          <div class="internal-track-content">
-            <div class="internal-track-numbers">
-              <span><small>计划</small><strong>${state.internalCoordination.plannedCount}</strong></span>
-              <span><small>已明确</small><strong>${state.internalCoordination.confirmedCount}</strong></span>
-              <span><small>待协调</small><strong>${state.internalCoordination.pendingCount}</strong></span>
-              <span><small>已到岗</small><strong>${state.internalCoordination.onboardCount}</strong></span>
-            </div>
-            <div class="internal-track-progress"><i><b style="width:${clampPercent(state.internalCoordination.confirmedCount, state.internalCoordination.plannedCount)}%"></b></i><strong>${clampPercent(state.internalCoordination.confirmedCount, state.internalCoordination.plannedCount)}%</strong></div>
-          </div>
-        </article>
-      </div>
-    </section>`;
-
-  document.querySelector("#view-all-positions").addEventListener("click", () => {
-    state.tab = "positions";
-    state.department = "全部部门";
-    state.recruitmentType = "全部方式";
-    state.query = "";
-    render();
-  });
-
-  document.querySelectorAll("[data-department]").forEach((button) => button.addEventListener("click", () => {
-    state.tab = "positions";
-    state.department = button.dataset.department;
-    state.recruitmentType = "全部方式";
-    state.query = "";
-    render();
-  }));
-  document.querySelectorAll("[data-edit-internal]").forEach((button) => button.addEventListener("click", openInternalEditor));
+    <section class="recruitment-stages" aria-label="外部招聘各阶段累计人数"><div class="stage-caption"><strong>外部招聘进展</strong><span>社会招聘 + 协力人员</span></div>${[["suitableCount", "简历合适"], ["interviewCount", "已面试"], ["salaryCount", "薪酬沟通"], ["offerCount", "已发 Offer"], ["onboardCount", "已到岗"]].map(([key, label]) => `<div class="stage-tally"><span>${label}</span><strong>${total(key)}<small>人</small></strong></div>`).join("")}</section>
+    <section class="department-section" aria-labelledby="department-title">
+      <div class="department-section-heading"><div><h2 id="department-title">部门招聘进度</h2><p>按招聘需求排列 · 点击明细查看各岗位进展</p></div><span class="department-count">${departments.length} 个部门</span></div>
+      <div class="dept-grid">${departments.map(item => `<article class="dept-card" aria-label="${escapeHtml(item.department)}招聘情况">
+        <div class="dept-card-heading"><div><h3>${escapeHtml(item.department)}</h3><span>${item.rows.length} 个岗位 · 落实率 ${clampPercent(item.secured, item.planned)}%</span></div><button type="button" data-department="${escapeHtml(item.department)}" aria-label="查看${escapeHtml(item.department)}岗位明细">查看明细 <span aria-hidden="true">↗</span></button></div>
+        <div class="dept-stats"><div><span>招聘需求</span><strong>${item.planned}</strong></div><div><span>已落实</span><strong>${item.secured}</strong></div><div class="dept-gap"><span>剩余缺口</span><strong>${item.gap}</strong></div></div>
+        ${progressBar(item, item.department)}${progressLabels(item)}
+        <div class="dept-channels">${["社会招聘", "协力人员"].map(type => {
+          const rows = item.rows.filter(row => row.recruitmentType === type);
+          if (!rows.length) return "";
+          const s = recruitmentSummary(rows);
+          return `<div><span>${type}</span><span>需求 <b>${s.planned}</b><i>·</i>已落实 <b>${s.secured}</b><i>·</i>缺口 <b>${s.gap}</b></span></div>`;
+        }).join("")}</div>
+      </article>`).join("")}</div>
+    </section>
+    <section class="internal-summary" aria-label="内部统筹进展"><div class="internal-summary-title"><span class="internal-icon" aria-hidden="true">⇄</span><div><h2>内部统筹</h2><p>独立统筹，计入人员补充总计划</p></div></div><div class="internal-summary-stats">${[["计划", internal.plannedCount], ["已明确", internal.confirmedCount], ["待协调", internal.pendingCount], ["已到岗", internal.onboardCount]].map(([label, value]) => `<div><span>${label}</span><strong>${value}<small>人</small></strong></div>`).join("")}</div>${state.canEdit ? '<button class="overview-detail-button" data-edit-internal type="button">更新数据</button>' : ""}</section>
+    <footer class="overview-footnote">统计口径：外部招聘“已落实”按已发 Offer 统计（含已到岗）；内部统筹按已明确统计。缺口沿用原表口径。</footer>`;
+  const showPositions = (department = "全部部门") => {
+    state.tab = "positions"; state.department = department; state.recruitmentType = "全部方式"; state.progress = "全部进展"; state.query = ""; render(); window.scrollTo({ top: 0, behavior: "instant" });
+  };
+  document.querySelector("#view-all-positions").addEventListener("click", () => showPositions());
+  document.querySelectorAll("[data-department]").forEach(button => button.addEventListener("click", () => showPositions(button.dataset.department)));
+  document.querySelectorAll("[data-edit-internal]").forEach(button => button.addEventListener("click", openInternalEditor));
 }
 
 function filteredItems() {
@@ -1108,7 +1062,6 @@ adminButton.addEventListener("click", async () => {
   }
 });
 
-initWaterClickRipple();
 void load();
 window.setInterval(() => void load(), 60000);
 window.addEventListener("focus", () => {
