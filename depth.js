@@ -30,7 +30,7 @@
       body.className = 'column-body';
       body.setAttribute('aria-hidden', 'true');
       body.style.setProperty('--column-delay', `${index * 110}ms`);
-      for (const face of ['front', 'side', 'top']) {
+      for (const face of ['front', 'bottom', 'top']) {
         const element = document.createElement('span');
         element.className = `column-face column-${face}`;
         body.append(element);

@@ -335,7 +335,7 @@ function departmentColumns(summary, department) {
   return `<div class="department-columns" role="img" aria-label="${escapeHtml(department)}：需求 ${summary.planned} 人，已发 Offer ${summary.secured} 人，缺口 ${summary.gap} 人">
     <div class="column-axis" aria-hidden="true"><span>${maximum} 人</span><span>0</span></div>
     <div class="column-plot"><div class="column-gridlines" aria-hidden="true"><i></i><i></i><i></i></div>
-      ${bars.map(([key, label, value]) => `<div class="column-slot"><div class="column-space"><div class="column-mark column-${key} ${value === 0 ? "column-zero" : ""}" style="height:${value / maximum * 100}%"><strong>${value}</strong></div></div><span class="column-label">${label}</span></div>`).join("")}
+      ${bars.map(([key, label, value]) => `<div class="column-slot ${key === "gap" && value === 0 ? "completed-column" : ""}"><div class="column-space"><div class="column-mark column-${key} ${value === 0 ? "column-zero" : ""}" style="height:${value / maximum * 100}%"><strong>${value}</strong></div></div><span class="column-label">${key === "gap" && value === 0 ? "已完成" : label}</span></div>`).join("")}
     </div>
   </div>`;
 }
@@ -345,8 +345,8 @@ function glassDepartmentCards(rows, type) {
     const selected = rows.filter(item => item.department === department);
     return { department, rows: selected, ...recruitmentSummary(selected) };
   }).sort((a, b) => b.planned - a.planned || b.gap - a.gap);
-  return departments.map(item => `<article class="liquid-dept glass-panel" data-chart-type="${escapeHtml(type)}" aria-label="${escapeHtml(item.department)}${escapeHtml(type)}">
-    <div class="liquid-dept-heading"><div><h3>${escapeHtml(item.department)}</h3><span>${item.rows.length} 个岗位</span></div><button data-department="${escapeHtml(item.department)}" data-recruitment-type="${escapeHtml(type)}" type="button" aria-label="查看${escapeHtml(item.department)}${escapeHtml(type)}岗位明细">明细 <span aria-hidden="true">↗</span></button></div>
+  return departments.map(item => `<article class="liquid-dept glass-panel ${item.gap === 0 ? "is-complete" : ""}" data-chart-type="${escapeHtml(type)}" data-gap="${item.gap}" aria-label="${escapeHtml(item.department)}${escapeHtml(type)}">
+    <div class="liquid-dept-heading"><div><div class="department-name"><h3>${escapeHtml(item.department)}</h3>${item.gap === 0 ? '<span class="completion-badge" title="剩余缺口为 0，按已发 Offer 统计"><i aria-hidden="true">✓</i>已完成</span>' : ""}</div><span>${item.rows.length} 个岗位</span></div><button data-department="${escapeHtml(item.department)}" data-recruitment-type="${escapeHtml(type)}" type="button" aria-label="查看${escapeHtml(item.department)}${escapeHtml(type)}岗位明细">明细 <span aria-hidden="true">↗</span></button></div>
     ${departmentColumns(item, item.department + type)}
     <div class="liquid-dept-footer"><span>已面试 <b>${total("interviewCount", item.rows)}</b></span><span>已到岗 <b>${item.onboard}</b></span><span>落实率 <b>${clampPercent(item.secured, item.planned)}%</b></span></div>
   </article>`).join("");
@@ -444,7 +444,7 @@ function renderPositions(focusSearch = false, cursor = null) {
             <td class="number">${item.salaryCount}</td>
             <td class="number offer">${item.offerCount}</td>
             <td class="number onboard">${item.onboardCount}</td>
-            <td class="number gap-number">${item.remainingCount}</td>
+            <td class="number gap-number">${Number(item.remainingCount) === 0 ? '<span class="table-completed">✓ 已完成</span>' : item.remainingCount}</td>
             <td><mark class="${statusTone(item.currentProgress)}">${escapeHtml(item.currentProgress)}</mark></td>
             <td class="time-cell">${formatTime(item.updatedAt)}</td>
             ${state.canEdit ? `<td><button class="edit-button" data-edit-id="${item.id}" type="button">更新</button></td>` : ""}
@@ -460,7 +460,7 @@ function renderPositions(focusSearch = false, cursor = null) {
             <td class="number">${filteredTotals.salaryCount}</td>
             <td class="number offer">${filteredTotals.offerCount}</td>
             <td class="number onboard">${filteredTotals.onboardCount}</td>
-            <td class="number gap-number">${filteredTotals.remainingCount}</td>
+            <td class="number gap-number">${filteredTotals.remainingCount === 0 ? '<span class="table-completed">✓ 已完成</span>' : filteredTotals.remainingCount}</td>
             <td>—</td>
             <td class="time-cell">—</td>
             ${state.canEdit ? "<td>—</td>" : ""}
