@@ -374,7 +374,7 @@ function renderOverview() {
         <div class="partner-status"><span>已到岗 <b>${partner.onboard}</b></span><span>待到岗 <b>${partner.waiting}</b></span></div>
       </section>
     </div>
-    <section class="social-stages glass-panel" aria-label="社会招聘各阶段累计人数">${[["suitableCount","合适人选"],["interviewCount","已面试"],["salaryCount","薪酬沟通"],["offerCount","已发 Offer"],["onboardCount","已到岗"]].map(([key,label])=>`<div><span>${label}</span><strong>${total(key,socialRows)}<small>人</small></strong></div>`).join("")}</section>
+    <section class="social-stages glass-panel" aria-label="社会招聘各阶段累计人数"><h2 class="stage-source-label">社会招聘进展</h2>${[["suitableCount","合适人选"],["interviewCount","已面试"],["salaryCount","薪酬沟通"],["offerCount","已发 Offer"],["onboardCount","已到岗"]].map(([key,label])=>`<div><span>${label}</span><strong>${total(key,socialRows)}<small>人</small></strong></div>`).join("")}</section>
     <section class="liquid-department-section" aria-labelledby="social-department-title"><div class="liquid-section-heading"><h2 id="social-department-title">社会招聘 · 部门进度</h2><span>${new Set(socialRows.map(item=>item.department)).size} 个部门</span></div><div class="liquid-dept-grid">${glassDepartmentCards(socialRows,"社会招聘")}</div></section>
     <section class="liquid-department-section partner-section" aria-labelledby="partner-department-title"><div class="liquid-section-heading"><h2 id="partner-department-title">协力人员 · 部门进度</h2><span>${new Set(partnerRows.map(item=>item.department)).size} 个部门</span></div><div class="liquid-dept-grid">${glassDepartmentCards(partnerRows,"协力人员")}</div></section>`;
   const showPositions = (department = "全部部门", type = "全部方式") => {

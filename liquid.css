@@ -54,7 +54,8 @@ body {
 .partner-kpis > div:last-child strong { color: #cf824d; }
 .partner-status { display: flex; justify-content: space-between; color: #667db1; font-size: 12px; margin-top: 14px; }
 .partner-status b { margin-left: 6px; color: #5573a4; }
-.social-stages { display: grid; grid-template-columns: repeat(5,1fr); padding: 20px 30px; margin-top: 18px; gap: 20px; border-radius: 20px; }
+.social-stages { display: grid; grid-template-columns: 122px repeat(5,1fr); padding: 20px 30px; margin-top: 18px; gap: 20px; border-radius: 20px; }
+.stage-source-label { margin: 0; font-size: 13px; color: #1768ad; font-weight: 600; align-self: center; }
 .social-stages > div { border-left: 1px solid #a9cee747; padding-left: 28px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .social-stages > div:first-child { border: 0; padding-left: 0; }
 .social-stages span { font-size: 12px; color: #4680b5; }
@@ -114,7 +115,8 @@ body {
   .partner-kpis { margin: 22px 0 20px; }
   .partner-overview .recruit-bar, .partner-overview .liquid-progress-heading, .partner-status { display: none; }
   .partner-kpis { margin-bottom: 0; }
-  .social-stages { gap: 12px; padding: 18px 22px; }
+  .social-stages { grid-template-columns: repeat(5,1fr); gap: 12px; padding: 18px 22px; }
+  .stage-source-label { grid-column: 1 / -1; }
   .social-stages > div { flex-direction: column; align-items: flex-start; gap: 4px; }
 }
 @media (max-width: 540px) {
