@@ -329,58 +329,60 @@ function progressLabels(summary) {
   return `<div class="bar-labels"><span><i class="key-arrived"></i>已到岗 <b>${summary.onboard}</b></span><span><i class="key-waiting"></i>待到岗 <b>${summary.waiting}</b></span><span><i class="key-vacant"></i>缺口 <b>${summary.gap}</b></span></div>`;
 }
 
-function renderOverview() {
-  const recruitment = recruitmentSummary(state.items);
-  const internal = state.internalCoordination;
-  const internalSummary = { planned: internal.plannedCount, secured: internal.confirmedCount, onboard: internal.onboardCount, waiting: Math.max(internal.confirmedCount - internal.onboardCount, 0), gap: internal.pendingCount };
-  const overall = Object.fromEntries(["planned", "secured", "onboard", "waiting", "gap"].map(key => [key, recruitment[key] + internalSummary[key]]));
-  const channels = ["社会招聘", "协力人员"].map(label => ({ label, ...recruitmentSummary(state.items.filter(item => item.recruitmentType === label)) }));
-  const departments = [...new Set(state.items.map(item => item.department))].map(department => {
-    const rows = state.items.filter(item => item.department === department);
-    return { department, rows, ...recruitmentSummary(rows) };
+function departmentColumns(summary, department) {
+  const maximum = Math.max(summary.planned, summary.secured, summary.gap, 1);
+  const bars = [["demand", "需求", summary.planned], ["secured", "已发 Offer", summary.secured], ["gap", "缺口", summary.gap]];
+  return `<div class="department-columns" role="img" aria-label="${escapeHtml(department)}：需求 ${summary.planned} 人，已发 Offer ${summary.secured} 人，缺口 ${summary.gap} 人">
+    <div class="column-axis" aria-hidden="true"><span>${maximum} 人</span><span>0</span></div>
+    <div class="column-plot"><div class="column-gridlines" aria-hidden="true"><i></i><i></i><i></i></div>
+      ${bars.map(([key, label, value]) => `<div class="column-slot"><div class="column-space"><div class="column-mark column-${key} ${value === 0 ? "column-zero" : ""}" style="height:${value / maximum * 100}%"><strong>${value}</strong></div></div><span class="column-label">${label}</span></div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function glassDepartmentCards(rows, type) {
+  const departments = [...new Set(rows.map(item => item.department))].map(department => {
+    const selected = rows.filter(item => item.department === department);
+    return { department, rows: selected, ...recruitmentSummary(selected) };
   }).sort((a, b) => b.planned - a.planned || b.gap - a.gap);
-  const rate = clampPercent(overall.secured, overall.planned);
+  return departments.map(item => `<article class="liquid-dept glass-panel" data-chart-type="${escapeHtml(type)}" aria-label="${escapeHtml(item.department)}${escapeHtml(type)}">
+    <div class="liquid-dept-heading"><div><h3>${escapeHtml(item.department)}</h3><span>${item.rows.length} 个岗位</span></div><button data-department="${escapeHtml(item.department)}" data-recruitment-type="${escapeHtml(type)}" type="button" aria-label="查看${escapeHtml(item.department)}${escapeHtml(type)}岗位明细">明细 <span aria-hidden="true">↗</span></button></div>
+    ${departmentColumns(item, item.department + type)}
+    <div class="liquid-dept-footer"><span>已面试 <b>${total("interviewCount", item.rows)}</b></span><span>已到岗 <b>${item.onboard}</b></span><span>落实率 <b>${clampPercent(item.secured, item.planned)}%</b></span></div>
+  </article>`).join("");
+}
+
+function renderOverview() {
+  const socialRows = state.items.filter(item => item.recruitmentType === "社会招聘");
+  const partnerRows = state.items.filter(item => item.recruitmentType === "协力人员");
+  const social = recruitmentSummary(socialRows);
+  const partner = recruitmentSummary(partnerRows);
   content.innerHTML = `
-    <div class="overview-heading"><div><span class="heading-kicker">宏华海洋 · 2026 年下半年</span><h1>招聘进度总览</h1><p>整体进度清晰可见，每个部门一目了然。</p></div><button id="view-all-positions" class="overview-detail-button" type="button">查看全部岗位 <span aria-hidden="true">↗</span></button></div>
-    <section class="overview-summary" aria-label="总体招聘情况">
-      <div class="summary-main">
-        <div class="summary-top"><span class="section-eyebrow">人员补充总计划</span><span class="summary-badge">${departments.length} 个部门 · ${state.items.length} 个岗位</span></div>
-        <div class="overview-kpis">
-          <div class="kpi-total"><span>招聘需求</span><strong data-kpi="planned">${overall.planned}<small>人</small></strong><p>含内部统筹 ${internal.plannedCount} 人</p></div>
-          <div><span>已落实</span><strong data-kpi="secured">${overall.secured}<small>人</small></strong><p>已到岗 ${overall.onboard} · 待到岗 ${overall.waiting}</p></div>
-          <div class="kpi-gap"><span>剩余缺口</span><strong data-kpi="gap">${overall.gap}<small>人</small></strong><p>仍需继续补充</p></div>
-        </div>
-        <div class="overall-bar-heading"><span>总体落实进度</span><strong>${rate}%</strong></div>
-        ${progressBar(overall, "总体招聘情况", true)}${progressLabels(overall)}
-      </div>
-      <div class="summary-channels"><h2>补充渠道</h2><div class="channel-table-head"><span>渠道</span><span>需求</span><span>已落实</span><span>缺口</span></div>
-        ${[...channels, { label: "内部统筹", ...internalSummary }].map(channel => `<div class="channel-table-row"><span>${channel.label}</span><strong>${channel.planned}</strong><strong>${channel.secured}</strong><strong class="channel-gap">${channel.gap}</strong></div>`).join("")}
-        <div class="channel-note">已落实包含已到岗人员</div>
-      </div>
-    </section>
-    <section class="recruitment-stages" aria-label="外部招聘各阶段累计人数"><div class="stage-caption"><strong>外部招聘进展</strong><span>社会招聘 + 协力人员</span></div>${[["suitableCount", "简历合适"], ["interviewCount", "已面试"], ["salaryCount", "薪酬沟通"], ["offerCount", "已发 Offer"], ["onboardCount", "已到岗"]].map(([key, label]) => `<div class="stage-tally"><span>${label}</span><strong>${total(key)}<small>人</small></strong></div>`).join("")}</section>
-    <section class="department-section" aria-labelledby="department-title">
-      <div class="department-section-heading"><div><h2 id="department-title">部门招聘进度</h2><p>按招聘需求排列 · 点击明细查看各岗位进展</p></div><span class="department-count">${departments.length} 个部门</span></div>
-      <div class="dept-grid">${departments.map(item => `<article class="dept-card" aria-label="${escapeHtml(item.department)}招聘情况">
-        <div class="dept-card-heading"><div><h3>${escapeHtml(item.department)}</h3><span>${item.rows.length} 个岗位 · 落实率 ${clampPercent(item.secured, item.planned)}%</span></div><button type="button" data-department="${escapeHtml(item.department)}" aria-label="查看${escapeHtml(item.department)}岗位明细">查看明细 <span aria-hidden="true">↗</span></button></div>
-        <div class="dept-stats"><div><span>招聘需求</span><strong>${item.planned}</strong></div><div><span>已落实</span><strong>${item.secured}</strong></div><div class="dept-gap"><span>剩余缺口</span><strong>${item.gap}</strong></div></div>
-        ${progressBar(item, item.department)}${progressLabels(item)}
-        <div class="dept-channels">${["社会招聘", "协力人员"].map(type => {
-          const rows = item.rows.filter(row => row.recruitmentType === type);
-          if (!rows.length) return "";
-          const s = recruitmentSummary(rows);
-          return `<div><span>${type}</span><span>需求 <b>${s.planned}</b><i>·</i>已落实 <b>${s.secured}</b><i>·</i>缺口 <b>${s.gap}</b></span></div>`;
-        }).join("")}</div>
-      </article>`).join("")}</div>
-    </section>
-    <section class="internal-summary" aria-label="内部统筹进展"><div class="internal-summary-title"><span class="internal-icon" aria-hidden="true">⇄</span><div><h2>内部统筹</h2><p>独立统筹，计入人员补充总计划</p></div></div><div class="internal-summary-stats">${[["计划", internal.plannedCount], ["已明确", internal.confirmedCount], ["待协调", internal.pendingCount], ["已到岗", internal.onboardCount]].map(([label, value]) => `<div><span>${label}</span><strong>${value}<small>人</small></strong></div>`).join("")}</div>${state.canEdit ? '<button class="overview-detail-button" data-edit-internal type="button">更新数据</button>' : ""}</section>
-    <footer class="overview-footnote">统计口径：外部招聘“已落实”按已发 Offer 统计（含已到岗）；内部统筹按已明确统计。缺口沿用原表口径。</footer>`;
-  const showPositions = (department = "全部部门") => {
-    state.tab = "positions"; state.department = department; state.recruitmentType = "全部方式"; state.progress = "全部进展"; state.query = ""; render(); window.scrollTo({ top: 0, behavior: "instant" });
+    <div class="liquid-page-heading"><div><span>宏华海洋 · 2026 年下半年</span><h1>招聘进度总览</h1></div><button id="view-all-positions" class="glass-button" type="button">全部岗位 <span aria-hidden="true">↗</span></button></div>
+    <div class="liquid-overview-grid">
+      <section class="social-overview glass-panel" aria-label="社会招聘总体情况">
+        <div class="liquid-panel-heading"><h2><i class="section-dot"></i>社会招聘</h2><button class="glass-text-button" data-channel="社会招聘" type="button">岗位明细 ↗</button></div>
+        <div class="social-kpis">${[["planned", "招聘需求", social.planned], ["secured", "已发 Offer", social.secured], ["gap", "剩余缺口", social.gap], ["onboard", "已到岗", social.onboard]].map(([key,label,value])=>`<div class="social-kpi social-kpi-${key}"><span>${label}</span><strong data-social-kpi="${key}">${value}<small>人</small></strong></div>`).join("")}</div>
+        <div class="liquid-progress-heading"><span>落实进度</span><strong>${clampPercent(social.secured,social.planned)}%</strong></div>
+        ${progressBar(social,"社会招聘",true)}${progressLabels(social)}
+      </section>
+      <section class="partner-overview glass-panel" aria-label="协力人员总体情况">
+        <div class="liquid-panel-heading"><h2><i class="section-dot partner-dot"></i>协力人员</h2><button class="glass-text-button" data-channel="协力人员" type="button">明细 ↗</button></div>
+        <div class="partner-kpis">${[["planned","需求",partner.planned],["secured","已发 Offer",partner.secured],["gap","缺口",partner.gap]].map(([key,label,value])=>`<div><span>${label}</span><strong data-partner-kpi="${key}">${value}<small>人</small></strong></div>`).join("")}</div>
+        <div class="liquid-progress-heading"><span>落实进度</span><strong>${clampPercent(partner.secured,partner.planned)}%</strong></div>
+        ${progressBar(partner,"协力人员",true)}
+        <div class="partner-status"><span>已到岗 <b>${partner.onboard}</b></span><span>待到岗 <b>${partner.waiting}</b></span></div>
+      </section>
+    </div>
+    <section class="social-stages glass-panel" aria-label="社会招聘各阶段累计人数">${[["suitableCount","合适人选"],["interviewCount","已面试"],["salaryCount","薪酬沟通"],["offerCount","已发 Offer"],["onboardCount","已到岗"]].map(([key,label])=>`<div><span>${label}</span><strong>${total(key,socialRows)}<small>人</small></strong></div>`).join("")}</section>
+    <section class="liquid-department-section" aria-labelledby="social-department-title"><div class="liquid-section-heading"><h2 id="social-department-title">社会招聘 · 部门进度</h2><span>${new Set(socialRows.map(item=>item.department)).size} 个部门</span></div><div class="liquid-dept-grid">${glassDepartmentCards(socialRows,"社会招聘")}</div></section>
+    <section class="liquid-department-section partner-section" aria-labelledby="partner-department-title"><div class="liquid-section-heading"><h2 id="partner-department-title">协力人员 · 部门进度</h2><span>${new Set(partnerRows.map(item=>item.department)).size} 个部门</span></div><div class="liquid-dept-grid">${glassDepartmentCards(partnerRows,"协力人员")}</div></section>`;
+  const showPositions = (department = "全部部门", type = "全部方式") => {
+    state.tab = "positions"; state.department = department; state.recruitmentType = type; state.progress = "全部进展"; state.query = ""; render(); window.scrollTo({top:0,behavior:"instant"});
   };
-  document.querySelector("#view-all-positions").addEventListener("click", () => showPositions());
-  document.querySelectorAll("[data-department]").forEach(button => button.addEventListener("click", () => showPositions(button.dataset.department)));
-  document.querySelectorAll("[data-edit-internal]").forEach(button => button.addEventListener("click", openInternalEditor));
+  document.querySelector("#view-all-positions").addEventListener("click",()=>showPositions());
+  document.querySelectorAll("[data-channel]").forEach(button=>button.addEventListener("click",()=>showPositions("全部部门",button.dataset.channel)));
+  document.querySelectorAll("[data-department]").forEach(button=>button.addEventListener("click",()=>showPositions(button.dataset.department,button.dataset.recruitmentType)));
 }
 
 function filteredItems() {
@@ -413,10 +415,7 @@ function renderPositions(focusSearch = false, cursor = null) {
     onboardCount: total("onboardCount", filtered),
     remainingCount: total("remainingCount", filtered),
   };
-  const showInternalCoordination = state.department === "全部部门"
-    && state.recruitmentType === "全部方式"
-    && state.progress === "全部进展"
-    && !state.query.trim();
+  const showInternalCoordination = false;
 
   content.innerHTML = `
     <section class="positions-head">

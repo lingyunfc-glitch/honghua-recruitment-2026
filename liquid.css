@@ -1,0 +1,157 @@
+:root { --ink: #123366; --arrived: #00a9a2; --waiting: #3289ed; --vacant: #ffc8a7; }
+body {
+  background: radial-gradient(ellipse at 6% 5%, #a5d8ffb3 0, transparent 34%), radial-gradient(ellipse at 95% 25%, #a9eeefd9 0, transparent 32%), radial-gradient(ellipse at 10% 65%, #c6c9ffc4 0, transparent 32%), linear-gradient(135deg, #edf8ff, #dbedff 48%, #e8f8ff);
+  background-attachment: fixed; color: #15366b;
+}
+.topbar { background: #f8fcff8c; border-bottom: 1px solid #ffffffbf; backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); box-shadow: 0 8px 30px #3264b10b; }
+.primary-nav { background: #ffffff70; border: 1px solid #ffffffbd; border-radius: 15px; }
+.nav-item { border-radius: 11px; color: #4071a3; }
+.nav-item.active { background: linear-gradient(135deg, #2194ff, #0062df); box-shadow: 0 4px 13px #1878e52b, inset 0 1px 0 #ffffff73; }
+.admin-login, .icon-button { background: #ffffff90; border-color: #fff; color: #1762ac; border-radius: 12px; }
+.motto span { color: #3479b6; -webkit-text-fill-color: #3479b6; }
+.updated, .updated strong { color: #477ba6; }
+.page-shell { max-width: 1400px; }
+.glass-panel {
+  position: relative; background: linear-gradient(140deg, #ffffffc9, #ffffff7a 65%, #ffffff9c);
+  border: 1px solid #ffffffea; border-radius: 25px;
+  backdrop-filter: blur(22px) saturate(155%); -webkit-backdrop-filter: blur(22px) saturate(155%);
+  box-shadow: inset 0 1px 1px #fff, inset 0 -1px 1px #ffffff91, 0 12px 36px #3274b412;
+}
+.glass-panel::before { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; border: 1px solid #fff5; box-shadow: inset 1px 1px 0 #fff9; }
+.liquid-page-heading { display: flex; justify-content: space-between; align-items: center; margin: 14px 0 24px; gap: 20px; }
+.liquid-page-heading > div > span { font-size: 12px; color: #4b84b8; letter-spacing: 1px; }
+.liquid-page-heading h1 { margin: 9px 0 0; font-size: 32px; color: #133d79; letter-spacing: 1px; }
+.glass-button { background: #ffffff9e; border: 1px solid #fff; color: #1664b3; border-radius: 14px; padding: 12px 18px; box-shadow: 0 6px 18px #4c92cb12, inset 0 1px #fff; font-size: 13px; cursor: pointer; }
+.glass-button span { margin-left: 14px; }
+.glass-button:hover { background: #fff; }
+.liquid-overview-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px; }
+.social-overview { padding: 28px 30px 25px; background: linear-gradient(120deg, #ffffffd6, #eaf6ffb0 65%, #ffffff86); }
+.partner-overview { padding: 28px 26px 25px; }
+.liquid-panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.liquid-panel-heading h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 18px; color: #15549a; font-weight: 650; }
+.section-dot { display: inline-block; height: 9px; width: 9px; border-radius: 50%; background: #1689fa; box-shadow: 0 0 0 5px #2598ff15; }
+.partner-dot { background: #9469e0; box-shadow: 0 0 0 5px #9974e817; }
+.partner-overview h2 { color: #6154a2; }
+.glass-text-button { border: 0; background: none; color: #4784be; padding: 8px 0 8px 8px; cursor: pointer; font-size: 12px; }
+.glass-text-button:hover { color: #0064d1; }
+.social-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 32px 0 26px; }
+.social-kpi > span, .partner-kpis span { display: block; font-size: 12px; color: #4f80b3; }
+.social-kpi strong { display: block; font-family: system-ui, sans-serif; font-size: 51px; font-weight: 650; color: #0969d1; line-height: 1.25; margin-top: 8px; letter-spacing: -1.5px; font-variant-numeric: tabular-nums; }
+.social-kpi-secured strong { color: #009c9d; }
+.social-kpi-gap strong { color: #ed7c48; }
+.social-kpi-onboard strong { color: #207ea0; }
+.social-kpis small, .partner-kpis small { font-size: 12px; font-weight: 400; font-family: "Microsoft YaHei", sans-serif; color: #628bb3; letter-spacing: 0; margin-left: 5px; }
+.liquid-progress-heading { display: flex; justify-content: space-between; font-size: 12px; color: #5182b0; margin-bottom: 10px; }
+.liquid-progress-heading strong { color: #2475c7; font-size: 14px; }
+.recruit-bar { background: #ffffff7d; border-radius: 7px; gap: 2px; box-shadow: inset 0 1px 3px #17569b0b; }
+.bar-arrived { background: linear-gradient(90deg,#00bcae,#21cbb9); }
+.bar-waiting { background: linear-gradient(90deg,#258aff,#55a7ff); }
+.bar-vacant { background: linear-gradient(90deg,#ffccaf,#ffbb91); }
+.bar-labels { color: #447aa8; font-size: 12px; }
+.bar-labels b { color: #245a8e; }
+.partner-kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 36px 0 31px; }
+.partner-kpis strong { display: block; font-family: system-ui,sans-serif; font-size: 40px; font-weight: 600; color: #695abc; line-height: 1.25; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.partner-kpis > div:last-child strong { color: #cf824d; }
+.partner-status { display: flex; justify-content: space-between; color: #667db1; font-size: 12px; margin-top: 14px; }
+.partner-status b { margin-left: 6px; color: #5573a4; }
+.social-stages { display: grid; grid-template-columns: repeat(5,1fr); padding: 20px 30px; margin-top: 18px; gap: 20px; border-radius: 20px; }
+.social-stages > div { border-left: 1px solid #a9cee747; padding-left: 28px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.social-stages > div:first-child { border: 0; padding-left: 0; }
+.social-stages span { font-size: 12px; color: #4680b5; }
+.social-stages strong { font-family: system-ui,sans-serif; font-weight: 600; font-size: 26px; color: #1268bc; }
+.social-stages small { font-size: 11px; font-weight: 400; margin-left: 4px; color: #739abd; }
+.liquid-department-section { margin-top: 32px; }
+.liquid-section-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 15px; }
+.liquid-section-heading h2 { margin: 0; font-size: 22px; color: #164f95; letter-spacing: .5px; }
+.liquid-section-heading > span { font-size: 12px; color: #4b85b6; }
+.liquid-dept-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.liquid-dept { padding: 23px 23px 18px; transition: box-shadow .2s ease, background .2s ease; }
+.liquid-dept:hover { background: linear-gradient(140deg,#ffffffe3,#ffffffa3); box-shadow: inset 0 1px 1px #fff, 0 14px 36px #2771b71c; }
+.liquid-dept-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.liquid-dept-heading h3 { margin: 0 0 7px; color: #1b579c; font-size: 17px; font-weight: 600; }
+.liquid-dept-heading > div > span { color: #5c8eb9; font-size: 11px; }
+.liquid-dept-heading button { border: 1px solid #ffffffad; background: #ffffff59; border-radius: 10px; color: #3d87c9; padding: 8px 10px; cursor: pointer; font-size: 11px; }
+.liquid-dept-heading button:hover { background: #fff; }
+.department-columns { display: grid; grid-template-columns: 34px 1fr; gap: 9px; height: 211px; margin: 32px 0 20px; }
+.column-axis { position: relative; font-size: 10px; color: #6995b8; }
+.column-axis span { position: absolute; left: 0; top: -7px; white-space: nowrap; }
+.column-axis span:last-child { top: 167px; }
+.column-plot { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 15px; position: relative; }
+.column-gridlines { position: absolute; inset: 0 0 34px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; }
+.column-gridlines i { display: block; height: 1px; border-top: 1px dashed #70a9d13d; }
+.column-gridlines i:last-child { border-top: 1px solid #6aa0cb5e; }
+.column-slot { z-index: 1; display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.column-space { height: 177px; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.column-mark { position: relative; width: min(58px,80%); border-radius: 10px 10px 0 0; min-height: 0; box-shadow: inset 1px 0 0 #ffffffa8, inset -1px 0 0 #ffffff4d; }
+.column-mark::after { content: ''; position: absolute; inset: 2px 4px auto; height: 8px; border-radius: 8px; background: linear-gradient(#ffffff8f,#ffffff0a); }
+.column-mark strong { position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); font-size: 22px; font-family: system-ui,sans-serif; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.column-demand { background: linear-gradient(90deg,#369cff,#73bcff 55%,#47a4ff); color: #0867c6; }
+.column-secured { background: linear-gradient(90deg,#16b8ba,#75e1d5 55%,#25c8c2); color: #008c94; }
+.column-gap { background: linear-gradient(90deg,#ffa16f,#ffcdab 55%,#ffb181); color: #cf7140; }
+.column-zero { box-shadow: none; }
+.column-zero::after { display: none; }
+.column-label { color: #527fa7; font-size: 11px; margin-top: 12px; white-space: nowrap; }
+.liquid-dept-footer { display: flex; justify-content: space-between; gap: 10px; padding-top: 15px; border-top: 1px solid #96bfe342; font-size: 11px; color: #5485b0; }
+.liquid-dept-footer b { margin-left: 4px; color: #225f9c; font-size: 12px; font-weight: 600; }
+.partner-section .liquid-section-heading h2 { color: #635ca8; }
+.partner-section .liquid-dept { background: linear-gradient(135deg,#ffffffe0,#f0eeff91); }
+.partner-section .liquid-dept-heading h3 { color: #55549c; }
+.positions-head, .filter-bar, .positions-table-panel { background: #ffffffb8; border: 1px solid #fff; backdrop-filter: blur(20px); border-radius: 20px; box-shadow: 0 10px 25px #3274b412; }
+@supports not (backdrop-filter: blur(1px)) { .glass-panel, .topbar { background: #f5fbff; } }
+@media (max-width: 1100px) {
+  .liquid-overview-grid { grid-template-columns: 1.6fr 1fr; gap: 16px; }
+  .social-overview { padding: 25px; }
+  .partner-overview { padding: 25px 20px; }
+  .social-kpis { gap: 12px; }
+  .social-kpi strong { font-size: 43px; }
+  .partner-kpis strong { font-size: 35px; }
+  .social-stages > div { padding-left: 16px; }
+  .liquid-dept-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+}
+@media (max-width: 850px) {
+  .liquid-overview-grid { grid-template-columns: 1fr; }
+  .partner-overview { padding: 23px 25px; }
+  .partner-kpis { margin: 22px 0 20px; }
+  .partner-overview .recruit-bar, .partner-overview .liquid-progress-heading, .partner-status { display: none; }
+  .partner-kpis { margin-bottom: 0; }
+  .social-stages { gap: 12px; padding: 18px 22px; }
+  .social-stages > div { flex-direction: column; align-items: flex-start; gap: 4px; }
+}
+@media (max-width: 540px) {
+  .liquid-page-heading { margin-top: 12px; margin-bottom: 21px; }
+  .liquid-page-heading h1 { font-size: 25px; }
+  .liquid-page-heading > div > span { font-size: 10px; letter-spacing: .5px; }
+  .glass-button { padding: 10px 11px; border-radius: 11px; font-size: 11px; }
+  .glass-button span { margin-left: 6px; }
+  .glass-panel { border-radius: 22px; }
+  .social-overview { padding: 23px 18px; }
+  .liquid-panel-heading h2 { font-size: 17px; }
+  .social-kpis { grid-template-columns: repeat(2,1fr); gap: 22px 30px; margin: 26px 0 25px; }
+  .social-kpi strong { font-size: 46px; margin-top: 5px; }
+  .social-kpi > span { font-size: 12px; }
+  .bar-labels { font-size: 11px; }
+  .partner-overview { padding: 21px 18px; }
+  .partner-kpis strong { font-size: 32px; }
+  .partner-kpis span { font-size: 11px; }
+  .social-stages { padding: 16px; gap: 10px; border-radius: 19px; }
+  .social-stages > div { padding-left: 8px; }
+  .social-stages span { font-size: 10px; white-space: nowrap; }
+  .social-stages strong { font-size: 23px; }
+  .social-stages small { display: none; }
+  .liquid-section-heading h2 { font-size: 19px; }
+  .liquid-section-heading > span { font-size: 11px; }
+  .liquid-dept-grid { grid-template-columns: 1fr; gap: 17px; }
+  .liquid-dept { padding: 23px 22px 19px; }
+  .liquid-dept-heading h3 { font-size: 18px; }
+  .department-columns { height: 209px; margin-top: 33px; }
+  .column-mark { width: min(60px,78%); }
+  .column-label { font-size: 12px; }
+}
+@media (max-width: 360px) {
+  .liquid-page-heading h1 { font-size: 22px; }
+  .glass-button { padding: 9px 8px; }
+  .liquid-dept { padding-left: 17px; padding-right: 17px; }
+  .liquid-dept-footer { gap: 5px; font-size: 10px; }
+  .social-stages { gap: 6px; padding: 14px 12px; }
+  .social-stages > div { padding-left: 6px; }
+}
