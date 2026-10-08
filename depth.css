@@ -1,0 +1,91 @@
+/* Extruded faces preserve the data-bearing front height and zero baseline. */
+.glass-panel {
+  --depth-x: 0deg; --depth-y: 0deg; --depth-lift: 0px;
+  --light-x: 28%; --light-y: 12%;
+  transform: perspective(1100px) translateY(var(--depth-lift)) rotateX(var(--depth-x)) rotateY(var(--depth-y));
+  transition: transform .42s cubic-bezier(.2,.75,.2,1), box-shadow .42s ease;
+  box-shadow: inset 0 2px 2px #fff, inset 0 -2px 2px #79b9e526, 0 3px 0 #b6d4ee52, 0 14px 28px #2664a51c, 0 30px 60px #4594cc0d;
+}
+.glass-panel::before {
+  border: 1px solid #ffffffe0;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #b5dcf96b;
+}
+.glass-panel::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(ellipse at var(--light-x) var(--light-y), #ffffff70, #ffffff10 42%, transparent 72%);
+  opacity: .48; transition: opacity .3s ease;
+}
+.glass-panel.depth-hovering {
+  transition: transform .1s ease-out, box-shadow .25s ease;
+  box-shadow: inset 0 2px 2px #fff, inset 0 -2px 2px #73b8e52b, 0 4px 0 #aacbe95c, 0 22px 38px #1f67a926, 0 36px 70px #3694d314;
+}
+.glass-panel.depth-hovering::after { opacity: .85; }
+.liquid-dept:hover { box-shadow: inset 0 2px 2px #fff, 0 3px 0 #b6d4ee52, 0 18px 34px #2664a525; }
+.glass-panel > * { position: relative; z-index: 1; }
+.department-columns { margin-top: 43px; }
+.column-mark {
+  --face-front: linear-gradient(90deg,#238aef,#67b6ff 60%,#389bfa);
+  --face-side: linear-gradient(90deg,#2375cd,#4e98e4);
+  --face-top: linear-gradient(130deg,#a7deff,#4c9eef);
+  background: transparent !important; border-radius: 0; box-shadow: none;
+}
+.column-secured {
+  --face-front: linear-gradient(90deg,#13b0b3,#6bddcf 60%,#21c3bd);
+  --face-side: linear-gradient(90deg,#008f99,#36b6b1);
+  --face-top: linear-gradient(130deg,#aefff0,#43c8c5);
+}
+.column-gap {
+  --face-front: linear-gradient(90deg,#ff9c61,#ffcca3 60%,#ffad74);
+  --face-side: linear-gradient(90deg,#db8657,#f6a375);
+  --face-top: linear-gradient(130deg,#ffe4c9,#ffb381);
+}
+.column-mark::after { display: none; }
+.column-mark strong { bottom: calc(100% + 16px); text-shadow: 0 1px 0 #ffffffc9; }
+.column-body {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform-origin: center bottom;
+  filter: drop-shadow(5px 7px 4px #165a9620);
+}
+.column-face { display: block; position: absolute; pointer-events: none; }
+.column-front {
+  inset: 0; border-radius: 4px 2px 0 0; background: var(--face-front);
+  box-shadow: inset 1px 0 0 #ffffff94, inset -1px 0 0 #fff4;
+}
+.column-front::after { content: ''; position: absolute; inset: 2px auto 0 8%; width: 14%; background: linear-gradient(90deg,transparent,#ffffff35,transparent); }
+.column-side {
+  left: 100%; top: -7px; width: 9px; height: calc(100% + 7px);
+  clip-path: polygon(0 7px,100% 0,100% calc(100% - 7px),0 100%);
+  background: var(--face-side);
+}
+.column-top {
+  left: 0; top: -7px; width: calc(100% + 9px); height: 7px;
+  clip-path: polygon(0 100%,9px 0,100% 0,calc(100% - 9px) 100%);
+  background: var(--face-top);
+}
+.depth-pending { opacity: 0; }
+.depth-pending .column-body { transform: scaleY(.015); opacity: 0; }
+.depth-pending .recruit-bar > span { transform: scaleX(.015); transform-origin: left center; }
+.depth-revealed.depth-pending { opacity: 1; animation: glass-depth-enter .68s cubic-bezier(.18,.7,.24,1) both; }
+.depth-revealed.depth-pending .column-body {
+  transform: scaleY(1); opacity: 1;
+  transition: transform 1.05s cubic-bezier(.16,.75,.2,1), opacity .3s ease;
+  transition-delay: var(--column-delay, 0ms);
+}
+.depth-revealed.depth-pending .recruit-bar > span { transform: scaleX(1); transition: transform .9s cubic-bezier(.16,.75,.2,1); }
+.depth-revealed.depth-pending .recruit-bar > span:nth-child(2) { transition-delay: .08s; }
+.depth-revealed.depth-pending .recruit-bar > span:nth-child(3) { transition-delay: .16s; }
+@keyframes glass-depth-enter {
+  from { opacity: 0; translate: 0 16px; }
+  to { opacity: 1; translate: 0 0; }
+}
+.glass-button, .liquid-dept-heading button { transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .glass-button:hover, .liquid-dept-heading button:hover { transform: translateY(-2px); box-shadow: 0 6px 14px #2189cb24, inset 0 1px 0 #fff; }
+}
+@media (max-width: 540px) { .department-columns { margin-top: 43px; } }
+@media (prefers-reduced-motion: reduce) {
+  .glass-panel, .glass-panel.depth-hovering { transform: none; transition: none; }
+  .depth-pending { opacity: 1; }
+  .depth-pending .column-body, .depth-pending .recruit-bar > span { transform: none; opacity: 1; transition: none; }
+  .depth-revealed.depth-pending { animation: none; translate: none; }
+}
