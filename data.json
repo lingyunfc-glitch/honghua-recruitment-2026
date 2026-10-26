@@ -262,15 +262,15 @@
       "detail": "项目档案",
       "recruitmentType": "协力人员",
       "plannedCount": 1,
-      "suitableCount": 0,
-      "interviewCount": 0,
-      "salaryCount": 0,
+      "suitableCount": 1,
+      "interviewCount": 1,
+      "salaryCount": 1,
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-06T02:28:22Z",
+      "updatedAt": "2026-10-26T01:17:42.986Z",
       "remainingCount": 1,
-      "currentProgress": "待更新"
+      "currentProgress": "薪酬谈判"
     },
     {
       "id": 17,
@@ -282,12 +282,12 @@
       "suitableCount": 7,
       "interviewCount": 7,
       "salaryCount": 1,
-      "offerCount": 0,
+      "offerCount": 1,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-23T06:48:26.250Z",
-      "remainingCount": 20,
-      "currentProgress": "薪酬谈判"
+      "updatedAt": "2026-10-26T01:18:12.229Z",
+      "remainingCount": 19,
+      "currentProgress": "已发Offer"
     },
     {
       "id": 18,
@@ -302,7 +302,7 @@
       "offerCount": 0,
       "onboardCount": 0,
       "candidateNames": null,
-      "updatedAt": "2026-10-23T06:48:48.770Z",
+      "updatedAt": "2026-10-26T01:18:34.518Z",
       "remainingCount": 10,
       "currentProgress": "已面试/确认"
     },
@@ -351,11 +351,11 @@
       "interviewCount": 5,
       "salaryCount": 1,
       "offerCount": 1,
-      "onboardCount": 0,
+      "onboardCount": 1,
       "candidateNames": null,
-      "updatedAt": "2026-10-13T02:11:17.709Z",
+      "updatedAt": "2026-10-26T01:18:52.047Z",
       "remainingCount": 0,
-      "currentProgress": "已发Offer"
+      "currentProgress": "已完成"
     },
     {
       "id": 22,
